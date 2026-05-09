@@ -8,7 +8,7 @@
 #   cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug
 #   cmake --build build-debug -j
 #
-# Run from the repo root so data files load:
+# Run from the repo root so ./assets/ (dat/, sound/, options.cfg, HighScores) resolve:
 #   ./build/chickens4linux
 #
 # Allegro is built out-of-tree by CMake’s ExternalProject (Allegro’s own CMake
@@ -61,16 +61,16 @@ ExternalProject_Add(chickens_allegro4
 )
 
 add_executable(chickens4linux
-    main.cpp
-    animation.cpp
-    chicken.cpp
-    gem.cpp
-    gore.cpp
-    helper.cpp
-    highscore.cpp
-    level.cpp
-    settings.cpp
-    smoke.cpp
+    src/main.cpp
+    src/animation.cpp
+    src/chicken.cpp
+    src/gem.cpp
+    src/gore.cpp
+    src/helper.cpp
+    src/highscore.cpp
+    src/level.cpp
+    src/settings.cpp
+    src/smoke.cpp
 )
 
 if(MSVC)
@@ -80,7 +80,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 add_dependencies(chickens4linux chickens_allegro4)
-target_include_directories(chickens4linux PRIVATE "${_alleg_install}/include")
+target_include_directories(chickens4linux PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${_alleg_install}/include"
+)
 target_link_libraries(chickens4linux PRIVATE "${_alleg_lib}")
 set_target_properties(chickens4linux PROPERTIES
     BUILD_RPATH "${_alleg_install}/lib"

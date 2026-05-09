@@ -1,10 +1,11 @@
+#include "helper.h"
 #include "highscore.h"
 
 using namespace std;
 
 void show_highscores(int rank, BITMAP* background)
 {
-    fstream file("HighScores");
+    fstream file(CHICKENS_ASSETS_REL("HighScores"));
 
     string players[HIGHSCORE_TABLE];
     int scores[HIGHSCORE_TABLE];
@@ -55,7 +56,7 @@ void show_highscores(int rank, BITMAP* background)
 
 int save_highscore(char* name, int score)
 {
-    fstream file("HighScores");
+    fstream file(CHICKENS_ASSETS_REL("HighScores"));
 
     string players[HIGHSCORE_TABLE];
     int scores[HIGHSCORE_TABLE];
@@ -86,7 +87,7 @@ int save_highscore(char* name, int score)
         players[rank] = name;
         scores[rank] = score;
 
-        file.open("HighScores", ios::out);
+        file.open(CHICKENS_ASSETS_REL("HighScores"), ios::out);
 
         for (int i = 0; i < HIGHSCORE_TABLE; ++i)
         {

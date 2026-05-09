@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
     level_mode = false;
     playername = getenv("USER");
     rank = HIGHSCORE_TABLE + 1;
-    config_path = "options.cfg";
+    config_path = CHICKENS_ASSETS_REL("options.cfg");
     current_level = 1;
     timer_delay = 0;
 
@@ -712,17 +712,17 @@ int mode_manager()
 
 void load_datafiles()
 {
-    background_data = load_datafile("dat/background.dat");
-    bigchicken_data = load_datafile("dat/bigchicken.dat");
-    chicken_data = load_datafile("dat/chicken.dat");
-    cursors_data = load_datafile("dat/cursors.dat");
-    flyingchicken_data = load_datafile("dat/flyingchicken.dat");
-    fonts_data = load_datafile("dat/fonts.dat");
-    gem_data = load_datafile("dat/gem.dat");
-    giblet_data = load_datafile("dat/giblets.dat");
-    icons_data = load_datafile("dat/icons.dat");
-    modechooser_data = load_datafile("dat/modechooser.dat");
-    terrain_data = load_datafile("dat/terrain.dat");
+    background_data = load_datafile(CHICKENS_ASSETS_REL("dat/background.dat"));
+    bigchicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
+    chicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/chicken.dat"));
+    cursors_data = load_datafile(CHICKENS_ASSETS_REL("dat/cursors.dat"));
+    flyingchicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
+    fonts_data = load_datafile(CHICKENS_ASSETS_REL("dat/fonts.dat"));
+    gem_data = load_datafile(CHICKENS_ASSETS_REL("dat/gem.dat"));
+    giblet_data = load_datafile(CHICKENS_ASSETS_REL("dat/giblets.dat"));
+    icons_data = load_datafile(CHICKENS_ASSETS_REL("dat/icons.dat"));
+    modechooser_data = load_datafile(CHICKENS_ASSETS_REL("dat/modechooser.dat"));
+    terrain_data = load_datafile(CHICKENS_ASSETS_REL("dat/terrain.dat"));
 }
 
 void load_fonts()
@@ -734,14 +734,14 @@ void load_fonts()
 
 void load_sounds()
 {
-    sound_alarm = load_sample("sound/alarm.wav");
-    sound_gameover = load_sample("sound/gameover.wav");
-    sound_gemcollect = load_sample("sound/gemcollect.wav");
-    sound_highscore = load_sample("sound/highscore.wav");
-    sound_menu = load_sample("sound/menu.wav");
-    sound_rocket = load_sample("sound/rocket.wav");
-    sound_shotgun = load_sample("sound/shotgun.wav");
-    sound_tenderizer = load_sample("sound/tenderizer.wav");
+    sound_alarm = load_sample(CHICKENS_ASSETS_REL("sound/alarm.wav"));
+    sound_gameover = load_sample(CHICKENS_ASSETS_REL("sound/gameover.wav"));
+    sound_gemcollect = load_sample(CHICKENS_ASSETS_REL("sound/gemcollect.wav"));
+    sound_highscore = load_sample(CHICKENS_ASSETS_REL("sound/highscore.wav"));
+    sound_menu = load_sample(CHICKENS_ASSETS_REL("sound/menu.wav"));
+    sound_rocket = load_sample(CHICKENS_ASSETS_REL("sound/rocket.wav"));
+    sound_shotgun = load_sample(CHICKENS_ASSETS_REL("sound/shotgun.wav"));
+    sound_tenderizer = load_sample(CHICKENS_ASSETS_REL("sound/tenderizer.wav"));
 }
 
 void initialize(int windowmode)
@@ -1066,7 +1066,7 @@ void show_modechooser()
 
 void show_levelcompleted()
 {
-    SAMPLE* sound_count = load_sample("sound/counter.wav");
+    SAMPLE* sound_count = load_sample(CHICKENS_ASSETS_REL("sound/counter.wav"));
 
     int b = 0;
     int color;

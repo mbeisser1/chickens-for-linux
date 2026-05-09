@@ -1,0 +1,68 @@
+# Build directories
+build/
+build-*/
+out/
+cmake-build-*/
+CMakeFiles/
+CMakeScripts/
+Testing/
+_deps/
+
+# CMake generated (in-source or leftover at repo root)
+CMakeCache.txt
+CMakeLists.txt.user
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+Makefile
+*.ninja
+.ninja_deps
+.ninja_log
+
+# Compiled objects / libs / binaries
+*.o
+*.obj
+*.lo
+*.slo
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Linker / dependency outputs
+*.d
+*.ilk
+*.pdb
+*.exp
+
+# Debug symbols
+*.dSYM/
+
+# Fortran (if any sneaks in)
+*.mod
+*.smod
+
+# Editors / IDEs
+.idea/
+*.swp
+*.swo
+*~
+.project
+.csettings
+
+# clangd (often under .cache/)
+.cache/
+
+# OS junk
+.DS_Store
+Thumbs.db

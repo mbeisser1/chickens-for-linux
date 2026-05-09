@@ -3,6 +3,9 @@
 
 #include <allegro.h>
 
+/* Packaged data lives under assets/ (paths relative to the process cwd; run from repo root). */
+#define CHICKENS_ASSETS_REL(relative_path) "assets/" relative_path
+
 #define CHICKEN_HEIGHT 20
 #define CHICKEN_WIDTH 24
 #define FOREVER TRUE

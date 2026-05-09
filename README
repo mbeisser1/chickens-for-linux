@@ -1,4 +1,61 @@
 --------------------------------------------------
+CHICKENS FOR LINUX
+--------------------------------------------------
+
+Allegro 4 port of the Chickens arcade-style game. Source lives under
+src/; game data (graphics, sounds, config, high scores) lives under
+assets/.
+
+Repository layout
+	assets/          options.cfg, HighScores, dat/*.dat, sound/*.wav
+	src/             C++ sources and headers
+	CMakeLists.txt   build at repo root (see below)
+
+Building
+	You need CMake 3.17 or newer, a C++17 compiler, and network access
+	the first time you configure: CMake downloads and builds Allegro 4
+	into your build directory.
+
+	Release:
+		cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+		cmake --build build -j
+
+	Debug game binary (Allegro from ExternalProject is still built as
+	Release):
+		cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug
+		cmake --build build-debug -j
+
+	The executable is named chickens4linux and is created next to your
+	chosen build directory (e.g. build/chickens4linux).
+
+How to run
+	The game resolves data files as paths like assets/dat/... and
+	assets/sound/... relative to the process current working directory.
+	Start it from the repository root so those paths exist:
+
+		./build/chickens4linux
+
+	If you used another build directory name, adjust the path (for
+	example ./build-debug/chickens4linux).
+
+	Useful command-line options (see also --help):
+		-u <name>       Player name for high scores (default is $USER)
+		-s <file>      Alternate settings file (default is assets/options.cfg)
+		--window       Windowed mode
+		--mute         No sound
+		--stock        Built-in default settings instead of the file
+		--warp <n>     Start at level n (Level mode)
+
+	Note: -s only changes the config file. Graphics and sounds are still
+	loaded from assets/ under the current working directory, so keep cwd
+	at the repo root unless you copy or symlink assets/ alongside the
+	binary.
+
+Code formatting (optional)
+	From the repo root:
+		./scripts/clang-format.sh
+
+--------------------------------------------------
 ----------- FREQUENTLY ASKED QUESTIONS -----------
 --------------------------------------------------
 
@@ -39,13 +96,17 @@
 
 3) How can I use a different High-Score name?
 
-	Answer: ./chickens -name your_name
+	Answer: From the repo root, run for example:
+		./build/chickens4linux -u your_name
+	(use your actual build directory if it is not build/).
 
 
 4) How do I change the configuration file?
 
-	Answer: Just open 'options.cfg' in your favorite text editor. I
-   made comments about each variable, so enjoy.
+	Answer: Edit assets/options.cfg in your favorite text editor (run
+   the game from the repo root so that file is used by default). I
+   made comments about each variable, so enjoy. You can also pass a
+   different file with -s /path/to/file.cfg.
 
 
 5) The chickens are running wicked fast! Why?

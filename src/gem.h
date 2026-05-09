@@ -20,7 +20,6 @@ class GEM
   public:
     GEM();
 
-    BITMAP image;
     void draw();
     void launch(float, float);
     int run();
