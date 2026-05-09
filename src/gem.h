@@ -1,5 +1,5 @@
 #ifndef GEM_H
-#define GEM_H 1
+#define GEM_H
 
 #include <allegro.h>
 

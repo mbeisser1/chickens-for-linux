@@ -1,5 +1,5 @@
 #ifndef SMOKE_H
-#define SMOKE_H 1
+#define SMOKE_H
 
 #include <allegro.h>
 

@@ -1,5 +1,5 @@
 #ifndef SETTINGS_H
-#define SETTINGS_H 1
+#define SETTINGS_H
 
 #include <fstream>
 

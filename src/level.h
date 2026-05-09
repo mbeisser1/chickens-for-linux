@@ -1,5 +1,5 @@
 #ifndef LEVEL_H
-#define LEVEL_H 1
+#define LEVEL_H
 
 #include <allegro.h>
 #include <math.h>

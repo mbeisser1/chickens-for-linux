@@ -1,5 +1,5 @@
 #ifndef CHICKEN_H
-#define CHICKEN_H 1
+#define CHICKEN_H
 
 #include <allegro.h>
 

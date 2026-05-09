@@ -1,5 +1,5 @@
 #ifndef ANIMATION_H
-#define ANIMATION_H 1
+#define ANIMATION_H
 
 #include <allegro.h>
 

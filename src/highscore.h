@@ -1,5 +1,5 @@
 #ifndef HISCORE_H
-#define HISCORE_H 1
+#define HISCORE_H
 
 #define HIGHSCORE_TABLE 10
 

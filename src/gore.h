@@ -1,5 +1,5 @@
 #ifndef GORE_H
-#define GORE_H 1
+#define GORE_H
 
 #include <allegro.h>
 
