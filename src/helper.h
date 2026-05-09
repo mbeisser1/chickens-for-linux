@@ -31,7 +31,7 @@
 #define ONCE FALSE
 #define RIGHT 1
 
-int items_in_datafile(DATAFILE*);
+int items_in_datafile(const DATAFILE* data);
 void Timer();
 
 extern bool TRANSLUCENT_SMOKE;

@@ -5,7 +5,7 @@ GEM::GEM()
     active = false;
 }
 
-void GEM::draw()
+void GEM::draw() const
 {
     if (active)
     {

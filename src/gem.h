@@ -8,7 +8,7 @@
 #define BONUS_TIMER 0
 #define BONUS_ROCKETSIZE 1
 
-extern void play_sound(SAMPLE*, int, int, bool);
+extern void play_sound(const SAMPLE* sample, int volume, int pan, bool loop);
 
 extern BITMAP* buffer;
 extern DATAFILE* gem_data;
@@ -20,8 +20,8 @@ class GEM
   public:
     GEM();
 
-    void draw();
-    void launch(float, float);
+    void draw() const;
+    void launch(float x, float y);
     int run();
     int type;
     float x;

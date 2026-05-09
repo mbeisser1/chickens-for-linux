@@ -14,6 +14,6 @@ extern FONT* font_big;
 extern FONT* font_interface;
 
 void show_highscores(int, BITMAP*);
-int save_highscore(char*, int);
+int save_highscore(const char* name, int score);
 
 #endif

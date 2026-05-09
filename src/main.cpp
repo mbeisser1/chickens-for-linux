@@ -46,10 +46,10 @@ void earn_bonus(int);
 void show_levelnumber();
 void fadeout(int, int);
 void next_level(int);
-int ctoi(char*);
+int ctoi(const char* t);
 inline void show_statistics();
 inline void weapon_manager(bool*, bool*);
-inline void play_sound(SAMPLE*, int, int, bool);
+inline void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
 
 // Configurable Variables
 bool FULLSCREEN;
@@ -98,7 +98,7 @@ bool level_mode;       // Whether level mode is on
 bool mute_sound;       // Shall we play sounds or not?
 bool not_dead;         // If the player isn't dead yet
 const char* config_path; // Path to configuration file
-char* playername;
+const char* playername;
 
 BITMAP* background;
 BITMAP* buffer;
@@ -1366,7 +1366,7 @@ void next_level(int level)
     timer = 60;
 }
 
-int ctoi(char* t)
+int ctoi(const char* t)
 {
     // Convert char* into integers, for processing the damn commandline parameters.
 
@@ -1472,7 +1472,7 @@ inline void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
     return;
 }
 
-inline void play_sound(SAMPLE* snd, int volume, int pan, bool loop)
+inline void play_sound(const SAMPLE* snd, int volume, int pan, bool loop)
 {
     if (mute_sound == false)
     {

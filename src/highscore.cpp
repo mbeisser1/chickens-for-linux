@@ -54,7 +54,7 @@ void show_highscores(int rank, BITMAP* background)
     } while (!key[KEY_ESC] && !key[KEY_SPACE] && !key[KEY_ENTER] && mouse_b != 1);
 }
 
-int save_highscore(char* name, int score)
+int save_highscore(const char* name, int score)
 {
     fstream file(CHICKENS_ASSETS_REL("HighScores"));
 

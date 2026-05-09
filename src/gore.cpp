@@ -1,6 +1,6 @@
 #include "gore.h"
 
-void BLOOD::release(float X, float Y, float X_VEL, float Y_VEL)
+void BLOOD::release(const float X, const float Y, const float X_VEL, const float Y_VEL)
 {
     x = X + rand() % 10 - rand() % 10;
     y = Y + rand() % 10 - rand() % 10;
@@ -126,7 +126,7 @@ void KFC::draw()
     }
 }
 
-void KFC::release(float at_x, float at_y, int accuracy, int death, int direction)
+void KFC::release(const float at_x, const float at_y, int accuracy, const int death, const int direction)
 {
     chunk = new GIBLET[CHUNKS_PER_CHICKEN];
 

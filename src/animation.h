@@ -10,11 +10,11 @@ extern BITMAP* buffer;
 struct ANIMATION
 {
     ANIMATION();
-    void load(DATAFILE*);
-    void play(BITMAP*); // Play the animation!
-    void reverse();     // Play it backwards (or forwards if it's already backwards)
+    void load(const DATAFILE* data);
+    void play(BITMAP* target); // Play the animation!
+    void reverse();             // Play it backwards (or forwards if it's already backwards)
 
-    DATAFILE* data; // Datafile containing images
+    const DATAFILE* data; // Datafile containing images
     float x;        // Location to draw on *target
     float y;
     int step;    // Current frame
@@ -34,10 +34,10 @@ struct ANIMATION
 struct CUTSCENE
 {
     CUTSCENE();
-    void load(char*);
-    int play(BITMAP*); // Play the cutscene!
+    void load(const char* path);
+    int play(BITMAP* target); // Play the cutscene!
 
-    DATAFILE* data; // Datafile containing images
+    const DATAFILE* data; // Datafile containing images
     float x;        // Location to draw on *target
     float y;
     int step; // Current frame

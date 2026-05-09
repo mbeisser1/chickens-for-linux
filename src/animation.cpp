@@ -10,7 +10,7 @@ ANIMATION::ANIMATION()
     y = 0;
 }
 
-void ANIMATION::load(DATAFILE* d)
+void ANIMATION::load(const DATAFILE* d)
 {
     data = d;
     frames = items_in_datafile(data);
@@ -85,7 +85,7 @@ CUTSCENE::CUTSCENE()
     y = 0;
 }
 
-void CUTSCENE::load(char* path)
+void CUTSCENE::load(const char* path)
 {
     data = load_datafile(path);
     frames = items_in_datafile(data);

@@ -14,7 +14,7 @@ extern DATAFILE* giblet_data;
 
 struct BLOOD
 {
-    void release(float, float, float, float);
+    void release(const float x, const float y, const float x_vel, const float y_vel);
     void run();
     void draw();
 
@@ -43,7 +43,8 @@ struct KFC
     GIBLET* chunk;
 
     void explode();
-    void release(float, float, int, int, int);
+    void release(
+        const float at_x, const float at_y, int accuracy, const int death, const int direction);
     void draw();
 
     bool released;
