@@ -18,6 +18,7 @@
     -----------------------------------------------------------------------------
 */
 
+#include <cstdlib>
 #include <iostream>
 
 #include <allegro.h>
@@ -129,7 +130,6 @@ int main(int argc, char* argv[])
     int rank; // Player rank
     int mx;   // Store previous mouse location
     int my;
-    int windowmode;    // Fullscreen or windowed?
     bool alert_sound;  // When true, the alert sound is playing
     bool fire_rocket;  // When true, a rocket is being fired
     bool fire_shotgun; // When true, the shotgun is being fired
@@ -156,14 +156,8 @@ int main(int argc, char* argv[])
         mute_sound = false;
     }
 
-    if (FULLSCREEN)
-    {
-        windowmode = GFX_AUTODETECT_FULLSCREEN;
-    }
-    else
-    {
-        windowmode = GFX_AUTODETECT_WINDOWED;
-    }
+    bool cli_force_windowed = false;
+    int windowmode = GFX_AUTODETECT_WINDOWED;
 
     // Process those pesky command line parameters
 
@@ -171,7 +165,7 @@ int main(int argc, char* argv[])
     {
         if (!strcmp(argv[i], "--window"))
         {
-            windowmode = GFX_AUTODETECT_WINDOWED;
+            cli_force_windowed = true;
         }
 
         else if (!strcmp(argv[i], "-s"))
@@ -252,6 +246,19 @@ int main(int argc, char* argv[])
             allegro_message("Error - Unknown Parameter '%s'\n", argv[i]);
             return 3;
         }
+    }
+
+    if (cli_force_windowed)
+    {
+        windowmode = GFX_AUTODETECT_WINDOWED;
+    }
+    else if (FULLSCREEN)
+    {
+        windowmode = GFX_AUTODETECT_FULLSCREEN;
+    }
+    else
+    {
+        windowmode = GFX_AUTODETECT_WINDOWED;
     }
 
     srand(time(NULL));
@@ -744,6 +751,57 @@ void load_sounds()
     sound_tenderizer = load_sample(CHICKENS_ASSETS_REL("sound/tenderizer.wav"));
 }
 
+static bool try_depths_for_driver(int gfx_driver)
+{
+    static const int depths[] = {24, 32, 16};
+    int d;
+
+    for (d = 0; d < 3; ++d)
+    {
+        set_color_depth(depths[d]);
+        if (set_gfx_mode(gfx_driver, 800, 600, 0, 0) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool try_set_gfx_mode(int requested_mode)
+{
+    if (try_depths_for_driver(requested_mode))
+    {
+        return true;
+    }
+
+#ifdef GFX_XWINDOWS
+    if (requested_mode != GFX_XWINDOWS)
+    {
+        if (try_depths_for_driver(GFX_XWINDOWS))
+        {
+            return true;
+        }
+    }
+#endif
+
+    if (requested_mode == GFX_AUTODETECT_FULLSCREEN)
+    {
+        allegro_message("Fullscreen mode failed; trying windowed.\n%s\n", allegro_error);
+        if (try_depths_for_driver(GFX_AUTODETECT_WINDOWED))
+        {
+            return true;
+        }
+#ifdef GFX_XWINDOWS
+        if (try_depths_for_driver(GFX_XWINDOWS))
+        {
+            return true;
+        }
+#endif
+    }
+
+    return false;
+}
+
 void initialize(int windowmode)
 {
     allegro_init();
@@ -760,8 +818,11 @@ void initialize(int windowmode)
     install_int_ex(Timer, BPS_TO_TIMER(60 + GAME_SPEED_OFFSET));
 
     text_mode(-1);
-    set_color_depth(24);
-    set_gfx_mode(windowmode, 800, 600, 0, 0);
+    if (!try_set_gfx_mode(windowmode))
+    {
+        allegro_message("Unable to set graphics mode 800x600.\n%s\n", allegro_error);
+        std::exit(EXIT_FAILURE);
+    }
 
     load_datafiles();
     load_fonts();

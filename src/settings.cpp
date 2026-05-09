@@ -130,7 +130,7 @@ int load_stock_config()
     CHANCE_OF_GEM = 25;
     CHICKEN_SPEED = 5;
     CHUNKS_PER_CHICKEN = 20;
-    FULLSCREEN = 1;
+    FULLSCREEN = 0;
     GAME_SPEED_OFFSET = 0;
     GRAVITY = 0.7;
     MAX_CHICKENS = 80;
