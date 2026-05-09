@@ -4,7 +4,7 @@
 #include <allegro.h>
 #include <math.h>
 
-#define MAX_LEVELHEIGHT 150
+constexpr int MAX_LEVELHEIGHT = 150;
 
 extern DATAFILE* terrain_data;
 

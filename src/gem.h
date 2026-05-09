@@ -5,8 +5,9 @@
 
 #include "helper.h"
 
-#define BONUS_TIMER 0
-#define BONUS_ROCKETSIZE 1
+constexpr int BONUS_TIMER = 0;
+constexpr int BONUS_ROCKETSIZE = 1;
+constexpr int BONUS_SCORE = 2;
 
 extern void play_sound(const SAMPLE* sample, int volume, int pan, bool loop);
 

@@ -6,8 +6,6 @@
 #include "animation.h"
 #include "gore.h"
 
-#define CROSSED_THE_ROAD 2
-
 extern float CHICKEN_SPEED;
 extern int MAX_CHICKENS;
 extern DATAFILE* chicken_data;

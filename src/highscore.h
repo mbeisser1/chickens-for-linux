@@ -1,13 +1,13 @@
 #ifndef HISCORE_H
 #define HISCORE_H
 
-#define HIGHSCORE_TABLE 10
-
 #include <fstream>
 #include <iostream>
 
 #include <allegro.h>
 #include <string.h>
+
+constexpr int HIGHSCORE_TABLE = 10;
 
 extern BITMAP* buffer;
 extern FONT* font_big;

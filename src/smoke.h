@@ -6,8 +6,8 @@
 #include "helper.h"
 #include "level.h"
 
-#define MAX_SMOKE 20
-#define MAX_SMOKEPUFFS 20
+constexpr int MAX_SMOKE = 20;
+constexpr int MAX_SMOKEPUFFS = 20;
 
 extern BITMAP* buffer;
 extern LEVEL level;

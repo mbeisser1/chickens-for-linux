@@ -1253,7 +1253,7 @@ void earn_bonus(int type)
 
     switch (type)
     {
-    case 0: // Blue gem
+    case BONUS_TIMER: // Blue gem
         if (level_mode == false)
         {
             timer += 6;
@@ -1264,7 +1264,7 @@ void earn_bonus(int type)
         }
         break;
 
-    case 1: // Green gem
+    case BONUS_ROCKETSIZE: // Green gem
         if (level_mode == false)
         {
             timer += 2;
@@ -1272,7 +1272,7 @@ void earn_bonus(int type)
         ROCKET_SIZE += 5;
         break;
 
-    case 2: // Red gem
+    case BONUS_SCORE: // Red gem
         if (level_mode == false)
         {
             score += 5000;

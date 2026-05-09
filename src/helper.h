@@ -13,23 +13,24 @@
 #define CHICKENS_TEXTPRINTF_CENTRE(bmp, f, x, y, color, fmt, ...) \
     textprintf_centre_ex((bmp), (f), (x), (y), (color), -1, (fmt), ##__VA_ARGS__)
 
-#define CHICKEN_HEIGHT 20
-#define CHICKEN_WIDTH 24
-#define FOREVER TRUE
-#define KILLED_WITH_ROCKET 1
-#define KILLED_WITH_SHOTGUN 2
-#define KILLED_WITH_TENDERIZER 3
-#define LEFT -1
-#define MAX_GEMS 10
-#define MODE_GAMEOVER 2
-#define MODE_RESTART 3
-#define MODE_PAUSED 5
-#define MODE_PLAYING 6
-#define MODE_NEXTLEVEL 7
-#define MODE_QUIT 8
-#define NOT_KILLED 0
-#define ONCE FALSE
-#define RIGHT 1
+constexpr int CHICKEN_HEIGHT = 20;
+constexpr int CHICKEN_WIDTH = 24;
+constexpr bool FOREVER = true;
+constexpr int KILLED_WITH_ROCKET = 1;
+constexpr int KILLED_WITH_SHOTGUN = 2;
+constexpr int KILLED_WITH_TENDERIZER = 3;
+constexpr int LEFT = -1;
+constexpr int MAX_GEMS = 10;
+constexpr int MODE_GAMEOVER = 2;
+constexpr int MODE_RESTART = 3;
+constexpr int MODE_PAUSED = 5;
+constexpr int MODE_PLAYING = 6;
+constexpr int MODE_NEXTLEVEL = 7;
+constexpr int MODE_QUIT = 8;
+constexpr int NOT_KILLED = 0;
+constexpr bool ONCE = false;
+constexpr int RIGHT = 1;
+constexpr int CROSSED_THE_ROAD = 2;
 
 int items_in_datafile(const DATAFILE* data);
 void Timer();

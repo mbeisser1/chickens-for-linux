@@ -14,10 +14,10 @@ void DisableVSync();
 bool VSyncEnabled();
 int GetScreenUpdateMethod();
 
-#define TRIPLEBUFFER 1
-#define PAGEFLIP 2
-#define SYSTEMBUFFER 3
-#define DOUBLEBUFFER 4
+constexpr int TRIPLEBUFFER = 1;
+constexpr int PAGEFLIP = 2;
+constexpr int SYSTEMBUFFER = 3;
+constexpr int DOUBLEBUFFER = 4;
 
 #ifdef __cplusplus
 }
