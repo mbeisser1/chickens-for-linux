@@ -10,11 +10,11 @@ constexpr int MAX_SMOKE = 20;
 constexpr int MAX_SMOKEPUFFS = 20;
 
 extern BITMAP* buffer;
-extern LEVEL level;
+extern Level level;
 extern DATAFILE* icons_data;
 extern int ROCKET_SIZE;
 
-struct SMOKEPUFF
+struct SmokePuff
 {
     int x_vel;
     int x;
@@ -23,12 +23,12 @@ struct SMOKEPUFF
     int life;
 };
 
-class SMOKE
+class Smoke
 {
   public:
-    SMOKE();
+    Smoke();
 
-    SMOKEPUFF* puff;
+    SmokePuff* puff;
 
     int draw();
     int run();

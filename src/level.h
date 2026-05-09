@@ -8,7 +8,7 @@ constexpr int MAX_LEVELHEIGHT = 150;
 
 extern DATAFILE* terrain_data;
 
-struct LEVEL
+struct Level
 {
     void create();
 

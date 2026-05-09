@@ -16,10 +16,10 @@ extern DATAFILE* gem_data;
 extern SAMPLE* sound_gemcollect;
 extern int timer;
 
-class GEM
+class Gem
 {
   public:
-    GEM();
+    Gem();
 
     void draw() const;
     void launch(float x, float y);

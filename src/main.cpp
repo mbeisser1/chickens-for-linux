@@ -41,7 +41,7 @@ void initialize(int);
 void show_startup();
 void show_modechooser();
 void show_levelcompleted();
-void restart(CHICKEN[], GEM[MAX_GEMS], SMOKE[MAX_SMOKE]);
+void restart(Chicken[], Gem[MAX_GEMS], Smoke[MAX_SMOKE]);
 void earn_bonus(int);
 void show_levelnumber();
 void fadeout(int, int);
@@ -113,7 +113,7 @@ DATAFILE* giblet_data;
 DATAFILE* icons_data;
 DATAFILE* fonts_data;
 DATAFILE* modechooser_data;
-LEVEL level;
+Level level;
 FONT* font_big;
 FONT* font_interface;
 SAMPLE* sound_alarm;
@@ -271,9 +271,9 @@ int main(int argc, char* argv[])
                                            // anything (ie no background image gets loaded)
     tmp_rocket_size = ROCKET_SIZE;
 
-    SMOKE smoke[MAX_SMOKE]; // Allegro needs to be running before we can initialize these!
-    GEM gem[MAX_GEMS];
-    CHICKEN chicken[MAX_CHICKENS];
+    Smoke smoke[MAX_SMOKE]; // Allegro needs to be running before we can initialize these!
+    Gem gem[MAX_GEMS];
+    Chicken chicken[MAX_CHICKENS];
 
     show_startup();
     fadeout(makecol(0, 0, 0), 50);
@@ -987,7 +987,7 @@ void show_startup()
 
 void show_modechooser()
 {
-    ANIMATION bigchick;
+    Animation bigchick;
 
     bool done = false;
     bool right_foot = false;
@@ -1204,7 +1204,7 @@ void show_levelcompleted()
     fadeout(makecol(0, 0, 0), 40);
 }
 
-void restart(CHICKEN chicken[], GEM gem[MAX_GEMS], SMOKE smoke[MAX_SMOKE])
+void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
 {
     for (int i = 0; i < MAX_CHICKENS; ++i)
     {

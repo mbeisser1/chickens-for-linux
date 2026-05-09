@@ -1,6 +1,6 @@
 #include "chicken.h"
 
-CHICKEN::CHICKEN()
+Chicken::Chicken()
 {
     running.load(chicken_data);
     flying.load(flyingchicken_data);
@@ -8,7 +8,7 @@ CHICKEN::CHICKEN()
     reset();
 }
 
-void CHICKEN::reset()
+void Chicken::reset()
 {
     if (rand() % 2 == 1)
     {
@@ -37,7 +37,7 @@ void CHICKEN::reset()
     flying.y = y;
 }
 
-int CHICKEN::run()
+int Chicken::run()
 {
     if (alive == NOT_KILLED)
     {
@@ -117,7 +117,7 @@ int CHICKEN::run()
     }
 }
 
-void CHICKEN::draw()
+void Chicken::draw()
 {
     if (x >= -CHICKEN_WIDTH && x < SCREEN_W)
     {

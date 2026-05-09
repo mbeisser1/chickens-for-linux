@@ -1,27 +1,27 @@
 #include "animation.h"
 
-ANIMATION::ANIMATION()
+Animation::Animation()
 {
     loop = true;
-    slide = false;
-    hflip = false;
+    slide = {};
+    hflip = {};
     speed = 400;
-    x = 0;
-    y = 0;
+    x = {};
+    y = {};
 }
 
-void ANIMATION::load(const DATAFILE* d)
+void Animation::load(const DATAFILE* d)
 {
     data = d;
     frames = items_in_datafile(data);
-    step = 0;
-    angle = 0;
-    old_angle = 0;
+    step = {};
+    angle = {};
+    old_angle = {};
     frame_direction = 1;
-    played_once = false;
+    played_once = {};
 }
 
-void ANIMATION::play(BITMAP* target)
+void Animation::play(BITMAP* target)
 {
     if (angle == 0)
     {
@@ -65,7 +65,7 @@ void ANIMATION::play(BITMAP* target)
     if (step == frames)
     {
         played_once = true;
-        step = 0;
+        step = {};
     }
 
     if (step < 0)
@@ -74,35 +74,35 @@ void ANIMATION::play(BITMAP* target)
     }
 }
 
-void ANIMATION::reverse()
+void Animation::reverse()
 {
     frame_direction = -frame_direction;
 }
 
-CUTSCENE::CUTSCENE()
+Cutscene::Cutscene()
 {
-    x = 0;
-    y = 0;
+    x = {};
+    y = {};
 }
 
-void CUTSCENE::load(const char* path)
+void Cutscene::load(const char* path)
 {
     data = load_datafile(path);
     frames = items_in_datafile(data);
-    step = 0;
+    step = {};
 }
 
-int CUTSCENE::play(BITMAP* target)
+int Cutscene::play(BITMAP* target)
 {
     draw_rle_sprite(target, (RLE_SPRITE*)data[step++].dat, (int)x, (int)y);
 
     if (step == frames)
     {
         --step;
-        return 0;
+        return {};
     }
     else
     {
-        return 1;
+        return {1};
     }
 }

@@ -1,6 +1,6 @@
 #include "level.h"
 
-void LEVEL::create()
+void Level::create()
 {
     int divider;
 

@@ -1,6 +1,6 @@
 #include "gore.h"
 
-void BLOOD::release(const float X, const float Y, const float X_VEL, const float Y_VEL)
+void Blood::release(const float X, const float Y, const float X_VEL, const float Y_VEL)
 {
     x = X + rand() % 10 - rand() % 10;
     y = Y + rand() % 10 - rand() % 10;
@@ -8,14 +8,14 @@ void BLOOD::release(const float X, const float Y, const float X_VEL, const float
     y_vel = Y_VEL + float(rand() % 5) / float(1 + rand() % 10) * (rand() % 2 == 1 ? 1 : -1);
 }
 
-void BLOOD::run()
+void Blood::run()
 {
     y_vel += GRAVITY;
     x += x_vel;
     y += y_vel;
 }
 
-void BLOOD::draw()
+void Blood::draw()
 {
     if (x >= 0 && x < SCREEN_W)
     {
@@ -26,18 +26,18 @@ void BLOOD::draw()
     }
 }
 
-GIBLET::GIBLET()
+Giblet::Giblet()
 {
     image = rand() % items_in_datafile(giblet_data);
     landed = false;
 }
 
-KFC::KFC()
+Kfc::Kfc()
 {
     released = false;
 }
 
-void KFC::explode()
+void Kfc::explode()
 {
     if (released)
     {
@@ -104,7 +104,7 @@ void KFC::explode()
     }
 }
 
-void KFC::draw()
+void Kfc::draw()
 {
     if (released)
     {
@@ -126,16 +126,16 @@ void KFC::draw()
     }
 }
 
-void KFC::release(const float at_x, const float at_y, int accuracy, const int death, const int direction)
+void Kfc::release(const float at_x, const float at_y, int accuracy, const int death, const int direction)
 {
-    chunk = new GIBLET[CHUNKS_PER_CHICKEN];
+    chunk = new Giblet[CHUNKS_PER_CHICKEN];
 
     accuracy -=
         CHICKEN_WIDTH / 2; // Base accuracy off the center of chicken, not its actual x position.
 
     for (int i = 0; i < CHUNKS_PER_CHICKEN; ++i)
     {
-        chunk[i].blood = new BLOOD[BLOOD_PER_CHUNK];
+        chunk[i].blood = new Blood[BLOOD_PER_CHUNK];
 
         chunk[i].landed = false;
         chunk[i].x = at_x + rand() % CHICKEN_WIDTH;

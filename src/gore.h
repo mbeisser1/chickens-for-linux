@@ -9,10 +9,10 @@
 extern int CHUNKS_PER_CHICKEN;
 extern int BLOOD_PER_CHUNK;
 extern BITMAP* buffer;
-extern LEVEL level;
+extern Level level;
 extern DATAFILE* giblet_data;
 
-struct BLOOD
+struct Blood
 {
     void release(const float x, const float y, const float x_vel, const float y_vel);
     void run();
@@ -25,10 +25,10 @@ struct BLOOD
     float y_vel;
 };
 
-struct GIBLET
+struct Giblet
 {
-    GIBLET();
-    BLOOD* blood;
+    Giblet();
+    Blood* blood;
     float x;
     float y;
     float x_vel;
@@ -37,10 +37,10 @@ struct GIBLET
     bool landed;
 };
 
-struct KFC
+struct Kfc
 {
-    KFC();
-    GIBLET* chunk;
+    Kfc();
+    Giblet* chunk;
 
     void explode();
     void release(

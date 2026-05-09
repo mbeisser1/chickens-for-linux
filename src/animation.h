@@ -7,9 +7,9 @@
 
 extern BITMAP* buffer;
 
-struct ANIMATION
+struct Animation
 {
-    ANIMATION();
+    Animation();
     void load(const DATAFILE* data);
     void play(BITMAP* target); // Play the animation!
     void reverse();             // Play it backwards (or forwards if it's already backwards)
@@ -31,9 +31,9 @@ struct ANIMATION
     bool played_once;    // This is only used when loop == false
 };
 
-struct CUTSCENE
+struct Cutscene
 {
-    CUTSCENE();
+    Cutscene();
     void load(const char* path);
     int play(BITMAP* target); // Play the cutscene!
 

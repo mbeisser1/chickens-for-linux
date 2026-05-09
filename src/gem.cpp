@@ -1,11 +1,11 @@
 #include "gem.h"
 
-GEM::GEM()
+Gem::Gem()
 {
     active = false;
 }
 
-void GEM::draw() const
+void Gem::draw() const
 {
     if (active)
     {
@@ -13,7 +13,7 @@ void GEM::draw() const
     }
 }
 
-void GEM::launch(float X, float Y)
+void Gem::launch(float X, float Y)
 {
     type = rand() % 3;
 
@@ -24,7 +24,7 @@ void GEM::launch(float X, float Y)
     active = true;
 }
 
-int GEM::run()
+int Gem::run()
 {
     if (active)
     {

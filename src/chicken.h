@@ -10,19 +10,19 @@ extern float CHICKEN_SPEED;
 extern int MAX_CHICKENS;
 extern DATAFILE* chicken_data;
 extern DATAFILE* flyingchicken_data;
-extern LEVEL level;
+extern Level level;
 
-class CHICKEN
+class Chicken
 {
   public:
-    CHICKEN();
+    Chicken();
     void draw();
     void reset();
     int run();
 
-    KFC dead;
-    ANIMATION running;
-    ANIMATION flying;
+    Kfc dead;
+    Animation running;
+    Animation flying;
 
     float x;
     float y;

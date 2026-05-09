@@ -1,11 +1,11 @@
 #include "smoke.h"
 
-SMOKE::SMOKE()
+Smoke::Smoke()
 {
     active = false;
 }
 
-int SMOKE::run()
+int Smoke::run()
 {
     if (active)
     {
@@ -42,9 +42,9 @@ int SMOKE::run()
     return 0;
 }
 
-int SMOKE::release()
+int Smoke::release()
 {
-    puff = new SMOKEPUFF[SMOKE_PUFFS];
+    puff = new SmokePuff[SMOKE_PUFFS];
 
     explo_size = ROCKET_SIZE;
     x = mouse_x;
@@ -65,7 +65,7 @@ int SMOKE::release()
     return 0;
 }
 
-int SMOKE::draw()
+int Smoke::draw()
 {
     BITMAP* light;
     BITMAP* cloud;
