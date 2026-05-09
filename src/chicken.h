@@ -20,16 +20,16 @@ class Chicken
     void reset();
     int run();
 
-    Kfc dead;
-    Animation running;
-    Animation flying;
+    Kfc dead{};
+    Animation running{};
+    Animation flying{};
 
-    float x;
-    float y;
-    float y_vel;
-    int direction;
-    int flight;
-    int alive;
+    float x{};
+    float y{};
+    float y_vel{};
+    int direction{};
+    int flight{};
+    int alive{};
 };
 
 #endif

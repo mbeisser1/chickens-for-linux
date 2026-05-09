@@ -12,9 +12,9 @@ struct Level
 {
     void create();
 
-    BITMAP* image;
-    BITMAP* terrain;
-    int height[800];
+    BITMAP* image{};
+    BITMAP* terrain{};
+    int height[800]{};
 };
 
 #endif

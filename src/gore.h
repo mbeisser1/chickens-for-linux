@@ -19,35 +19,35 @@ struct Blood
     void draw();
 
   private:
-    float x;
-    float y;
-    float x_vel;
-    float y_vel;
+    float x{};
+    float y{};
+    float x_vel{};
+    float y_vel{};
 };
 
 struct Giblet
 {
     Giblet();
-    Blood* blood;
-    float x;
-    float y;
-    float x_vel;
-    float y_vel;
-    int image;
-    bool landed;
+    Blood* blood{};
+    float x{};
+    float y{};
+    float x_vel{};
+    float y_vel{};
+    int image{};
+    bool landed{};
 };
 
 struct Kfc
 {
-    Kfc();
-    Giblet* chunk;
+    Kfc() = default;
+    Giblet* chunk{};
 
     void explode();
     void release(
         const float at_x, const float at_y, int accuracy, const int death, const int direction);
     void draw();
 
-    bool released;
+    bool released{};
 };
 
 #endif

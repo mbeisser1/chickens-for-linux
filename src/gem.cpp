@@ -1,10 +1,5 @@
 #include "gem.h"
 
-Gem::Gem()
-{
-    active = false;
-}
-
 void Gem::draw() const
 {
     if (active)

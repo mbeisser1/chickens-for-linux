@@ -1,10 +1,5 @@
 #include "smoke.h"
 
-Smoke::Smoke()
-{
-    active = false;
-}
-
 int Smoke::run()
 {
     if (active)

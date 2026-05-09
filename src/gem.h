@@ -19,18 +19,18 @@ extern int timer;
 class Gem
 {
   public:
-    Gem();
+    Gem() = default;
 
     void draw() const;
     void launch(float x, float y);
     int run();
-    int type;
-    float x;
-    float y;
-    float x_vel;
-    float y_vel;
+    int type{};
+    float x{};
+    float y{};
+    float x_vel{};
+    float y_vel{};
 
-    bool active;
+    bool active{};
 };
 
 #endif

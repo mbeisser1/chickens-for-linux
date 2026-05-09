@@ -1,15 +1,5 @@
 #include "animation.h"
 
-Animation::Animation()
-{
-    loop = true;
-    slide = {};
-    hflip = {};
-    speed = 400;
-    x = {};
-    y = {};
-}
-
 void Animation::load(const DATAFILE* d)
 {
     data = d;
@@ -77,12 +67,6 @@ void Animation::play(BITMAP* target)
 void Animation::reverse()
 {
     frame_direction = -frame_direction;
-}
-
-Cutscene::Cutscene()
-{
-    x = {};
-    y = {};
 }
 
 void Cutscene::load(const char* path)

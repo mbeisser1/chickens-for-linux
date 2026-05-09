@@ -29,12 +29,6 @@ void Blood::draw()
 Giblet::Giblet()
 {
     image = rand() % items_in_datafile(giblet_data);
-    landed = false;
-}
-
-Kfc::Kfc()
-{
-    released = false;
 }
 
 void Kfc::explode()

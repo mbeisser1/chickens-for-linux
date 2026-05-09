@@ -16,32 +16,32 @@ extern int ROCKET_SIZE;
 
 struct SmokePuff
 {
-    int x_vel;
-    int x;
-    int y;
-    int wait;
-    int life;
+    int x_vel{};
+    int x{};
+    int y{};
+    int wait{};
+    int life{};
 };
 
 class Smoke
 {
   public:
-    Smoke();
+    Smoke() = default;
 
-    SmokePuff* puff;
+    SmokePuff* puff{};
 
     int draw();
     int run();
     int release();
 
-    int explo_size;
-    int x;
-    int y;
-    int w;
-    int h;
-    int ratio_w;
-    int ratio_h;
-    bool active;
+    int explo_size{};
+    int x{};
+    int y{};
+    int w{};
+    int h{};
+    int ratio_w{};
+    int ratio_h{};
+    bool active{};
 };
 
 #endif
