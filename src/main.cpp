@@ -52,112 +52,97 @@ void weapon_manager(bool*, bool*);
 void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
 
 // Configurable Variables
-bool FULLSCREEN;
-bool MUTE;
-bool TRANSLUCENT_SMOKE;
-float GRAVITY;
-int BLOOD_PER_CHUNK;
-int CHANCE_OF_FLIGHT;
-int CHANCE_OF_GEM;
-float CHICKEN_SPEED;
-int CHUNKS_PER_CHICKEN;
-int GAME_SPEED_OFFSET;
-int INITIAL_CHICKENS;
-int MAX_CHICKENS;
-int POINTS_FOR_ROCKET;
-int POINTS_FOR_SHOTGUN;
-int POINTS_FOR_TENDERIZER;
-int RESPAWN_RATE;
-int ROCKET_RELOAD;
-int ROCKET_SIZE;
-int SHOTGUN_RELOAD;
-int SHOTGUN_SIZE;
-int SMOKE_LINGERING;
-int SMOKE_PUFFS;
-int TIMER;
-int VOLUME;
+bool FULLSCREEN{};
+bool MUTE{};
+bool TRANSLUCENT_SMOKE{};
+float GRAVITY{};
+int BLOOD_PER_CHUNK{};
+int CHANCE_OF_FLIGHT{};
+int CHANCE_OF_GEM{};
+float CHICKEN_SPEED{};
+int CHUNKS_PER_CHICKEN{};
+int GAME_SPEED_OFFSET{};
+int INITIAL_CHICKENS{};
+int MAX_CHICKENS{};
+int POINTS_FOR_ROCKET{};
+int POINTS_FOR_SHOTGUN{};
+int POINTS_FOR_TENDERIZER{};
+int RESPAWN_RATE{};
+int ROCKET_RELOAD{};
+int ROCKET_SIZE{};
+int SHOTGUN_RELOAD{};
+int SHOTGUN_SIZE{};
+int SMOKE_LINGERING{};
+int SMOKE_PUFFS{};
+int TIMER{};
+int VOLUME{};
 // End Configurable Variables
 
-volatile int game_time;
+volatile int game_time{};
 
-int chickens_left;     // Number of chickens left to kill, for levelmode only
-int current_level;     // Current level, levelmode only
-int delay_of_levelend; // Set a delay so the level doesn't end until you actually see the final
-                       // chicken die
-int mode;              // Current game mode
-int kills;             // Number of chickens killed
-int runners;           // Number of chickens currently in game
-int score;             // Current game score
-int shots_fired;       // Number of rockets/shotguns fired
-int timer;             // Game time
-int timer_delay;       // Keeps track of each second
-int tenderizers;       // Number of tenderizers available (you can really only have 1)
-int tmp_rocket_size;   // Used for remembering the default rocket size
-bool alert_mode;       // Alert mode!
-bool level_mode;       // Whether level mode is on
-bool mute_sound;       // Shall we play sounds or not?
-bool not_dead;         // If the player isn't dead yet
-const char* config_path; // Path to configuration file
-const char* playername;
+int chickens_left{};     // Number of chickens left to kill, for levelmode only
+int current_level{1};    // Current level, levelmode only
+int delay_of_levelend{}; // Set a delay so the level doesn't end until you actually see the final
+                         // chicken die
+int mode{MODE_PLAYING};  // Current game mode
+int kills{};             // Number of chickens killed
+int runners{};           // Number of chickens currently in game
+int score{};             // Current game score
+int shots_fired{};       // Number of rockets/shotguns fired
+int timer{};             // Game time
+int timer_delay{};       // Keeps track of each second
+int tenderizers{};       // Number of tenderizers available (you can really only have 1)
+int tmp_rocket_size{};   // Used for remembering the default rocket size
+bool alert_mode{};       // Alert mode!
+bool level_mode{};       // Whether level mode is on
+bool mute_sound{};       // Shall we play sounds or not?
+bool not_dead{};         // If the player isn't dead yet
+const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configuration file
+const char* playername{};
 
-BITMAP* background;
-BITMAP* buffer;
-DATAFILE* background_data;
-DATAFILE* bigchicken_data;
-DATAFILE* cursors_data;
-DATAFILE* chicken_data;
-DATAFILE* flyingchicken_data;
-DATAFILE* terrain_data;
-DATAFILE* gem_data;
-DATAFILE* giblet_data;
-DATAFILE* icons_data;
-DATAFILE* fonts_data;
-DATAFILE* modechooser_data;
-Level level;
-FONT* font_big;
-FONT* font_interface;
-SAMPLE* sound_alarm;
-SAMPLE* sound_gameover;
-SAMPLE* sound_gemcollect;
-SAMPLE* sound_highscore;
-SAMPLE* sound_menu;
-SAMPLE* sound_rocket;
-SAMPLE* sound_shotgun;
-SAMPLE* sound_tenderizer;
+BITMAP* background{};
+BITMAP* buffer{};
+DATAFILE* background_data{};
+DATAFILE* bigchicken_data{};
+DATAFILE* cursors_data{};
+DATAFILE* chicken_data{};
+DATAFILE* flyingchicken_data{};
+DATAFILE* terrain_data{};
+DATAFILE* gem_data{};
+DATAFILE* giblet_data{};
+DATAFILE* icons_data{};
+DATAFILE* fonts_data{};
+DATAFILE* modechooser_data{};
+Level level{};
+FONT* font_big{};
+FONT* font_interface{};
+SAMPLE* sound_alarm{};
+SAMPLE* sound_gameover{};
+SAMPLE* sound_gemcollect{};
+SAMPLE* sound_highscore{};
+SAMPLE* sound_menu{};
+SAMPLE* sound_rocket{};
+SAMPLE* sound_shotgun{};
+SAMPLE* sound_tenderizer{};
 
 int main(int argc, char* argv[])
 {
-    int rank; // Player rank
-    int mx;   // Store previous mouse location
-    int my;
-    bool alert_sound;  // When true, the alert sound is playing
-    bool fire_rocket;  // When true, a rocket is being fired
-    bool fire_shotgun; // When true, the shotgun is being fired
+    int rank{HIGHSCORE_TABLE + 1}; // Player rank
+    int mx{};                      // Store previous mouse location
+    int my{};
+    bool alert_sound{}; // When true, the alert sound is playing
+    bool fire_rocket{};   // When true, a rocket is being fired
+    bool fire_shotgun{}; // When true, the shotgun is being fired
 
-    mode = MODE_PLAYING;
-    alert_mode = false;
-    alert_sound = false;
-    level_mode = false;
     playername = getenv("USER");
-    rank = HIGHSCORE_TABLE + 1;
-    config_path = CHICKENS_ASSETS_REL("options.cfg");
-    current_level = 1;
-    timer_delay = 0;
 
     load_stock_config();      // Load game defaults, in case of broken config file
     load_config(config_path); // Read in some game variables
 
-    if (MUTE)
-    {
-        mute_sound = true;
-    }
-    else
-    {
-        mute_sound = false;
-    }
+    mute_sound = MUTE;
 
-    bool cli_force_windowed = false;
-    int windowmode = GFX_AUTODETECT_WINDOWED;
+    bool cli_force_windowed{};
+    int windowmode{};
 
     // Process those pesky command line parameters
 
@@ -248,18 +233,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    if (cli_force_windowed)
-    {
-        windowmode = GFX_AUTODETECT_WINDOWED;
-    }
-    else if (FULLSCREEN)
-    {
-        windowmode = GFX_AUTODETECT_FULLSCREEN;
-    }
-    else
-    {
-        windowmode = GFX_AUTODETECT_WINDOWED;
-    }
+    windowmode = (cli_force_windowed || !FULLSCREEN) ? GFX_AUTODETECT_WINDOWED
+                                                       : GFX_AUTODETECT_FULLSCREEN;
 
     srand(time(NULL));
 
@@ -754,9 +729,8 @@ void load_sounds()
 static bool try_depths_for_driver(int gfx_driver)
 {
     static const int depths[] = {24, 32, 16};
-    int d;
 
-    for (d = 0; d < 3; ++d)
+    for (int d = 0; d < 3; ++d)
     {
         set_color_depth(depths[d]);
         if (set_gfx_mode(gfx_driver, 800, 600, 0, 0) == 0)
@@ -832,8 +806,8 @@ void initialize(int windowmode)
 
 void show_startup()
 {
-    int mx;
-    int my;
+    int mx{};
+    int my{};
 
     do
     {
@@ -989,20 +963,19 @@ void show_modechooser()
 {
     Animation bigchick;
 
-    bool done = false;
-    bool right_foot = false;
-    int counter = 0;
-    int mx;
-    int my;
-    int bigchick_bloodyfeet;
-    int bigchick_tspeed;
-    float bigchick_xspeed;
-    float bigchick_yspeed;
+    bool done{};
+    bool right_foot{};
+    int counter{};
+    int mx{};
+    int my{};
+    int bigchick_bloodyfeet{};
+    int bigchick_tspeed{};
+    float bigchick_xspeed{};
+    float bigchick_yspeed{};
 
     bigchick.load(bigchicken_data);
     bigchick.x = 100;
     bigchick.y = 100;
-    bigchick.angle = 0;
 
     stop_sample(sound_alarm);
     stop_sample(sound_highscore);
@@ -1128,12 +1101,12 @@ void show_levelcompleted()
 {
     SAMPLE* sound_count = load_sample(CHICKENS_ASSETS_REL("sound/counter.wav"));
 
-    int b = 0;
-    int mx;
-    int my;
-    float a = 0;
+    int b{};
+    int mx{};
+    int my{};
+    float a{};
     float accuracy = (((float)kills / (float)shots_fired) * 70) + ((timer / 60) * 30);
-    float bonus = 0;
+    float bonus{};
 
     if (accuracy > 100)
     {
@@ -1291,8 +1264,8 @@ void earn_bonus(int type)
 
 void show_levelnumber()
 {
-    int mx;
-    int my;
+    int mx{};
+    int my{};
 
     do
     {
@@ -1327,8 +1300,8 @@ void show_levelnumber()
 
 void fadeout(int color, int duration)
 {
-    int fader = 255;
-    int fader_step = duration % fader;
+    int fader{255};
+    int fader_step{duration % fader};
 
     BITMAP* fading = create_bitmap(SCREEN_W, SCREEN_H);
     clear_to_color(fading, color);
@@ -1370,9 +1343,9 @@ int ctoi(const char* t)
 {
     // Convert char* into integers, for processing the damn commandline parameters.
 
-    int v = 0;
-    int l = strlen(t);
-    int n = t[0] == '-' ? 1 : 0;
+    int v{};
+    int l{static_cast<int>(strlen(t))};
+    int n{(t[0] == '-') ? 1 : 0};
 
     for (int i = l - 1; i >= 0 + n; --i)
     {
@@ -1384,17 +1357,9 @@ int ctoi(const char* t)
 
 void show_statistics()
 {
-    const char* format;
-    int minutes = timer / 60;
-    int seconds = timer - (minutes * 60);
-    if (seconds < 10)
-    {
-        format = "%d:0%d";
-    }
-    else
-    {
-        format = "%d:%d";
-    }
+    int minutes{timer / 60};
+    int seconds{timer - (minutes * 60)};
+    const char* format{(seconds < 10) ? "%d:0%d" : "%d:%d"};
 
     if (level_mode == true)
     {
