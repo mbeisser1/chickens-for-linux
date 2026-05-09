@@ -83,7 +83,7 @@ int CHICKEN::run()
             y = SCREEN_H - level.height[0] - CHICKEN_HEIGHT;
         }
 
-        if ((direction == LEFT && x < -CHICKEN_WIDTH) || direction == RIGHT && x > SCREEN_W)
+        if ((direction == LEFT && x < -CHICKEN_WIDTH) || (direction == RIGHT && x > SCREEN_W))
         {
             reset();
             return CROSSED_THE_ROAD;

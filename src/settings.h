@@ -30,7 +30,7 @@ extern int SMOKE_PUFFS;
 extern int TIMER;
 extern int VOLUME;
 
-int load_config(char*);
+int load_config(const char*);
 int load_stock_config();
 
 #endif

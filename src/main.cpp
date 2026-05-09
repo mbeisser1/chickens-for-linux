@@ -97,7 +97,7 @@ bool alert_mode;       // Alert mode!
 bool level_mode;       // Whether level mode is on
 bool mute_sound;       // Shall we play sounds or not?
 bool not_dead;         // If the player isn't dead yet
-char* config_path;     // Path to configuration file
+const char* config_path; // Path to configuration file
 char* playername;
 
 BITMAP* background;
@@ -600,13 +600,13 @@ int main(int argc, char* argv[])
                 line(buffer, 0, i, SCREEN_W, i, makecol(0, 0, 60));
             }
 
-            textout_centre(buffer,
+            CHICKENS_TEXTOUT_CENTRE(buffer,
                            font_big,
                            "PAUSED",
                            SCREEN_W / 2,
                            SCREEN_H / 2 - 40,
                            makecol(255, 255, 255));
-            textout_centre(buffer,
+            CHICKENS_TEXTOUT_CENTRE(buffer,
                            font,
                            "Press 'C' to continue or 'Q' to quit",
                            SCREEN_W / 2,
@@ -619,25 +619,25 @@ int main(int argc, char* argv[])
 
             rectfill(buffer, 0, SCREEN_H - 40, SCREEN_W, SCREEN_H, makecol(0, 0, 0));
 
-            textout_centre(buffer,
+            CHICKENS_TEXTOUT_CENTRE(buffer,
                            font_big,
                            "Armageddon",
                            SCREEN_W / 2,
                            SCREEN_H / 2 - 20,
                            makecol(255, 255, 255));
-            textout_centre(buffer,
+            CHICKENS_TEXTOUT_CENTRE(buffer,
                            font,
                            "The chickens have risen. Everyone is dead. Our world is gone.",
                            SCREEN_W / 2,
                            SCREEN_H / 2 + 40,
                            makecol(255, 255, 255));
-            textout_centre(buffer,
+            CHICKENS_TEXTOUT_CENTRE(buffer,
                            font,
                            "Press 'R' to play again!",
                            SCREEN_W / 2,
                            SCREEN_H - 35,
                            makecol(0, 255, 0));
-            textout_centre(buffer,
+            CHICKENS_TEXTOUT_CENTRE(buffer,
                            font,
                            "Not that this is a game. This is actually happening, in real life.",
                            SCREEN_W / 2,
@@ -646,7 +646,7 @@ int main(int argc, char* argv[])
 
             if (rank <= HIGHSCORE_TABLE)
             {
-                textprintf_centre(buffer,
+                CHICKENS_TEXTPRINTF_CENTRE(buffer,
                                   font_interface,
                                   SCREEN_W / 2,
                                   SCREEN_H / 2 + 65,
@@ -817,7 +817,6 @@ void initialize(int windowmode)
 
     install_int_ex(Timer, BPS_TO_TIMER(60 + GAME_SPEED_OFFSET));
 
-    text_mode(-1);
     if (!try_set_gfx_mode(windowmode))
     {
         allegro_message("Unable to set graphics mode 800x600.\n%s\n", allegro_error);
@@ -855,121 +854,121 @@ void show_startup()
         line(buffer, 0, 104, SCREEN_W, 104, makecol(100, 0, 0));
         line(buffer, 0, SCREEN_H - 30, SCREEN_W, SCREEN_H - 30, makecol(100, 0, 0));
 
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "In the final days of Armageddon, the chickens are preparing",
                        SCREEN_W / 2,
                        130,
                        makecol(200, 200, 200));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "to detonate our planet. They are trying to run across your",
                        SCREEN_W / 2,
                        145,
                        makecol(200, 200, 200));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "screen, and if even a single chicken succeeds, it's all over.",
                        SCREEN_W / 2,
                        160,
                        makecol(200, 200, 200));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "Please look in README for info about LEVEL MODE--this screen is temporary!",
                        SCREEN_W / 2,
                        180,
                        makecol(220, 0, 0));
-        textout_centre(buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "You are on a 2 minute timer. Each time that you shoot, you",
                        SCREEN_W / 2,
                        215,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "lose an additional second, so try to kill as many chickens",
                        SCREEN_W / 2,
                        230,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "per click as possible. Killing chickens with rockets gives",
                        SCREEN_W / 2,
                        245,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "you 100 points. A shotgun kill earns you 250, but it takes",
                        SCREEN_W / 2,
                        260,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "longer to reload. Chickens high up in flight must be shot",
                        SCREEN_W / 2,
                        275,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "with the shotgun, as rockets can only shoot at ground level.",
                        SCREEN_W / 2,
                        290,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "You are given 1 tenderizer. In case of emergency hit SPACE.",
                        SCREEN_W / 2,
                        305,
                        makecol(255, 70, 70));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "Occasionally, cool gems fly out of exploding chickens. Catch",
                        SCREEN_W / 2,
                        320,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "them with your mouse cursor (don't click!) to earn bonuses.",
                        SCREEN_W / 2,
                        335,
                        makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "All gems automatically give you 2 extra seconds.",
                        SCREEN_W / 2,
                        350,
                        makecol(255, 255, 255));
 
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "+5 radius",
                        SCREEN_W / 2 - 140,
                        SCREEN_H / 2 + 120,
                        makecol(255, 255, 255));
-        textout_centre(
+        CHICKENS_TEXTOUT_CENTRE(
             buffer, font, "+8 sec", SCREEN_W / 2, SCREEN_H / 2 + 120, makecol(255, 255, 255));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "+5000 pts",
                        SCREEN_W / 2 + 152,
                        SCREEN_H / 2 + 120,
                        makecol(255, 255, 255));
 
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "Rocket: Left-click",
                        SCREEN_W / 2 - 100,
                        SCREEN_H - 50,
                        makecol(255, 30, 30));
-        textout_centre(buffer,
+        CHICKENS_TEXTOUT_CENTRE(buffer,
                        font,
                        "Shotgun: Right-click",
                        SCREEN_W / 2 + 100,
                        SCREEN_H - 50,
                        makecol(255, 30, 30));
 
-        textout_right(buffer,
+        CHICKENS_TEXTOUT_RIGHT(buffer,
                       font,
                       "moistrous software 2004 (0.2.4)",
                       SCREEN_W - 10,
@@ -1130,7 +1129,6 @@ void show_levelcompleted()
     SAMPLE* sound_count = load_sample(CHICKENS_ASSETS_REL("sound/counter.wav"));
 
     int b = 0;
-    int color;
     int mx;
     int my;
     float a = 0;
@@ -1158,31 +1156,31 @@ void show_levelcompleted()
                 play_sound(sound_count, int(float(a / accuracy) * VOLUME), 128, ONCE);
             }
 
-            if (a > 100)
-            {
-                color = makecol(0, 255, 0);
-            }
         }
 
         clear(buffer);
 
-        textprintf_centre(buffer,
-                          font_big,
-                          SCREEN_W / 2,
-                          SCREEN_H / 2,
-                          makecol(255, 255, 255),
-                          "Level Completed!",
-                          current_level);
-        textprintf_centre(buffer,
-                          font_interface,
-                          SCREEN_W / 2,
-                          SCREEN_H / 2 + 90,
-                          makecol(255, 255, 255),
-                          "Accuracy: %d%%",
-                          (int)a);
+        CHICKENS_TEXTPRINTF_CENTRE(buffer,
+                                    font_big,
+                                    SCREEN_W / 2,
+                                    SCREEN_H / 2,
+                                    makecol(255, 255, 255),
+                                    "Level %d Completed!",
+                                    current_level);
+        {
+            /* a>100: green text here; old inner loop only set unused `color`. */
+            const int acc_fg = (a > 100.0f) ? makecol(0, 255, 0) : makecol(255, 255, 255);
+            CHICKENS_TEXTPRINTF_CENTRE(buffer,
+                                        font_interface,
+                                        SCREEN_W / 2,
+                                        SCREEN_H / 2 + 90,
+                                        acc_fg,
+                                        "Accuracy: %d%%",
+                                        (int)a);
+        }
         if (a == 100 && b > 0)
         {
-            textprintf_centre(buffer,
+            CHICKENS_TEXTPRINTF_CENTRE(buffer,
                               font_interface,
                               SCREEN_W / 2 + 60,
                               SCREEN_H / 2 + 90 - (255 - b),
@@ -1307,7 +1305,7 @@ void show_levelnumber()
 
         clear(buffer);
 
-        textprintf_centre(buffer,
+        CHICKENS_TEXTPRINTF_CENTRE(buffer,
                           font_big,
                           SCREEN_W / 2,
                           SCREEN_H / 2,
@@ -1331,7 +1329,6 @@ void fadeout(int color, int duration)
 {
     int fader = 255;
     int fader_step = duration % fader;
-    int d = duration;
 
     BITMAP* fading = create_bitmap(SCREEN_W, SCREEN_H);
     clear_to_color(fading, color);
@@ -1387,35 +1384,39 @@ int ctoi(char* t)
 
 inline void show_statistics()
 {
-    char* format = "%d:%d";
+    const char* format;
     int minutes = timer / 60;
     int seconds = timer - (minutes * 60);
     if (seconds < 10)
     {
         format = "%d:0%d";
     }
+    else
+    {
+        format = "%d:%d";
+    }
 
     if (level_mode == true)
     {
         // Level Mode:
-        textprintf(
+        CHICKENS_TEXTPRINTF(
             buffer, font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", current_level);
-        textprintf(buffer,
+        CHICKENS_TEXTPRINTF(buffer,
                    font_interface,
                    20,
                    25,
                    makecol(255, 255, 255),
                    "Chickens: %d    ",
                    chickens_left);
-        textprintf(
+        CHICKENS_TEXTPRINTF(
             buffer, font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
     }
     else
     {
         // Classic Mode:
-        textprintf(buffer, font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", score);
-        textprintf(buffer, font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", kills);
-        textprintf(
+        CHICKENS_TEXTPRINTF(buffer, font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", score);
+        CHICKENS_TEXTPRINTF(buffer, font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", kills);
+        CHICKENS_TEXTPRINTF(
             buffer, font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
 
         if (alert_mode)
@@ -1423,7 +1424,7 @@ inline void show_statistics()
             set_trans_blender(255, 255, 255, 150);
             draw_trans_sprite(
                 buffer, (BITMAP*)icons_data[0].dat, SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
-            textout_centre(
+            CHICKENS_TEXTOUT_CENTRE(
                 buffer, font_big, "ALERT", SCREEN_W / 2, SCREEN_H / 2 - 30, makecol(255, 255, 255));
         }
     }

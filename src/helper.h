@@ -4,7 +4,14 @@
 #include <allegro.h>
 
 /* Packaged data lives under assets/ (paths relative to the process cwd; run from repo root). */
-#define CHICKENS_ASSETS_REL(relative_path) "assets/" relative_path
+#define CHICKENS_ASSETS_REL(relative_path) ("assets/" relative_path)
+
+/* Non-deprecated Allegro 4 text APIs (-1 = transparent text background). */
+#define CHICKENS_TEXTOUT_CENTRE(bmp, f, str, x, y, color) textout_centre_ex((bmp), (f), (str), (x), (y), (color), -1)
+#define CHICKENS_TEXTOUT_RIGHT(bmp, f, str, x, y, color) textout_right_ex((bmp), (f), (str), (x), (y), (color), -1)
+#define CHICKENS_TEXTPRINTF(bmp, f, x, y, color, fmt, ...) textprintf_ex((bmp), (f), (x), (y), (color), -1, (fmt), ##__VA_ARGS__)
+#define CHICKENS_TEXTPRINTF_CENTRE(bmp, f, x, y, color, fmt, ...) \
+    textprintf_centre_ex((bmp), (f), (x), (y), (color), -1, (fmt), ##__VA_ARGS__)
 
 #define CHICKEN_HEIGHT 20
 #define CHICKEN_WIDTH 24

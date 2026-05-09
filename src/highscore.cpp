@@ -23,7 +23,7 @@ void show_highscores(int rank, BITMAP* background)
         clear(buffer);
         draw_sprite(buffer, background, 0, 0);
 
-        textout_centre(buffer, font_big, "High Scores", SCREEN_W / 2, 5, makecol(220, 0, 0));
+        CHICKENS_TEXTOUT_CENTRE(buffer, font_big, "High Scores", SCREEN_W / 2, 5, makecol(220, 0, 0));
 
         for (int i = 0; i < HIGHSCORE_TABLE; ++i)
         {
@@ -36,15 +36,15 @@ void show_highscores(int rank, BITMAP* background)
                 col = makecol(0, 255, 0);
             }
 
-            textprintf(buffer,
-                       font_interface,
-                       130 + (i > 8 ? 20 : 0),
-                       75 + m,
-                       col,
-                       "%s",
-                       players[i].c_str());
-            textprintf(buffer, font_big, 100, 70 + m, makecol(d, d, 0), "%d", i + 1);
-            textprintf(
+            CHICKENS_TEXTPRINTF(buffer,
+                                font_interface,
+                                130 + (i > 8 ? 20 : 0),
+                                75 + m,
+                                col,
+                                "%s",
+                                players[i].c_str());
+            CHICKENS_TEXTPRINTF(buffer, font_big, 100, 70 + m, makecol(d, d, 0), "%d", i + 1);
+            CHICKENS_TEXTPRINTF(
                 buffer, font, 130 + (i > 8 ? 20 : 0), 105 + m, makecol(d, d, 0), "%d", scores[i]);
         }
 

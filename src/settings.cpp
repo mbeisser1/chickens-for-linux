@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int load_config(char* path)
+int load_config(const char* path)
 {
     fstream file(path);
 

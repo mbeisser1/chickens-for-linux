@@ -62,6 +62,7 @@ int SMOKE::release()
     }
 
     active = true;
+    return 0;
 }
 
 int SMOKE::draw()
@@ -123,4 +124,6 @@ int SMOKE::draw()
 
         destroy_bitmap(cloud);
     }
+
+    return 0;
 }
