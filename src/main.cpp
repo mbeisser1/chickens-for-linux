@@ -47,9 +47,9 @@ void show_levelnumber();
 void fadeout(int, int);
 void next_level(int);
 int ctoi(const char* t);
-inline void show_statistics();
-inline void weapon_manager(bool*, bool*);
-inline void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
+void show_statistics();
+void weapon_manager(bool*, bool*);
+void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
 
 // Configurable Variables
 bool FULLSCREEN;
@@ -1382,7 +1382,7 @@ int ctoi(const char* t)
     return v = n ? -v : v;
 }
 
-inline void show_statistics()
+void show_statistics()
 {
     const char* format;
     int minutes = timer / 60;
@@ -1430,7 +1430,7 @@ inline void show_statistics()
     }
 }
 
-inline void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
+void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
 {
     static int reloading_rocket = 0;
     static int reloading_shotgun = 0;
@@ -1472,7 +1472,7 @@ inline void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
     return;
 }
 
-inline void play_sound(const SAMPLE* snd, int volume, int pan, bool loop)
+void play_sound(const SAMPLE* snd, int volume, int pan, bool loop)
 {
     if (mute_sound == false)
     {
