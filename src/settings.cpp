@@ -1,12 +1,10 @@
 #include "settings.h"
 
-using namespace std;
-
 int load_config(const char* path)
 {
-    fstream file(path);
+    std::fstream file(path);
 
-    string key;
+    std::string key;
     char comment[255];
 
     while (file >> key)
