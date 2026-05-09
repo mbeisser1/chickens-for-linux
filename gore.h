@@ -1,7 +1,8 @@
 #ifndef GORE_H
-#define GORE_H	1
+#define GORE_H 1
 
 #include <allegro.h>
+
 #include "helper.h"
 #include "level.h"
 
@@ -11,45 +12,41 @@ extern BITMAP* buffer;
 extern LEVEL level;
 extern DATAFILE* giblet_data;
 
-struct BLOOD {
-	
-	void release(float, float, float, float);
-	void run();
-	void draw();
-	
-	private:
-	float x;
-	float y;
-	float x_vel;
-	float y_vel;
+struct BLOOD
+{
+    void release(float, float, float, float);
+    void run();
+    void draw();
+
+  private:
+    float x;
+    float y;
+    float x_vel;
+    float y_vel;
 };
 
-
-
-struct GIBLET {
-	
-	GIBLET();
-	BLOOD *blood;
-	float x;
-	float y;
-	float x_vel;
-	float y_vel;
-	int image;
-	bool landed;
+struct GIBLET
+{
+    GIBLET();
+    BLOOD* blood;
+    float x;
+    float y;
+    float x_vel;
+    float y_vel;
+    int image;
+    bool landed;
 };
 
+struct KFC
+{
+    KFC();
+    GIBLET* chunk;
 
+    void explode();
+    void release(float, float, int, int, int);
+    void draw();
 
-struct KFC {
-	
-	KFC();
-	GIBLET* chunk;
-	
-	void explode();
-	void release(float, float, int, int, int);
-	void draw();
-	
-	bool released;
+    bool released;
 };
 
 #endif

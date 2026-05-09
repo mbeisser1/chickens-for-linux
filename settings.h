@@ -1,9 +1,9 @@
 #ifndef SETTINGS_H
-#define SETTINGS_H	1
+#define SETTINGS_H 1
 
 #include <fstream>
-#include <string.h>
 
+#include <string.h>
 
 extern bool FULLSCREEN;
 extern bool MUTE;
