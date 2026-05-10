@@ -62,7 +62,6 @@ ExternalProject_Add(chickens_allegro4
 
 add_executable(chickens4linux
     src/main.cpp
-    src/allegro_runtime.cpp
     src/game.cpp
     src/game_flow.cpp
     src/graphics_display.cpp
@@ -72,6 +71,7 @@ add_executable(chickens4linux
     src/gem.cpp
     src/gore.cpp
     src/helper.cpp
+    src/game_state.cpp
     src/highscore.cpp
     src/level.cpp
     src/settings.cpp

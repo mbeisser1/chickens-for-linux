@@ -1,19 +1,12 @@
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
-#include <cstdlib>
-
 #include "helper.h"
 #include "settings.h"
 
 struct GameState
 {
-    /** `$USER`, or `"player"` if unset. Call once at startup; not touched by `apply_settings`. */
-    void seed_default_playername()
-    {
-        const char* user = std::getenv("USER");
-        playername = (user != nullptr) ? user : "player";
-    }
+    explicit GameState(const Settings& settings);
 
     /** Mirror file/settings into per-run fields. Does not change `playername`. */
     void apply_settings(const Settings& settings)
@@ -40,7 +33,6 @@ struct GameState
     /** If true, reloads from config still keep the session muted (`--mute`). */
     bool mute_via_cli{};
     bool not_dead{};
-    const char* config_path{CHICKENS_ASSETS_REL("options.cfg")};
     const char* playername{"player"};
 };
 

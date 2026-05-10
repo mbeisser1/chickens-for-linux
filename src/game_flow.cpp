@@ -254,7 +254,7 @@ void show_modechooser(AppContext& ctx)
                         ctx.state.mode = MODE_RESTART;
                         ctx.state.level_mode = false;
                         ctx.settings = Settings(
-                            ctx.state.config_path); // Load original config settings (easier than a
+                            ctx.settings.config_path); // Load original config settings (easier than a
                         ctx.state.apply_settings(ctx.settings);
                         // having a ton of variables to remember them)
                         done = true;

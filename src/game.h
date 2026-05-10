@@ -14,19 +14,19 @@
 class Game
 {
   public:
-    Game(AppContext ctx, const RenderContext& render_context);
+    /** Installs Allegro, sets gfx mode, loads assets, binds entities. `app` must outlive `Game`. */
+    explicit Game(AppContext& app);
 
     void run();
 
   private:
     void show_highscores(int player_rank_one_based);
 
-    AppContext ctx_;
+    AppContext& ctx_;
     Level terrain_{};
     std::array<Smoke, MAX_SMOKE> smoke_{};
     std::array<Gem, MAX_GEMS> gem_{};
     std::array<Chicken, MAX_CHICKENS_CAPACITY> chicken_{};
-    const RenderContext& render_context_;
 };
 
 #endif

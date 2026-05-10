@@ -1,13 +1,9 @@
 #ifndef GRAPHICS_DISPLAY_H
 #define GRAPHICS_DISPLAY_H
 
-// Allegro gfx driver constants (e.g. GFX_AUTODETECT_WINDOWED) come from allegro.h
+struct Settings;
 
-struct GfxLaunchRequest
-{
-    bool cli_force_windowed{};
-    bool settings_fullscreen{};
-};
+// Allegro gfx driver constants (e.g. GFX_AUTODETECT_WINDOWED) come from allegro.h
 
 class GraphicsDisplay
 {
@@ -15,8 +11,12 @@ class GraphicsDisplay
     static constexpr int WIDTH{800};
     static constexpr int HEIGHT{600};
 
-    /** Merge CLI window override with config fullscreen preference. */
-    static int requested_driver(const GfxLaunchRequest& launch);
+    /**
+     * Set 800×600 gfx mode from settings (`FORCE_WINDOWED`, `FULLSCREEN`),
+     * with color-depth fallbacks, optional X11 fallback, and fullscreen → windowed
+     * fallback when needed.
+     */
+    static bool try_set_mode(const Settings& settings);
 
     /**
      * Set 800×600 gfx mode with color-depth fallbacks, optional X11 fallback,

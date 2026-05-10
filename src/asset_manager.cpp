@@ -220,7 +220,19 @@ bool AssetManager::load_app_assets()
     app_assets_.sound_shotgun = get_sample("sound_shotgun");
     app_assets_.sound_tenderizer = get_sample("sound_tenderizer");
 
-    return success;
+    if (!success)
+    {
+        return false;
+    }
+
+    app_assets_.buffer = create_system_bitmap(SCREEN_W, SCREEN_H);
+    app_assets_.background = create_bitmap(SCREEN_W, SCREEN_H);
+    if (app_assets_.buffer == nullptr || app_assets_.background == nullptr)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 AppAssets& AssetManager::assets()

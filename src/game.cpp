@@ -2,16 +2,80 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <stdexcept>
 
 #include <allegro.h>
 
 #include "game_flow.h"
+#include "graphics_display.h"
 #include "highscore.h"
 
 extern volatile int game_time;
 
-Game::Game(AppContext ctx, const RenderContext& render_context) : ctx_(ctx), render_context_(render_context)
+namespace
 {
+/**
+ * Allegro core setup: subsystems, timer IRQ, and registering state the timer ISR uses.
+ * Runs before graphics mode and asset load; pair the process with `allegro_exit()`.
+ */
+void init_allegro(const Settings& settings)
+{
+    allegro_init();
+
+    install_mouse();
+    install_keyboard();
+    install_sound(DIGI_AUTODETECT, MIDI_NONE, nullptr);
+    install_timer();
+
+    /* Allegro’s timer-ISR locking hooks. On Linux they expand to nothing (see
+     * `allegro/internal/alconfig.h` defaults); on DOS they pinned code/data for IRQ safety.
+     * Kept before `install_int_ex` as the usual portable recipe. */
+    LOCK_VARIABLE(game_time);
+    LOCK_FUNCTION(Timer);
+
+    install_int_ex(Timer, BPS_TO_TIMER(60 + settings.GAME_SPEED_OFFSET));
+}
+
+void load_datafiles(AssetManager& asset_manager)
+{
+    if (!asset_manager.load_app_assets())
+    {
+        const auto msg = std::string{"Failed to load one or more game assets.\n"};
+        allegro_message("%s:%s", msg.c_str(), allegro_error);
+        throw std::runtime_error(msg);
+    }
+
+    // allegro default font pointer
+    font = asset_manager.assets().font;
+}
+
+void set_gfx_mode(const Settings& settings)
+{
+    if (!GraphicsDisplay::try_set_mode(settings))
+    {
+        char buf[256]= {0};
+        snprintf(buf, sizeof(buf), "Unable to set graphics mode %dx%d.\n%s\n",
+            GraphicsDisplay::WIDTH,
+            GraphicsDisplay::HEIGHT,
+            allegro_error);
+        allegro_message("%s", buf);
+        throw std::runtime_error(buf);
+    }
+}
+} // namespace
+
+Game::Game(AppContext& app) : ctx_(app)
+{
+    init_allegro(ctx_.settings);
+    set_gfx_mode(ctx_.settings);
+    load_datafiles(ctx_.asset_manager);
+
+    AppAssets& loaded = ctx_.assets();
+    ctx_.render_context = RenderContext{
+        loaded.buffer, loaded.gem_data, loaded.icons_data, loaded.giblet_data};
+
+    set_mouse_sprite(static_cast<BITMAP*>(ctx_.assets().cursors_data[0].dat));
+
     for (auto& puff : smoke_)
     {
         puff.bind_level(&terrain_);
@@ -308,16 +372,16 @@ void Game::run()
         case MODE_PLAYING:
             for (int i = 0; i < MAX_SMOKE; ++i)
             {
-                smoke_[i].draw(render_context_);
+                smoke_[i].draw(c.render_context);
             }
             draw_sprite(c.assets().buffer, terrain_.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
             for (int i = 0; i < MAX_GEMS; ++i)
             {
-                gem_[i].draw(render_context_);
+                gem_[i].draw(c.render_context);
             }
             for (int i = 0; i < c.state.runners; ++i)
             {
-                chicken_[i].draw(render_context_);
+                chicken_[i].draw(c.render_context);
             }
             show_statistics(c);
             break;

@@ -5,10 +5,17 @@ constexpr int MAX_CHICKENS_CAPACITY{512};
 
 struct Settings
 {
+    static constexpr const char* kDefaultConfigPath{"assets/options.cfg"};
+
     Settings() = default;
     explicit Settings(const char* path);
 
+    /** Last config file used (`-s`); starts at `kDefaultConfigPath`. */
+    const char* config_path{kDefaultConfigPath};
+
     bool FULLSCREEN{false};
+    /** When true, always use a window (config or `--window`); wins over `FULLSCREEN`. */
+    bool FORCE_WINDOWED{false};
     bool MUTE{false};
     bool TRANSLUCENT_SMOKE{true};
     float GRAVITY{0.7F};

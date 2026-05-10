@@ -1,5 +1,6 @@
 #include "settings.h"
 
+#include <algorithm>
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -7,13 +8,14 @@
 Settings::Settings(const char* path)
 {
     *this = Settings{}; // weird but ok
+    config_path = path;
 
     std::fstream file(path);
     if(!file.is_open())
     {
         throw std::runtime_error("Cannot load settings");
     }
-    
+
     std::string key;
     char comment[255];
 
@@ -37,6 +39,10 @@ Settings::Settings(const char* path)
             {
                 file >> FULLSCREEN;
             }
+            if (key == "FORCE_WINDOWED")
+            {
+                file >> FORCE_WINDOWED;
+            }
             if (key == "GAME_SPEED_OFFSET")
             {
                 file >> GAME_SPEED_OFFSET;
@@ -56,6 +62,7 @@ Settings::Settings(const char* path)
             if (key == "MAX_CHICKENS")
             {
                 file >> MAX_CHICKENS;
+                MAX_CHICKENS = std::min(MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
             }
             if (key == "MUTE")
             {
