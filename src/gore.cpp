@@ -1,4 +1,5 @@
 #include "gore.h"
+#include "asset_manager.h"
 
 void Blood::release(const float X, const float Y, const float X_VEL, const float Y_VEL)
 {
@@ -28,7 +29,7 @@ void Blood::draw(const RenderContext& render_context)
 
 Giblet::Giblet()
 {
-    image = rand() % items_in_datafile(giblet_data);
+    image = rand() % items_in_datafile(asset_manager.app_assets().giblet_data);
 }
 
 void Kfc::explode()
@@ -76,7 +77,8 @@ void Kfc::explode()
                     if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
                     {
                         draw_sprite(level.image,
-                                    static_cast<BITMAP*>(giblet_data[chunk[i].image].dat),
+                                    static_cast<BITMAP*>(
+                                        asset_manager.app_assets().giblet_data[chunk[i].image].dat),
                                     static_cast<int>(chunk[i].x),
                                     MAX_LEVELHEIGHT - level.height[static_cast<int>(chunk[i].x)]);
                     }

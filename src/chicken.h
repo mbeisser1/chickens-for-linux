@@ -6,8 +6,6 @@
 #include "animation.h"
 #include "gore.h"
 
-extern DATAFILE* chicken_data;
-extern DATAFILE* flyingchicken_data;
 extern Level level;
 
 class Chicken

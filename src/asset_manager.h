@@ -25,6 +25,8 @@ using BitmapPtr = std::unique_ptr<BITMAP, AllegroDeleter<BITMAP, destroy_bitmap>
 
 struct AppAssets
 {
+    BITMAP* background{};
+    BITMAP* buffer{};
     DATAFILE* background_data{};
     DATAFILE* bigchicken_data{};
     DATAFILE* chicken_data{};
@@ -65,6 +67,7 @@ class AssetManager
     const SAMPLE* get_sample(const std::string& key) const;
     void clear_samples();
     const AppAssets& load_app_assets();
+    AppAssets& app_assets();
     const AppAssets& app_assets() const;
 
   private:
@@ -73,5 +76,7 @@ class AssetManager
     std::unordered_map<std::string, SamplePtr> samples_;
     AppAssets app_assets_{};
 };
+
+extern AssetManager asset_manager;
 
 #endif

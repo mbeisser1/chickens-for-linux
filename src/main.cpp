@@ -25,7 +25,6 @@
 #include <math.h>
 
 #include "animation.h"
-#include "app_assets.h"
 #include "asset_manager.h"
 #include "chicken.h"
 #include "gem.h"
@@ -77,6 +76,35 @@ const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configur
 const char* playername{};
 
 Level level{};
+static AppAssets& assets()
+{
+    return asset_manager.app_assets();
+}
+
+#define background (assets().background)
+#define buffer (assets().buffer)
+#define background_data (assets().background_data)
+#define bigchicken_data (assets().bigchicken_data)
+#define chicken_data (assets().chicken_data)
+#define cursors_data (assets().cursors_data)
+#define flyingchicken_data (assets().flyingchicken_data)
+#define fonts_data (assets().fonts_data)
+#define gem_data (assets().gem_data)
+#define giblet_data (assets().giblet_data)
+#define icons_data (assets().icons_data)
+#define modechooser_data (assets().modechooser_data)
+#define terrain_data (assets().terrain_data)
+#define font_big (assets().font_big)
+#define font_interface (assets().font_interface)
+#define sound_alarm (assets().sound_alarm)
+#define sound_gameover (assets().sound_gameover)
+#define sound_gemcollect (assets().sound_gemcollect)
+#define sound_highscore (assets().sound_highscore)
+#define sound_menu (assets().sound_menu)
+#define sound_rocket (assets().sound_rocket)
+#define sound_shotgun (assets().sound_shotgun)
+#define sound_tenderizer (assets().sound_tenderizer)
+
 int main(int argc, char* argv[])
 {
     int rank{HIGHSCORE_TABLE + 1}; // Player rank
@@ -596,7 +624,7 @@ int main(int argc, char* argv[])
 
     } while (mode != MODE_QUIT);
 
-    show_highscores(rank - 1, background);
+    show_highscores(rank - 1, buffer, background);
 
     // Let's free up some memory
 
@@ -632,29 +660,8 @@ int mode_manager()
 
 void load_datafiles()
 {
-    const AppAssets& assets = asset_manager.load_app_assets();
-    background_data = assets.background_data;
-    bigchicken_data = assets.bigchicken_data;
-    chicken_data = assets.chicken_data;
-    cursors_data = assets.cursors_data;
-    flyingchicken_data = assets.flyingchicken_data;
-    fonts_data = assets.fonts_data;
-    gem_data = assets.gem_data;
-    giblet_data = assets.giblet_data;
-    icons_data = assets.icons_data;
-    modechooser_data = assets.modechooser_data;
-    terrain_data = assets.terrain_data;
-    font = assets.font;
-    font_big = assets.font_big;
-    font_interface = assets.font_interface;
-    sound_alarm = assets.sound_alarm;
-    sound_gameover = assets.sound_gameover;
-    sound_gemcollect = assets.sound_gemcollect;
-    sound_highscore = assets.sound_highscore;
-    sound_menu = assets.sound_menu;
-    sound_rocket = assets.sound_rocket;
-    sound_shotgun = assets.sound_shotgun;
-    sound_tenderizer = assets.sound_tenderizer;
+    asset_manager.load_app_assets();
+    font = assets().font;
 }
 
 static bool try_depths_for_driver(int gfx_driver)

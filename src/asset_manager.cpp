@@ -177,6 +177,11 @@ const AppAssets& AssetManager::load_app_assets()
     return app_assets_;
 }
 
+AppAssets& AssetManager::app_assets()
+{
+    return app_assets_;
+}
+
 const AppAssets& AssetManager::app_assets() const
 {
     return app_assets_;

@@ -5,8 +5,6 @@
 
 #include "helper.h"
 
-extern BITMAP* buffer;
-
 class Animation
 {
   public:

@@ -9,7 +9,6 @@
 #include "level.h"
 
 extern Level level;
-extern DATAFILE* giblet_data;
 
 struct Blood
 {

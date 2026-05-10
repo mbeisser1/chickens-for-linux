@@ -1,7 +1,8 @@
 #include "helper.h"
 #include "highscore.h"
+#include "asset_manager.h"
 
-void show_highscores(int rank, BITMAP* background)
+void show_highscores(int rank, BITMAP* target, BITMAP* background)
 {
     std::fstream file(CHICKENS_ASSETS_REL("HighScores"));
 
@@ -18,10 +19,11 @@ void show_highscores(int rank, BITMAP* background)
 
     do
     {
-        clear(buffer);
-        draw_sprite(buffer, background, 0, 0);
+        clear(target);
+        draw_sprite(target, background, 0, 0);
 
-        CHICKENS_TEXTOUT_CENTRE(buffer, font_big, "High Scores", SCREEN_W / 2, 5, makecol(220, 0, 0));
+        CHICKENS_TEXTOUT_CENTRE(
+            target, asset_manager.app_assets().font_big, "High Scores", SCREEN_W / 2, 5, makecol(220, 0, 0));
 
         for (int i = 0; i < HIGHSCORE_TABLE; ++i)
         {
@@ -34,20 +36,26 @@ void show_highscores(int rank, BITMAP* background)
                 col = makecol(0, 255, 0);
             }
 
-            CHICKENS_TEXTPRINTF(buffer,
-                                font_interface,
+            CHICKENS_TEXTPRINTF(target,
+                                asset_manager.app_assets().font_interface,
                                 130 + (i > 8 ? 20 : 0),
                                 75 + m,
                                 col,
                                 "%s",
                                 players[i].c_str());
-            CHICKENS_TEXTPRINTF(buffer, font_big, 100, 70 + m, makecol(d, d, 0), "%d", i + 1);
+            CHICKENS_TEXTPRINTF(target,
+                                asset_manager.app_assets().font_big,
+                                100,
+                                70 + m,
+                                makecol(d, d, 0),
+                                "%d",
+                                i + 1);
             CHICKENS_TEXTPRINTF(
-                buffer, font, 130 + (i > 8 ? 20 : 0), 105 + m, makecol(d, d, 0), "%d", scores[i]);
+                target, font, 130 + (i > 8 ? 20 : 0), 105 + m, makecol(d, d, 0), "%d", scores[i]);
         }
 
-        draw_sprite(buffer, mouse_sprite, mouse_x, mouse_y);
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(target, mouse_sprite, mouse_x, mouse_y);
+        blit(target, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
     } while (!key[KEY_ESC] && !key[KEY_SPACE] && !key[KEY_ENTER] && mouse_b != 1);
 }

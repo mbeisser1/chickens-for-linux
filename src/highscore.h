@@ -9,11 +9,7 @@
 
 constexpr int HIGHSCORE_TABLE = 10;
 
-extern BITMAP* buffer;
-extern FONT* font_big;
-extern FONT* font_interface;
-
-void show_highscores(int, BITMAP*);
+void show_highscores(int, BITMAP*, BITMAP*);
 int save_highscore(const char* name, int score);
 
 #endif

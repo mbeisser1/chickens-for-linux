@@ -1,9 +1,10 @@
 #include "chicken.h"
+#include "asset_manager.h"
 
 Chicken::Chicken()
 {
-    running.load(chicken_data);
-    flying.load(flyingchicken_data);
+    running.load(asset_manager.app_assets().chicken_data);
+    flying.load(asset_manager.app_assets().flyingchicken_data);
     flying.slide = true;
     reset();
 }
