@@ -34,7 +34,7 @@ constexpr bool ONCE = false;
 constexpr int RIGHT = 1;
 constexpr int CROSSED_THE_ROAD = 2;
 
-void Timer();
+extern volatile int game_time;
 
 struct RenderContext
 {
@@ -43,7 +43,5 @@ struct RenderContext
     const DATAFILE* icons_data{};
     const DATAFILE* giblet_data{};
 };
-
-extern volatile int game_time;
 
 #endif

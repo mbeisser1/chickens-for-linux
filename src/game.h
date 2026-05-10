@@ -28,15 +28,15 @@ class Game
     void show_levelnumber();
     void restart();
 
-    void tick_mode_restart(AppContext& c);
-    void tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket, bool& fire_shotgun);
-    void tick_mode_next_level(AppContext& c);
-    void tick_mode_paused(AppContext& c);
-    void tick_mode_gameover(AppContext& c, int& rank);
+    void tick_mode_restart();
+    void tick_mode_playing(bool& alert_sound, bool& fire_rocket, bool& fire_shotgun);
+    void tick_mode_next_level();
+    void tick_mode_paused();
+    void tick_mode_gameover(int& rank);
 
-    void draw_frame_playing(AppContext& c);
-    void draw_frame_paused(AppContext& c);
-    void draw_frame_gameover(AppContext& c, int rank);
+    void draw_frame_playing();
+    void draw_frame_paused();
+    void draw_frame_gameover(int rank);
 
     AppContext& ctx_;
     Level terrain_{};

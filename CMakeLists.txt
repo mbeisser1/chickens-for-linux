@@ -68,10 +68,7 @@ add_executable(chickens4linux
     src/animation.cpp
     src/chicken.cpp
     src/gem.cpp
-    src/gore.cpp
-    src/helper.cpp
     src/game_state.cpp
-    src/highscore.cpp
     src/level.cpp
     src/settings.cpp
     src/smoke.cpp
