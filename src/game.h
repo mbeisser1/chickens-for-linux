@@ -22,6 +22,12 @@ class Game
   private:
     void show_highscores(int player_rank_one_based);
 
+    void show_startup();
+    void show_modechooser();
+    void show_levelcompleted();
+    void show_levelnumber();
+    void restart();
+
     void tick_mode_restart(AppContext& c);
     void tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket, bool& fire_shotgun);
     void tick_mode_next_level(AppContext& c);
