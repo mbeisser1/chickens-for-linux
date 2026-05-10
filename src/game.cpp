@@ -14,15 +14,14 @@ extern Level level;
 extern AppAssets& assets;
 extern volatile int game_time;
 
-Game::Game(std::array<Smoke, MAX_SMOKE>& smoke,
-           std::array<Gem, MAX_GEMS>& gem,
-           std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
-           const RenderContext& render_context)
-    : smoke_(smoke), gem_(gem), chicken_(chicken), render_context_(render_context)
+Game::Game(const RenderContext& render_context) : render_context_(render_context) {}
+
+void Game::show_highscores(int player_rank_one_based)
 {
+    ::show_highscores(player_rank_one_based - 1, assets.buffer, assets.background);
 }
 
-int Game::run()
+void Game::run()
 {
     show_startup();
     fadeout(makecol(0, 0, 0), 50);
@@ -367,5 +366,5 @@ int Game::run()
         }
     } while (game_state.mode != MODE_QUIT);
 
-    return rank;
+    show_highscores(rank);
 }

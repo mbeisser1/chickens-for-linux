@@ -20,7 +20,6 @@
 
 #include <cstdlib>
 #include <algorithm>
-#include <array>
 #include <iostream>
 
 #include <allegro.h>
@@ -31,7 +30,6 @@
 #include "game.h"
 #include "game_state.h"
 #include "graphics_display.h"
-#include "highscore.h"
 #include "level.h"
 #include "settings.h"
 
@@ -83,19 +81,11 @@ int main(int argc, char* argv[])
         create_bitmap(SCREEN_W, SCREEN_H); // Prevent a segfault if they exit without playing
                                            // anything (ie no background image gets loaded)
 
-    //////
-
-    std::array<Smoke, MAX_SMOKE> smoke;
-    std::array<Gem, MAX_GEMS> gem;
-    std::array<Chicken, MAX_CHICKENS_CAPACITY> chicken;
-
     const RenderContext render_context{
         assets.buffer, assets.gem_data, assets.icons_data, assets.giblet_data};
 
-    Game game(smoke, gem, chicken, render_context);
-    const int rank = game.run();
-
-    show_highscores(rank - 1, assets.buffer, assets.background);
+    Game game(render_context);
+    game.run();
 
     allegro_exit();
 

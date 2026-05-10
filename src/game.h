@@ -12,17 +12,16 @@
 class Game
 {
   public:
-    Game(std::array<Smoke, MAX_SMOKE>& smoke,
-         std::array<Gem, MAX_GEMS>& gem,
-         std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
-         const RenderContext& render_context);
+    explicit Game(const RenderContext& render_context);
 
-    int run();
+    void run();
 
   private:
-    std::array<Smoke, MAX_SMOKE>& smoke_;
-    std::array<Gem, MAX_GEMS>& gem_;
-    std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken_;
+    void show_highscores(int player_rank_one_based);
+
+    std::array<Smoke, MAX_SMOKE> smoke_{};
+    std::array<Gem, MAX_GEMS> gem_{};
+    std::array<Chicken, MAX_CHICKENS_CAPACITY> chicken_{};
     const RenderContext& render_context_;
 };
 
