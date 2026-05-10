@@ -76,34 +76,7 @@ const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configur
 const char* playername{};
 
 Level level{};
-static AppAssets& assets()
-{
-    return asset_manager.app_assets();
-}
-
-#define background (assets().background)
-#define buffer (assets().buffer)
-#define background_data (assets().background_data)
-#define bigchicken_data (assets().bigchicken_data)
-#define chicken_data (assets().chicken_data)
-#define cursors_data (assets().cursors_data)
-#define flyingchicken_data (assets().flyingchicken_data)
-#define fonts_data (assets().fonts_data)
-#define gem_data (assets().gem_data)
-#define giblet_data (assets().giblet_data)
-#define icons_data (assets().icons_data)
-#define modechooser_data (assets().modechooser_data)
-#define terrain_data (assets().terrain_data)
-#define font_big (assets().font_big)
-#define font_interface (assets().font_interface)
-#define sound_alarm (assets().sound_alarm)
-#define sound_gameover (assets().sound_gameover)
-#define sound_gemcollect (assets().sound_gemcollect)
-#define sound_highscore (assets().sound_highscore)
-#define sound_menu (assets().sound_menu)
-#define sound_rocket (assets().sound_rocket)
-#define sound_shotgun (assets().sound_shotgun)
-#define sound_tenderizer (assets().sound_tenderizer)
+static AppAssets& assets{asset_manager.app_assets()};
 
 int main(int argc, char* argv[])
 {
@@ -219,8 +192,8 @@ int main(int argc, char* argv[])
 
     initialize(windowmode);
 
-    buffer = create_system_bitmap(SCREEN_W, SCREEN_H);
-    background =
+    assets.buffer = create_system_bitmap(SCREEN_W, SCREEN_H);
+    assets.background =
         create_bitmap(SCREEN_W, SCREEN_H); // Prevent a segfault if they exit without playing
                                            // anything (ie no background image gets loaded)
     tmp_rocket_size = game_settings.ROCKET_SIZE;
@@ -229,7 +202,8 @@ int main(int argc, char* argv[])
     Gem gem[MAX_GEMS];
     Chicken chicken[game_settings.MAX_CHICKENS];
 
-    const RenderContext render_context{buffer, gem_data, icons_data, giblet_data};
+    const RenderContext render_context{
+        assets.buffer, assets.gem_data, assets.icons_data, assets.giblet_data};
 
     show_startup();
     fadeout(makecol(0, 0, 0), 50);
@@ -287,13 +261,13 @@ int main(int argc, char* argv[])
                     alert_mode = true;
                     if (!alert_sound)
                     { // Protect against playing the sound repeatedly with each cycle
-                        play_sound(sound_alarm, game_settings.VOLUME, 128, FOREVER);
+                        play_sound(assets.sound_alarm, game_settings.VOLUME, 128, FOREVER);
                         alert_sound = true;
                     }
                 }
                 else if (alert_mode)
                 {
-                    stop_sample(sound_alarm);
+                    stop_sample(assets.sound_alarm);
                     alert_sound = false;
                     alert_mode = false;
                 }
@@ -414,7 +388,7 @@ int main(int argc, char* argv[])
                                 }
                             }
 
-                            play_sound(sound_tenderizer, game_settings.VOLUME, 128, ONCE);
+                            play_sound(assets.sound_tenderizer, game_settings.VOLUME, 128, ONCE);
                             tenderizers--;
                         }
                     }
@@ -487,16 +461,16 @@ int main(int argc, char* argv[])
                     if (not_dead)
                     {
                         rank = save_highscore(playername, score);
-                        stop_sample(sound_alarm);
+                        stop_sample(assets.sound_alarm);
                         not_dead = false;
 
                         if (rank <= HIGHSCORE_TABLE)
                         {
-                            play_sound(sound_highscore, game_settings.VOLUME, 128, FOREVER);
+                            play_sound(assets.sound_highscore, game_settings.VOLUME, 128, FOREVER);
                         }
                         else
                         {
-                            play_sound(sound_gameover, game_settings.VOLUME, 128, ONCE);
+                            play_sound(assets.sound_gameover, game_settings.VOLUME, 128, ONCE);
                         }
                     }
                 }
@@ -521,8 +495,8 @@ int main(int argc, char* argv[])
 
         // DRAW EVERYTHING
 
-        clear(buffer);
-        draw_sprite(buffer, background, 0, 0);
+        clear(assets.buffer);
+        draw_sprite(assets.buffer, assets.background, 0, 0);
 
         switch (mode)
         {
@@ -533,7 +507,7 @@ int main(int argc, char* argv[])
                 smoke[i].draw(render_context);
             }
 
-            draw_sprite(buffer, level.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
+            draw_sprite(assets.buffer, level.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
 
             for (int i = 0; i < MAX_GEMS; ++i)
             {
@@ -553,16 +527,16 @@ int main(int argc, char* argv[])
 
             for (int i = 0; i < SCREEN_H; i += 2)
             {
-                line(buffer, 0, i, SCREEN_W, i, makecol(0, 0, 60));
+                line(assets.buffer, 0, i, SCREEN_W, i, makecol(0, 0, 60));
             }
 
-            CHICKENS_TEXTOUT_CENTRE(buffer,
-                           font_big,
+            CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+                           assets.font_big,
                            "PAUSED",
                            SCREEN_W / 2,
                            SCREEN_H / 2 - 40,
                            makecol(255, 255, 255));
-            CHICKENS_TEXTOUT_CENTRE(buffer,
+            CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                            font,
                            "Press 'C' to continue or 'Q' to quit",
                            SCREEN_W / 2,
@@ -573,27 +547,27 @@ int main(int argc, char* argv[])
 
         case MODE_GAMEOVER:
 
-            rectfill(buffer, 0, SCREEN_H - 40, SCREEN_W, SCREEN_H, makecol(0, 0, 0));
+            rectfill(assets.buffer, 0, SCREEN_H - 40, SCREEN_W, SCREEN_H, makecol(0, 0, 0));
 
-            CHICKENS_TEXTOUT_CENTRE(buffer,
-                           font_big,
+            CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+                           assets.font_big,
                            "Armageddon",
                            SCREEN_W / 2,
                            SCREEN_H / 2 - 20,
                            makecol(255, 255, 255));
-            CHICKENS_TEXTOUT_CENTRE(buffer,
+            CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                            font,
                            "The chickens have risen. Everyone is dead. Our world is gone.",
                            SCREEN_W / 2,
                            SCREEN_H / 2 + 40,
                            makecol(255, 255, 255));
-            CHICKENS_TEXTOUT_CENTRE(buffer,
+            CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                            font,
                            "Press 'R' to play again!",
                            SCREEN_W / 2,
                            SCREEN_H - 35,
                            makecol(0, 255, 0));
-            CHICKENS_TEXTOUT_CENTRE(buffer,
+            CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                            font,
                            "Not that this is a game. This is actually happening, in real life.",
                            SCREEN_W / 2,
@@ -602,8 +576,8 @@ int main(int argc, char* argv[])
 
             if (rank <= HIGHSCORE_TABLE)
             {
-                CHICKENS_TEXTPRINTF_CENTRE(buffer,
-                                  font_interface,
+                CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
+                                  assets.font_interface,
                                   SCREEN_W / 2,
                                   SCREEN_H / 2 + 65,
                                   makecol(0, 220, 0),
@@ -615,8 +589,8 @@ int main(int argc, char* argv[])
             break;
         }
 
-        draw_sprite(buffer, mouse_sprite, mx - 11, my - 11);
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(assets.buffer, mouse_sprite, mx - 11, my - 11);
+        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -624,14 +598,14 @@ int main(int argc, char* argv[])
 
     } while (mode != MODE_QUIT);
 
-    show_highscores(rank - 1, buffer, background);
+    show_highscores(rank - 1, assets.buffer, assets.background);
 
     // Let's free up some memory
 
     asset_manager.clear_samples();
     asset_manager.clear_datafiles();
 
-    destroy_bitmap(buffer);
+    destroy_bitmap(assets.buffer);
 
     allegro_exit();
 
@@ -643,7 +617,7 @@ int mode_manager()
 {
     if (mode == MODE_PLAYING)
     {
-        set_mouse_sprite(static_cast<BITMAP*>(cursors_data[1].dat));
+        set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[1].dat));
 
         if (key[KEY_ESC] || key[KEY_PAUSE])
         {
@@ -652,7 +626,7 @@ int mode_manager()
     }
     else
     {
-        set_mouse_sprite(static_cast<BITMAP*>(cursors_data[0].dat));
+        set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[0].dat));
     }
 
     return mode;
@@ -661,7 +635,7 @@ int mode_manager()
 void load_datafiles()
 {
     asset_manager.load_app_assets();
-    font = assets().font;
+    font = assets.font;
 }
 
 static bool try_depths_for_driver(int gfx_driver)
@@ -737,7 +711,7 @@ void initialize(int windowmode)
 
     load_datafiles();
 
-    set_mouse_sprite(static_cast<BITMAP*>(cursors_data[0].dat));
+    set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[0].dat));
 }
 
 void show_startup()
@@ -754,141 +728,145 @@ void show_startup()
             game_time--;
         }
 
-        clear(buffer);
+        clear(assets.buffer);
 
-        draw_sprite(buffer, static_cast<BITMAP*>(icons_data[2].dat), SCREEN_W / 2 - 177, 4);
         draw_sprite(
-            buffer, static_cast<BITMAP*>(gem_data[1].dat), SCREEN_W / 2 - 143, SCREEN_H / 2 + 100);
-        draw_sprite(buffer, static_cast<BITMAP*>(gem_data[0].dat), SCREEN_W / 2 - 3, SCREEN_H / 2 + 100);
+            assets.buffer, static_cast<BITMAP*>(assets.icons_data[2].dat), SCREEN_W / 2 - 177, 4);
         draw_sprite(
-            buffer, static_cast<BITMAP*>(gem_data[2].dat), SCREEN_W / 2 + 147, SCREEN_H / 2 + 100);
+            assets.buffer, static_cast<BITMAP*>(assets.gem_data[1].dat), SCREEN_W / 2 - 143, SCREEN_H / 2 + 100);
+        draw_sprite(assets.buffer,
+                    static_cast<BITMAP*>(assets.gem_data[0].dat),
+                    SCREEN_W / 2 - 3,
+                    SCREEN_H / 2 + 100);
+        draw_sprite(
+            assets.buffer, static_cast<BITMAP*>(assets.gem_data[2].dat), SCREEN_W / 2 + 147, SCREEN_H / 2 + 100);
 
-        line(buffer, 0, 104, SCREEN_W, 104, makecol(100, 0, 0));
-        line(buffer, 0, SCREEN_H - 30, SCREEN_W, SCREEN_H - 30, makecol(100, 0, 0));
+        line(assets.buffer, 0, 104, SCREEN_W, 104, makecol(100, 0, 0));
+        line(assets.buffer, 0, SCREEN_H - 30, SCREEN_W, SCREEN_H - 30, makecol(100, 0, 0));
 
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "In the final days of Armageddon, the chickens are preparing",
                        SCREEN_W / 2,
                        130,
                        makecol(200, 200, 200));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "to detonate our planet. They are trying to run across your",
                        SCREEN_W / 2,
                        145,
                        makecol(200, 200, 200));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "screen, and if even a single chicken succeeds, it's all over.",
                        SCREEN_W / 2,
                        160,
                        makecol(200, 200, 200));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "Please look in README for info about LEVEL MODE--this screen is temporary!",
                        SCREEN_W / 2,
                        180,
                        makecol(220, 0, 0));
-        CHICKENS_TEXTOUT_CENTRE(buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "You are on a 2 minute timer. Each time that you shoot, you",
                        SCREEN_W / 2,
                        215,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "lose an additional second, so try to kill as many chickens",
                        SCREEN_W / 2,
                        230,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "per click as possible. Killing chickens with rockets gives",
                        SCREEN_W / 2,
                        245,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "you 100 points. A shotgun kill earns you 250, but it takes",
                        SCREEN_W / 2,
                        260,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "longer to reload. Chickens high up in flight must be shot",
                        SCREEN_W / 2,
                        275,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "with the shotgun, as rockets can only shoot at ground level.",
                        SCREEN_W / 2,
                        290,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "You are given 1 tenderizer. In case of emergency hit SPACE.",
                        SCREEN_W / 2,
                        305,
                        makecol(255, 70, 70));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "Occasionally, cool gems fly out of exploding chickens. Catch",
                        SCREEN_W / 2,
                        320,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "them with your mouse cursor (don't click!) to earn bonuses.",
                        SCREEN_W / 2,
                        335,
                        makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "All gems automatically give you 2 extra seconds.",
                        SCREEN_W / 2,
                        350,
                        makecol(255, 255, 255));
 
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "+5 radius",
                        SCREEN_W / 2 - 140,
                        SCREEN_H / 2 + 120,
                        makecol(255, 255, 255));
         CHICKENS_TEXTOUT_CENTRE(
-            buffer, font, "+8 sec", SCREEN_W / 2, SCREEN_H / 2 + 120, makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+            assets.buffer, font, "+8 sec", SCREEN_W / 2, SCREEN_H / 2 + 120, makecol(255, 255, 255));
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "+5000 pts",
                        SCREEN_W / 2 + 152,
                        SCREEN_H / 2 + 120,
                        makecol(255, 255, 255));
 
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "Rocket: Left-click",
                        SCREEN_W / 2 - 100,
                        SCREEN_H - 50,
                        makecol(255, 30, 30));
-        CHICKENS_TEXTOUT_CENTRE(buffer,
+        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
                        "Shotgun: Right-click",
                        SCREEN_W / 2 + 100,
                        SCREEN_H - 50,
                        makecol(255, 30, 30));
 
-        CHICKENS_TEXTOUT_RIGHT(buffer,
+        CHICKENS_TEXTOUT_RIGHT(assets.buffer,
                       font,
                       "moistrous software 2004 (0.2.4)",
                       SCREEN_W - 10,
                       SCREEN_H - 25,
                       makecol(255, 255, 255));
 
-        draw_sprite(buffer, mouse_sprite, mx, my);
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(assets.buffer, mouse_sprite, mx, my);
+        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -911,14 +889,14 @@ void show_modechooser()
     float bigchick_xspeed{};
     float bigchick_yspeed{};
 
-    bigchick.load(bigchicken_data);
+    bigchick.load(assets.bigchicken_data);
     bigchick.x = 100;
     bigchick.y = 100;
 
-    stop_sample(sound_alarm);
-    stop_sample(sound_highscore);
-    stop_sample(sound_menu);
-    play_sound(sound_menu, game_settings.VOLUME, 128, FOREVER);
+    stop_sample(assets.sound_alarm);
+    stop_sample(assets.sound_highscore);
+    stop_sample(assets.sound_menu);
+    play_sound(assets.sound_menu, game_settings.VOLUME, 128, FOREVER);
 
     do
     {
@@ -986,7 +964,7 @@ void show_modechooser()
             game_time--;
         }
 
-        clear(buffer);
+        clear(assets.buffer);
 
         bigchick.x -= bigchick_xspeed;
         bigchick.y -= bigchick_yspeed;
@@ -1001,12 +979,12 @@ void show_modechooser()
             clear_to_color(track, makecol(255, 0, 255));
 
             rotate_sprite(track,
-                          static_cast<BITMAP*>(modechooser_data[1].dat),
+                          static_cast<BITMAP*>(assets.modechooser_data[1].dat),
                           0,
                           0,
                           itofix(static_cast<int>(bigchick.angle) + rand() % 6 - rand() % 6));
             set_trans_blender(255, 255, 255, bigchick_bloodyfeet * 10);
-            draw_trans_sprite(static_cast<BITMAP*>(modechooser_data[0].dat),
+            draw_trans_sprite(static_cast<BITMAP*>(assets.modechooser_data[0].dat),
                               track,
                               static_cast<int>(bigchick.x) + 15 - rand() % 20,
                               static_cast<int>(bigchick.y) + 30 - rand() % 20);
@@ -1017,11 +995,11 @@ void show_modechooser()
             right_foot = !right_foot;
         }
 
-        draw_sprite(buffer, static_cast<BITMAP*>(modechooser_data[0].dat), 0, 0);
-        bigchick.play(buffer);
+        draw_sprite(assets.buffer, static_cast<BITMAP*>(assets.modechooser_data[0].dat), 0, 0);
+        bigchick.play(assets.buffer);
 
-        draw_sprite(buffer, mouse_sprite, mx, my);
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(assets.buffer, mouse_sprite, mx, my);
+        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -1072,10 +1050,10 @@ void show_levelcompleted()
 
         }
 
-        clear(buffer);
+        clear(assets.buffer);
 
-        CHICKENS_TEXTPRINTF_CENTRE(buffer,
-                                    font_big,
+        CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
+                                    assets.font_big,
                                     SCREEN_W / 2,
                                     SCREEN_H / 2,
                                     makecol(255, 255, 255),
@@ -1084,8 +1062,8 @@ void show_levelcompleted()
         {
             /* a>100: green text here; old inner loop only set unused `color`. */
             const int acc_fg = (a > 100.0f) ? makecol(0, 255, 0) : makecol(255, 255, 255);
-            CHICKENS_TEXTPRINTF_CENTRE(buffer,
-                                        font_interface,
+            CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
+                                        assets.font_interface,
                                         SCREEN_W / 2,
                                         SCREEN_H / 2 + 90,
                                         acc_fg,
@@ -1094,8 +1072,8 @@ void show_levelcompleted()
         }
         if (a == 100 && b > 0)
         {
-            CHICKENS_TEXTPRINTF_CENTRE(buffer,
-                              font_interface,
+            CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
+                              assets.font_interface,
                               SCREEN_W / 2 + 60,
                               SCREEN_H / 2 + 90 - (255 - b),
                               makecol(0, b, 0),
@@ -1104,8 +1082,8 @@ void show_levelcompleted()
             b -= 2;
         }
 
-        draw_sprite(buffer, mouse_sprite, mx, my);
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(assets.buffer, mouse_sprite, mx, my);
+        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -1135,8 +1113,8 @@ void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
         smoke[i].active = false;
     }
 
-    background =
-        static_cast<BITMAP*>(background_data[rand() % items_in_datafile(background_data)].dat);
+    assets.background = static_cast<BITMAP*>(
+        assets.background_data[rand() % items_in_datafile(assets.background_data)].dat);
     level.create();
 
     game_settings.ROCKET_SIZE = tmp_rocket_size;
@@ -1156,15 +1134,15 @@ void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
     alert_mode = false;
     not_dead = true;
 
-    stop_sample(sound_gameover); // They might not always be playing but stop them anyway
-    stop_sample(sound_highscore);
-    stop_sample(sound_tenderizer);
-    stop_sample(sound_menu);
+    stop_sample(assets.sound_gameover); // They might not always be playing but stop them anyway
+    stop_sample(assets.sound_highscore);
+    stop_sample(assets.sound_tenderizer);
+    stop_sample(assets.sound_menu);
 }
 
 void earn_bonus(int type)
 {
-    play_sound(sound_gemcollect, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
+    play_sound(assets.sound_gemcollect, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
     switch (type)
     {
@@ -1218,18 +1196,18 @@ void show_levelnumber()
             game_time--;
         }
 
-        clear(buffer);
+        clear(assets.buffer);
 
-        CHICKENS_TEXTPRINTF_CENTRE(buffer,
-                          font_big,
+        CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
+                          assets.font_big,
                           SCREEN_W / 2,
                           SCREEN_H / 2,
                           makecol(255, 255, 255),
                           "Level %d",
                           current_level);
 
-        draw_sprite(buffer, mouse_sprite, mx, my);
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(assets.buffer, mouse_sprite, mx, my);
+        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -1258,9 +1236,9 @@ void fadeout(int color, int duration)
         }
 
         set_trans_blender(255, 255, 255, 60);
-        draw_trans_sprite(buffer, fading, 0, 0);
+        draw_trans_sprite(assets.buffer, fading, 0, 0);
 
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -1271,9 +1249,9 @@ void fadeout(int color, int duration)
 
 void next_level(int level)
 {
-    stop_sample(sound_alarm);
-    stop_sample(sound_highscore);
-    stop_sample(sound_gameover);
+    stop_sample(assets.sound_alarm);
+    stop_sample(assets.sound_highscore);
+    stop_sample(assets.sound_gameover);
 
     current_level = level;
     chickens_left = game_settings.INITIAL_CHICKENS + (level * 4);
@@ -1307,32 +1285,32 @@ void show_statistics()
     {
         // Level Mode:
         CHICKENS_TEXTPRINTF(
-            buffer, font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", current_level);
-        CHICKENS_TEXTPRINTF(buffer,
-                   font_interface,
+            assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", current_level);
+        CHICKENS_TEXTPRINTF(assets.buffer,
+                   assets.font_interface,
                    20,
                    25,
                    makecol(255, 255, 255),
                    "Chickens: %d    ",
                    chickens_left);
         CHICKENS_TEXTPRINTF(
-            buffer, font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
+            assets.buffer, assets.font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
     }
     else
     {
         // Classic Mode:
-        CHICKENS_TEXTPRINTF(buffer, font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", score);
-        CHICKENS_TEXTPRINTF(buffer, font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", kills);
+        CHICKENS_TEXTPRINTF(assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", score);
+        CHICKENS_TEXTPRINTF(assets.buffer, assets.font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", kills);
         CHICKENS_TEXTPRINTF(
-            buffer, font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
+            assets.buffer, assets.font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
 
         if (alert_mode)
         {
             set_trans_blender(255, 255, 255, 150);
             draw_trans_sprite(
-                buffer, static_cast<BITMAP*>(icons_data[0].dat), SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
+                assets.buffer, static_cast<BITMAP*>(assets.icons_data[0].dat), SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
             CHICKENS_TEXTOUT_CENTRE(
-                buffer, font_big, "ALERT", SCREEN_W / 2, SCREEN_H / 2 - 30, makecol(255, 255, 255));
+                assets.buffer, assets.font_big, "ALERT", SCREEN_W / 2, SCREEN_H / 2 - 30, makecol(255, 255, 255));
         }
     }
 }
@@ -1360,7 +1338,7 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
     if (*fire_rocket)
     {
         reloading_rocket = game_settings.ROCKET_RELOAD; // reload time
-        play_sound(sound_rocket, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
+        play_sound(assets.sound_rocket, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
         --timer;
     }
@@ -1368,7 +1346,7 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
     if (*fire_shotgun)
     {
         reloading_shotgun = game_settings.SHOTGUN_RELOAD; // reload time
-        play_sound(sound_shotgun,
+        play_sound(assets.sound_shotgun,
                    game_settings.VOLUME,
                    int(mouse_x / 3.13),
                    ONCE); // Pan speaker output to mouse location
