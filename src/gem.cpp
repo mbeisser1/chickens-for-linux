@@ -5,9 +5,9 @@ void Gem::draw(const RenderContext& render_context) const
     if (active)
     {
         draw_sprite(render_context.target,
-                    (BITMAP*)render_context.gem_data[type].dat,
-                    (int)x,
-                    (int)y);
+                    static_cast<BITMAP*>(render_context.gem_data[type].dat),
+                    static_cast<int>(x),
+                    static_cast<int>(y));
     }
 }
 

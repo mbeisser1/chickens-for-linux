@@ -106,7 +106,8 @@ int Smoke::draw(const RenderContext& render_context)
 
                 if (puff[i].life > 0)
                 {
-                    stretch_sprite(cloud, (BITMAP*)render_context.icons_data[1].dat, 0, 0, w, h);
+                    stretch_sprite(
+                        cloud, static_cast<BITMAP*>(render_context.icons_data[1].dat), 0, 0, w, h);
 
                     if (game_settings.TRANSLUCENT_SMOKE)
                     {

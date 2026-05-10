@@ -54,7 +54,7 @@ int Chicken::run()
         if (x >= 0 && x < SCREEN_W)
         { // Only if the chicken is visible on screen
 
-            ground = SCREEN_H - level.height[(int)x] - CHICKEN_HEIGHT;
+            ground = SCREEN_H - level.height[static_cast<int>(x)] - CHICKEN_HEIGHT;
 
             if (rand() % game_settings.CHANCE_OF_FLIGHT <= 1) // Chance of flying
             {
@@ -124,7 +124,7 @@ void Chicken::draw(const RenderContext& render_context)
     {
         if (alive == NOT_KILLED)
         {
-            if (y < SCREEN_H - level.height[(int)x] - CHICKEN_HEIGHT)
+            if (y < SCREEN_H - level.height[static_cast<int>(x)] - CHICKEN_HEIGHT)
             {
                 flying.play(render_context.target);
             }

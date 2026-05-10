@@ -306,8 +306,8 @@ int main(int argc, char* argv[])
                     {
                         if (chicken[i].alive == NOT_KILLED &&
                             ((SCREEN_H - chicken[i].y) - level.height[mouse_x]) < game_settings.ROCKET_SIZE &&
-                            (abs(mouse_x - (int)chicken[i].x) < game_settings.ROCKET_SIZE ||
-                             abs(mouse_x - (int)chicken[i].x - CHICKEN_WIDTH) < game_settings.ROCKET_SIZE))
+                            (abs(mouse_x - static_cast<int>(chicken[i].x)) < game_settings.ROCKET_SIZE ||
+                             abs(mouse_x - static_cast<int>(chicken[i].x) - CHICKEN_WIDTH) < game_settings.ROCKET_SIZE))
                         {
                             score += game_settings.POINTS_FOR_ROCKET;
                             chicken[i].alive = KILLED_WITH_ROCKET;
@@ -336,10 +336,10 @@ int main(int argc, char* argv[])
                     if (fire_shotgun)
                     {
                         if (chicken[i].alive == NOT_KILLED &&
-                            (abs(mouse_x - (int)chicken[i].x) < game_settings.SHOTGUN_SIZE ||
-                             abs(mouse_x - (int)chicken[i].x - CHICKEN_WIDTH) < game_settings.SHOTGUN_SIZE) &&
-                            (abs(mouse_y - (int)chicken[i].y) < game_settings.SHOTGUN_SIZE ||
-                             abs(mouse_y - (int)chicken[i].y - CHICKEN_HEIGHT) < game_settings.SHOTGUN_SIZE))
+                            (abs(mouse_x - static_cast<int>(chicken[i].x)) < game_settings.SHOTGUN_SIZE ||
+                             abs(mouse_x - static_cast<int>(chicken[i].x) - CHICKEN_WIDTH) < game_settings.SHOTGUN_SIZE) &&
+                            (abs(mouse_y - static_cast<int>(chicken[i].y)) < game_settings.SHOTGUN_SIZE ||
+                             abs(mouse_y - static_cast<int>(chicken[i].y) - CHICKEN_HEIGHT) < game_settings.SHOTGUN_SIZE))
                         { // Look! it's the worlds longest line of code.
 
                             score += game_settings.POINTS_FOR_SHOTGUN;
@@ -653,7 +653,7 @@ int mode_manager()
 {
     if (mode == MODE_PLAYING)
     {
-        set_mouse_sprite((BITMAP*)cursors_data[1].dat);
+        set_mouse_sprite(static_cast<BITMAP*>(cursors_data[1].dat));
 
         if (key[KEY_ESC] || key[KEY_PAUSE])
         {
@@ -662,7 +662,7 @@ int mode_manager()
     }
     else
     {
-        set_mouse_sprite((BITMAP*)cursors_data[0].dat);
+        set_mouse_sprite(static_cast<BITMAP*>(cursors_data[0].dat));
     }
 
     return mode;
@@ -685,9 +685,9 @@ void load_datafiles()
 
 void load_fonts()
 {
-    font = (FONT*)fonts_data[0].dat;
-    font_big = (FONT*)fonts_data[1].dat;
-    font_interface = (FONT*)fonts_data[2].dat;
+    font = static_cast<FONT*>(fonts_data[0].dat);
+    font_big = static_cast<FONT*>(fonts_data[1].dat);
+    font_interface = static_cast<FONT*>(fonts_data[2].dat);
 }
 
 void load_sounds()
@@ -777,7 +777,7 @@ void initialize(int windowmode)
     load_fonts();
     load_sounds();
 
-    set_mouse_sprite((BITMAP*)cursors_data[0].dat);
+    set_mouse_sprite(static_cast<BITMAP*>(cursors_data[0].dat));
 }
 
 void show_startup()
@@ -796,10 +796,12 @@ void show_startup()
 
         clear(buffer);
 
-        draw_sprite(buffer, (BITMAP*)icons_data[2].dat, SCREEN_W / 2 - 177, 4);
-        draw_sprite(buffer, (BITMAP*)gem_data[1].dat, SCREEN_W / 2 - 143, SCREEN_H / 2 + 100);
-        draw_sprite(buffer, (BITMAP*)gem_data[0].dat, SCREEN_W / 2 - 3, SCREEN_H / 2 + 100);
-        draw_sprite(buffer, (BITMAP*)gem_data[2].dat, SCREEN_W / 2 + 147, SCREEN_H / 2 + 100);
+        draw_sprite(buffer, static_cast<BITMAP*>(icons_data[2].dat), SCREEN_W / 2 - 177, 4);
+        draw_sprite(
+            buffer, static_cast<BITMAP*>(gem_data[1].dat), SCREEN_W / 2 - 143, SCREEN_H / 2 + 100);
+        draw_sprite(buffer, static_cast<BITMAP*>(gem_data[0].dat), SCREEN_W / 2 - 3, SCREEN_H / 2 + 100);
+        draw_sprite(
+            buffer, static_cast<BITMAP*>(gem_data[2].dat), SCREEN_W / 2 + 147, SCREEN_H / 2 + 100);
 
         line(buffer, 0, 104, SCREEN_W, 104, makecol(100, 0, 0));
         line(buffer, 0, SCREEN_H - 30, SCREEN_W, SCREEN_H - 30, makecol(100, 0, 0));
@@ -979,7 +981,9 @@ void show_modechooser()
                 }
             }
 
-            if (mouse_b & 1 && abs((int)bigchick_xspeed) + abs((int)bigchick_yspeed) < 3)
+            if (mouse_b & 1
+                && abs(static_cast<int>(bigchick_xspeed)) + abs(static_cast<int>(bigchick_yspeed))
+                       < 3)
             {
                 // Entering Classic Mode
                 if (mouse_x < 90)
@@ -1028,7 +1032,7 @@ void show_modechooser()
         bigchick.y -= bigchick_yspeed;
 
         // Give the chicken a stupid waddle
-        bigchick_tspeed = abs((int)bigchick_xspeed) + abs((int)bigchick_yspeed);
+        bigchick_tspeed = abs(static_cast<int>(bigchick_xspeed)) + abs(static_cast<int>(bigchick_yspeed));
         bigchick.angle += (rand() % (1 + bigchick_tspeed) - rand() % (1 + bigchick_tspeed)) / 2;
 
         if (bigchick_bloodyfeet > 0 && counter % 7 == 0)
@@ -1037,15 +1041,15 @@ void show_modechooser()
             clear_to_color(track, makecol(255, 0, 255));
 
             rotate_sprite(track,
-                          (BITMAP*)modechooser_data[1].dat,
+                          static_cast<BITMAP*>(modechooser_data[1].dat),
                           0,
                           0,
-                          itofix((int)bigchick.angle + rand() % 6 - rand() % 6));
+                          itofix(static_cast<int>(bigchick.angle) + rand() % 6 - rand() % 6));
             set_trans_blender(255, 255, 255, bigchick_bloodyfeet * 10);
-            draw_trans_sprite((BITMAP*)modechooser_data[0].dat,
+            draw_trans_sprite(static_cast<BITMAP*>(modechooser_data[0].dat),
                               track,
-                              (int)bigchick.x + 15 - rand() % 20,
-                              (int)bigchick.y + 30 - rand() % 20);
+                              static_cast<int>(bigchick.x) + 15 - rand() % 20,
+                              static_cast<int>(bigchick.y) + 30 - rand() % 20);
             bigchick_bloodyfeet--;
 
             destroy_bitmap(track);
@@ -1053,7 +1057,7 @@ void show_modechooser()
             right_foot = !right_foot;
         }
 
-        draw_sprite(buffer, (BITMAP*)modechooser_data[0].dat, 0, 0);
+        draw_sprite(buffer, static_cast<BITMAP*>(modechooser_data[0].dat), 0, 0);
         bigchick.play(buffer);
 
         draw_sprite(buffer, mouse_sprite, mx, my);
@@ -1081,7 +1085,8 @@ void show_levelcompleted()
     int mx{};
     int my{};
     float a{};
-    float accuracy = (((float)kills / (float)shots_fired) * 70) + ((timer / 60) * 30);
+    float accuracy = ((static_cast<float>(kills) / static_cast<float>(shots_fired)) * 70)
+                     + ((timer / 60) * 30);
     float bonus{};
 
     if (accuracy > 100)
@@ -1125,7 +1130,7 @@ void show_levelcompleted()
                                         SCREEN_H / 2 + 90,
                                         acc_fg,
                                         "Accuracy: %d%%",
-                                        (int)a);
+                                        static_cast<int>(a));
         }
         if (a == 100 && b > 0)
         {
@@ -1135,7 +1140,7 @@ void show_levelcompleted()
                               SCREEN_H / 2 + 90 - (255 - b),
                               makecol(0, b, 0),
                               "+%d",
-                              (int)bonus);
+                              static_cast<int>(bonus));
             b -= 2;
         }
 
@@ -1170,7 +1175,8 @@ void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
         smoke[i].active = false;
     }
 
-    background = (BITMAP*)background_data[rand() % items_in_datafile(background_data)].dat;
+    background =
+        static_cast<BITMAP*>(background_data[rand() % items_in_datafile(background_data)].dat);
     level.create();
 
     game_settings.ROCKET_SIZE = tmp_rocket_size;
@@ -1311,7 +1317,7 @@ void next_level(int level)
 
     current_level = level;
     chickens_left = game_settings.INITIAL_CHICKENS + (level * 4);
-    game_settings.CHICKEN_SPEED = (int)sqrt(chickens_left) / 2;
+    game_settings.CHICKEN_SPEED = static_cast<int>(sqrt(chickens_left)) / 2;
     timer = 60;
 }
 
@@ -1325,7 +1331,7 @@ int ctoi(const char* t)
 
     for (int i = l - 1; i >= 0 + n; --i)
     {
-        v += (t[l - i - 1 + n] - 48) * (int)pow(10, i - n);
+        v += (t[l - i - 1 + n] - 48) * static_cast<int>(pow(10, i - n));
     }
 
     return v = n ? -v : v;
@@ -1364,7 +1370,7 @@ void show_statistics()
         {
             set_trans_blender(255, 255, 255, 150);
             draw_trans_sprite(
-                buffer, (BITMAP*)icons_data[0].dat, SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
+                buffer, static_cast<BITMAP*>(icons_data[0].dat), SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
             CHICKENS_TEXTOUT_CENTRE(
                 buffer, font_big, "ALERT", SCREEN_W / 2, SCREEN_H / 2 - 30, makecol(255, 255, 255));
         }

@@ -21,7 +21,7 @@ void Blood::draw(const RenderContext& render_context)
     {
         if (y >= 0 && y < SCREEN_H)
         {
-            putpixel(render_context.target, (int)x, (int)y, makecol(220, 0, 0));
+            putpixel(render_context.target, static_cast<int>(x), static_cast<int>(y), makecol(220, 0, 0));
         }
     }
 }
@@ -45,9 +45,9 @@ void Kfc::explode()
         { // Thank you Jarno!
 
             // If it hit the ground
-            if (chunk[i].y >= SCREEN_H - level.height[(int)chunk[i].x])
+            if (chunk[i].y >= SCREEN_H - level.height[static_cast<int>(chunk[i].x)])
             {
-                chunk[i].y = SCREEN_H - level.height[(int)chunk[i].x];
+                chunk[i].y = SCREEN_H - level.height[static_cast<int>(chunk[i].x)];
                 chunk[i].x_vel = int(chunk[i].x_vel * 0.3);
                 chunk[i].y_vel = -int(chunk[i].y_vel * 0.3);
 
@@ -58,7 +58,7 @@ void Kfc::explode()
 
                     for (int j = 0; j < 10; ++j)
                     {
-                        int v = (int)chunk[i].x + j;
+                        int v = static_cast<int>(chunk[i].x) + j;
 
                         if (v < SCREEN_W - 1 && v > 0)
                         {
@@ -76,9 +76,9 @@ void Kfc::explode()
                     if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
                     {
                         draw_sprite(level.image,
-                                    (BITMAP*)giblet_data[chunk[i].image].dat,
-                                    (int)chunk[i].x,
-                                    MAX_LEVELHEIGHT - level.height[(int)chunk[i].x]);
+                                    static_cast<BITMAP*>(giblet_data[chunk[i].image].dat),
+                                    static_cast<int>(chunk[i].x),
+                                    MAX_LEVELHEIGHT - level.height[static_cast<int>(chunk[i].x)]);
                     }
                 }
             }
@@ -113,9 +113,9 @@ void Kfc::draw(const RenderContext& render_context)
         if (chunk[i].landed == false)
         {
             draw_sprite(render_context.target,
-                        (BITMAP*)render_context.giblet_data[chunk[i].image].dat,
-                        (int)chunk[i].x,
-                        (int)chunk[i].y);
+                        static_cast<BITMAP*>(render_context.giblet_data[chunk[i].image].dat),
+                        static_cast<int>(chunk[i].x),
+                        static_cast<int>(chunk[i].y));
         }
 
         for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)

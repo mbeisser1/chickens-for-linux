@@ -17,16 +17,22 @@ void Animation::play(BITMAP* target)
     {
         if (hflip)
         {
-            draw_sprite_h_flip(target, (BITMAP*)data[step].dat, (int)x, (int)y);
+            draw_sprite_h_flip(
+                target, static_cast<BITMAP*>(data[step].dat), static_cast<int>(x), static_cast<int>(y));
         }
         else
         {
-            draw_sprite(target, (BITMAP*)data[step].dat, (int)x, (int)y);
+            draw_sprite(
+                target, static_cast<BITMAP*>(data[step].dat), static_cast<int>(x), static_cast<int>(y));
         }
     }
     else
     {
-        rotate_sprite(target, (BITMAP*)data[step].dat, (int)x, (int)y, itofix((int)angle));
+        rotate_sprite(target,
+                      static_cast<BITMAP*>(data[step].dat),
+                      static_cast<int>(x),
+                      static_cast<int>(y),
+                      itofix(static_cast<int>(angle)));
     }
 
     if (played_once && loop == false)
@@ -78,7 +84,10 @@ void Cutscene::load(const char* path)
 
 int Cutscene::play(BITMAP* target)
 {
-    draw_rle_sprite(target, (RLE_SPRITE*)data[step++].dat, (int)x, (int)y);
+    draw_rle_sprite(target,
+                    static_cast<RLE_SPRITE*>(data[step++].dat),
+                    static_cast<int>(x),
+                    static_cast<int>(y));
 
     if (step == frames)
     {
