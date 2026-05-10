@@ -15,7 +15,7 @@ struct Blood
 {
     void release(const float x, const float y, const float x_vel, const float y_vel);
     void run();
-    void draw(BITMAP* target);
+    void draw(const RenderContext& render_context);
 
   private:
     float x{};
@@ -43,7 +43,7 @@ struct Kfc
 
     void explode();
     void release(const float at_x, const float at_y, int accuracy, const int death, const int direction);
-    void draw(BITMAP* target, const DATAFILE* giblet_data);
+    void draw(const RenderContext& render_context);
 
     bool released{};
 };

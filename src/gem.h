@@ -14,7 +14,7 @@ class Gem
   public:
     Gem() = default;
 
-    void draw(BITMAP* target, const DATAFILE* gem_data) const;
+    void draw(const RenderContext& render_context) const;
     void launch(float x, float y);
     int run();
 

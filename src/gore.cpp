@@ -15,13 +15,13 @@ void Blood::run()
     y += y_vel;
 }
 
-void Blood::draw(BITMAP* target)
+void Blood::draw(const RenderContext& render_context)
 {
     if (x >= 0 && x < SCREEN_W)
     {
         if (y >= 0 && y < SCREEN_H)
         {
-            putpixel(target, (int)x, (int)y, makecol(220, 0, 0));
+            putpixel(render_context.target, (int)x, (int)y, makecol(220, 0, 0));
         }
     }
 }
@@ -101,7 +101,7 @@ void Kfc::explode()
 }
 
 
-void Kfc::draw(BITMAP* target, const DATAFILE* giblet_data)
+void Kfc::draw(const RenderContext& render_context)
 {
     if(!released)
     {
@@ -112,15 +112,15 @@ void Kfc::draw(BITMAP* target, const DATAFILE* giblet_data)
     {
         if (chunk[i].landed == false)
         {
-            draw_sprite(target,
-                        (BITMAP*)giblet_data[chunk[i].image].dat,
+            draw_sprite(render_context.target,
+                        (BITMAP*)render_context.giblet_data[chunk[i].image].dat,
                         (int)chunk[i].x,
                         (int)chunk[i].y);
         }
 
         for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
         {
-            chunk[i].blood[j].draw(target);
+            chunk[i].blood[j].draw(render_context);
         }
     }
 }

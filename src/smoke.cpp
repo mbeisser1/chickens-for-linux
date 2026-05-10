@@ -60,7 +60,7 @@ void Smoke::release()
     active = true;
 }
 
-int Smoke::draw(BITMAP* target, const DATAFILE* icons_data)
+int Smoke::draw(const RenderContext& render_context)
 {
     BITMAP* light;
     BITMAP* cloud;
@@ -79,12 +79,18 @@ int Smoke::draw(BITMAP* target, const DATAFILE* icons_data)
             {
                 set_trans_blender(255, 255, 255, 100);
                 draw_trans_sprite(
-                    target, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
+                    render_context.target,
+                    light,
+                    x - game_settings.ROCKET_SIZE,
+                    SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
             }
             else
             {
                 draw_sprite(
-                    target, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
+                    render_context.target,
+                    light,
+                    x - game_settings.ROCKET_SIZE,
+                    SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
             }
 
             destroy_bitmap(light);
@@ -100,18 +106,24 @@ int Smoke::draw(BITMAP* target, const DATAFILE* icons_data)
 
                 if (puff[i].life > 0)
                 {
-                    stretch_sprite(cloud, (BITMAP*)icons_data[1].dat, 0, 0, w, h);
+                    stretch_sprite(cloud, (BITMAP*)render_context.icons_data[1].dat, 0, 0, w, h);
 
                     if (game_settings.TRANSLUCENT_SMOKE)
                     {
                         set_trans_blender(255, 255, 255, puff[i].life * 2);
                         draw_trans_sprite(
-                            target, cloud, puff[i].x - w / 2, SCREEN_H - (y + puff[i].y) - h / 2);
+                            render_context.target,
+                            cloud,
+                            puff[i].x - w / 2,
+                            SCREEN_H - (y + puff[i].y) - h / 2);
                     }
                     else
                     {
                         draw_sprite(
-                            target, cloud, puff[i].x - w / 2, SCREEN_H - (y + puff[i].y) - h / 2);
+                            render_context.target,
+                            cloud,
+                            puff[i].x - w / 2,
+                            SCREEN_H - (y + puff[i].y) - h / 2);
                     }
                 }
             }

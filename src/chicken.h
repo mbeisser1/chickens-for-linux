@@ -14,7 +14,7 @@ class Chicken
 {
   public:
     Chicken();
-    void draw(BITMAP* target, const DATAFILE* giblet_data);
+    void draw(const RenderContext& render_context);
     void reset();
     int run();
 

@@ -26,7 +26,7 @@ class Smoke
 {
   public:
     Smoke() = default;
-    int draw(BITMAP* target, const DATAFILE* icons_data);
+    int draw(const RenderContext& render_context);
     int run();
     void release();
 

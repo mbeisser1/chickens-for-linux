@@ -224,6 +224,8 @@ int main(int argc, char* argv[])
     Gem gem[MAX_GEMS];
     Chicken chicken[game_settings.MAX_CHICKENS];
 
+    const RenderContext render_context{buffer, gem_data, icons_data, giblet_data};
+
     show_startup();
     fadeout(makecol(0, 0, 0), 50);
     show_modechooser();
@@ -523,19 +525,19 @@ int main(int argc, char* argv[])
 
             for (int i = 0; i < MAX_SMOKE; ++i)
             {
-                smoke[i].draw(buffer, icons_data);
+                smoke[i].draw(render_context);
             }
 
             draw_sprite(buffer, level.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
 
             for (int i = 0; i < MAX_GEMS; ++i)
             {
-                gem[i].draw(buffer, gem_data);
+                gem[i].draw(render_context);
             }
 
             for (int i = 0; i < runners; ++i)
             {
-                chicken[i].draw(buffer, giblet_data);
+                chicken[i].draw(render_context);
             }
 
             show_statistics();
