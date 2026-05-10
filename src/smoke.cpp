@@ -1,4 +1,5 @@
 #include "smoke.h"
+#include <memory>
 
 int Smoke::run()
 {
@@ -39,7 +40,7 @@ int Smoke::run()
 
 void Smoke::release()
 {
-    puff = new SmokePuff[game_settings.SMOKE_PUFFS];
+    puff = std::unique_ptr<SmokePuff[]>(new SmokePuff[game_settings.SMOKE_PUFFS]);
 
     explo_size = game_settings.ROCKET_SIZE;
     x = mouse_x;

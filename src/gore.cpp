@@ -33,103 +33,108 @@ Giblet::Giblet()
 
 void Kfc::explode()
 {
-    if (released)
+    if(!released)
     {
-        for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
-        {
-            // If the chunk is visible on the screen
-            if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
-            { // Thank you Jarno!
+        return;
+    }
 
-                // If it hit the ground
-                if (chunk[i].y >= SCREEN_H - level.height[(int)chunk[i].x])
+    for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
+    {
+        // If the chunk is visible on the screen
+        if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
+        { // Thank you Jarno!
+
+            // If it hit the ground
+            if (chunk[i].y >= SCREEN_H - level.height[(int)chunk[i].x])
+            {
+                chunk[i].y = SCREEN_H - level.height[(int)chunk[i].x];
+                chunk[i].x_vel = int(chunk[i].x_vel * 0.3);
+                chunk[i].y_vel = -int(chunk[i].y_vel * 0.3);
+
+                // If the chunk has landed for good
+                if (!chunk[i].landed && chunk[i].y_vel == 0 && chunk[i].x_vel == 0)
                 {
-                    chunk[i].y = SCREEN_H - level.height[(int)chunk[i].x];
-                    chunk[i].x_vel = int(chunk[i].x_vel * 0.3);
-                    chunk[i].y_vel = -int(chunk[i].y_vel * 0.3);
+                    chunk[i].landed = true;
 
-                    // If the chunk has landed for good
-                    if (!chunk[i].landed && chunk[i].y_vel == 0 && chunk[i].x_vel == 0)
+                    for (int j = 0; j < 10; ++j)
                     {
-                        chunk[i].landed = true;
+                        int v = (int)chunk[i].x + j;
 
-                        for (int j = 0; j < 10; ++j)
+                        if (v < SCREEN_W - 1 && v > 0)
                         {
-                            int v = (int)chunk[i].x + j;
-
-                            if (v < SCREEN_W - 1 && v > 0)
+                            if (level.height[v] - level.height[v - 1] < 1)
                             {
-                                if (level.height[v] - level.height[v - 1] < 1)
+                                if (level.height[v] - level.height[v + 1] < 1)
                                 {
-                                    if (level.height[v] - level.height[v + 1] < 1)
-                                    {
-                                        level.height[v]++;
-                                    }
+                                    level.height[v]++;
                                 }
                             }
                         }
+                    }
 
-                        // If the chunk is visible on the screen
-                        if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
-                        {
-                            draw_sprite(level.image,
-                                        (BITMAP*)giblet_data[chunk[i].image].dat,
-                                        (int)chunk[i].x,
-                                        MAX_LEVELHEIGHT - level.height[(int)chunk[i].x]);
-                        }
+                    // If the chunk is visible on the screen
+                    if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
+                    {
+                        draw_sprite(level.image,
+                                    (BITMAP*)giblet_data[chunk[i].image].dat,
+                                    (int)chunk[i].x,
+                                    MAX_LEVELHEIGHT - level.height[(int)chunk[i].x]);
                     }
                 }
             }
-            else
-            {
-                chunk[i].landed = true;
-            }
+        }
+        else
+        {
+            chunk[i].landed = true;
+        }
 
-            chunk[i].y_vel += game_settings.GRAVITY;
+        chunk[i].y_vel += game_settings.GRAVITY;
 
-            chunk[i].x += chunk[i].x_vel;
-            chunk[i].y += chunk[i].y_vel;
+        chunk[i].x += chunk[i].x_vel;
+        chunk[i].y += chunk[i].y_vel;
 
-            for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
-            {
-                chunk[i].blood[j].run();
-            }
+        for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
+        {
+            chunk[i].blood[j].run();
         }
     }
 }
 
+
 void Kfc::draw()
 {
-    if (released)
+    if(!released)
     {
-        for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
-        {
-            if (chunk[i].landed == false)
-            {
-                draw_sprite(buffer,
-                            (BITMAP*)giblet_data[chunk[i].image].dat,
-                            (int)chunk[i].x,
-                            (int)chunk[i].y);
-            }
+        return;
+    }
 
-            for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
-            {
-                chunk[i].blood[j].draw();
-            }
+    for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
+    {
+        if (chunk[i].landed == false)
+        {
+            draw_sprite(buffer,
+                        (BITMAP*)giblet_data[chunk[i].image].dat,
+                        (int)chunk[i].x,
+                        (int)chunk[i].y);
+        }
+
+        for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
+        {
+            chunk[i].blood[j].draw();
         }
     }
 }
 
 void Kfc::release(const float at_x, const float at_y, int accuracy, const int death, const int direction)
 {
-    chunk = new Giblet[game_settings.CHUNKS_PER_CHICKEN];
+    chunk = std::unique_ptr<Giblet[]>(new Giblet[game_settings.CHUNKS_PER_CHICKEN]);
 
     accuracy -=
         CHICKEN_WIDTH / 2; // Base accuracy off the center of chicken, not its actual x position.
 
     for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
     {
-        chunk[i].blood = new Blood[game_settings.BLOOD_PER_CHUNK];
+        chunk[i].blood = std::unique_ptr<Blood[]>(new Blood[game_settings.BLOOD_PER_CHUNK]);
 
         chunk[i].landed = false;
         chunk[i].x = at_x + rand() % CHICKEN_WIDTH;

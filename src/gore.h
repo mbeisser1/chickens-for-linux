@@ -1,6 +1,8 @@
 #ifndef GORE_H
 #define GORE_H
 
+#include <memory>
+
 #include <allegro.h>
 
 #include "helper.h"
@@ -26,7 +28,7 @@ struct Blood
 struct Giblet
 {
     Giblet();
-    Blood* blood{};
+    std::unique_ptr<Blood[]> blood{};
     float x{};
     float y{};
     float x_vel{};
@@ -38,7 +40,7 @@ struct Giblet
 struct Kfc
 {
     Kfc() = default;
-    Giblet* chunk{};
+    std::unique_ptr<Giblet[]> chunk{};
 
     void explode();
     void release(

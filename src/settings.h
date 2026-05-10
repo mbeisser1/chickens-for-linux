@@ -1,12 +1,11 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <fstream>
-
-#include <string.h>
-
 struct Settings
 {
+    Settings() = default;
+    explicit Settings(const char* path);
+
     bool FULLSCREEN{false};
     bool MUTE{false};
     bool TRANSLUCENT_SMOKE{true};
@@ -34,8 +33,5 @@ struct Settings
 };
 
 extern Settings game_settings;
-
-void load_config(const char* path);
-void load_stock_config();
 
 #endif

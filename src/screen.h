@@ -1,4 +1,5 @@
-// screen.h
+#ifndef SCREEN_H
+#define SCREEN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -233,23 +234,30 @@ BITMAP* GetBuffer()
 {
     return active_page;
 }
+
 BITMAP* GetScreen()
 {
     return current_page;
 }
+
 void EnableVSync()
 {
     waitforvsync = true;
 }
+
 void DisableVSync()
 {
     waitforvsync = false;
 }
+
 bool VSyncEnabled()
 {
     return waitforvsync;
 }
+
 int GetScreenUpdateMethod()
 {
     return updatemethod;
 }
+
+#endif

@@ -1,6 +1,8 @@
 #ifndef SMOKE_H
 #define SMOKE_H
 
+#include <memory>
+
 #include <allegro.h>
 
 #include "helper.h"
@@ -30,7 +32,7 @@ class Smoke
     int run();
     void release();
 
-    SmokePuff* puff{};
+    std::unique_ptr<SmokePuff[]> puff{};
     bool active{};
     
     private:

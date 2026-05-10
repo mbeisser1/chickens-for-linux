@@ -111,8 +111,7 @@ int main(int argc, char* argv[])
 
     playername = getenv("USER");
 
-    load_stock_config();      // Load game defaults, in case of broken config file
-    load_config(config_path); // Read in some game variables
+    game_settings = Settings(config_path);
 
     mute_sound = game_settings.MUTE;
 
@@ -133,7 +132,7 @@ int main(int argc, char* argv[])
             if (i < argc - 1)
             {
                 config_path = argv[++i];
-                load_config(config_path); // Load the new config file
+                game_settings = Settings(config_path);
             }
             else
             {
@@ -145,7 +144,7 @@ int main(int argc, char* argv[])
 
         else if (!strcmp(argv[i], "--stock"))
         {
-            load_stock_config();
+            game_settings = Settings{};
         }
 
         else if (!strcmp(argv[i], "--mute"))
@@ -987,7 +986,7 @@ void show_modechooser()
                     {
                         mode = MODE_RESTART;
                         level_mode = false;
-                        load_config(config_path); // Load original config settings (easier than a
+                        game_settings = Settings(config_path); // Load original config settings (easier than a
                                                   // having a ton of variables to remember them)
                         done = true;
                     }

@@ -27,6 +27,7 @@ void Chicken::reset()
         direction = RIGHT;
     }
 
+    dead.chunk.reset();
     dead.released = false;
     alive = NOT_KILLED;
     y_vel = 0;
