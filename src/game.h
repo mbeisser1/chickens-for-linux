@@ -6,6 +6,7 @@
 #include "chicken.h"
 #include "gem.h"
 #include "helper.h"
+#include "level.h"
 #include "settings.h"
 #include "smoke.h"
 
@@ -19,6 +20,7 @@ class Game
   private:
     void show_highscores(int player_rank_one_based);
 
+    Level terrain_{};
     std::array<Smoke, MAX_SMOKE> smoke_{};
     std::array<Gem, MAX_GEMS> gem_{};
     std::array<Chicken, MAX_CHICKENS_CAPACITY> chicken_{};

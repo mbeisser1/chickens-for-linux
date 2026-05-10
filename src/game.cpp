@@ -1,16 +1,17 @@
 #include "game.h"
 
+#include <cstdlib>
+#include <ctime>
+
 #include <allegro.h>
 
 #include "asset_manager.h"
 #include "game_flow.h"
 #include "game_state.h"
 #include "highscore.h"
-#include "level.h"
 
 extern Settings game_settings;
 extern GameState game_state;
-extern Level level;
 extern AppAssets& assets;
 extern volatile int game_time;
 
@@ -23,6 +24,8 @@ void Game::show_highscores(int player_rank_one_based)
 
 void Game::run()
 {
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
     show_startup();
     fadeout(makecol(0, 0, 0), 50);
     show_modechooser();
@@ -45,7 +48,7 @@ void Game::run()
             switch (game_state.mode)
             {
             case MODE_RESTART:
-                restart(chicken_, gem_, smoke_);
+                restart(chicken_, gem_, smoke_, terrain_);
                 game_state.mode = MODE_PLAYING;
                 if (game_state.level_mode == true)
                 {
@@ -99,7 +102,7 @@ void Game::run()
                     if (fire_rocket)
                     {
                         if (chicken_[i].alive == NOT_KILLED &&
-                            ((SCREEN_H - chicken_[i].y) - level.height[mouse_x]) < game_settings.ROCKET_SIZE &&
+                            ((SCREEN_H - chicken_[i].y) - terrain_.height[mouse_x]) < game_settings.ROCKET_SIZE &&
                             (abs(mouse_x - static_cast<int>(chicken_[i].x)) < game_settings.ROCKET_SIZE ||
                              abs(mouse_x - static_cast<int>(chicken_[i].x) - CHICKEN_WIDTH) < game_settings.ROCKET_SIZE))
                         {
@@ -238,7 +241,7 @@ void Game::run()
             case MODE_NEXTLEVEL:
                 fadeout(makecol(0, 0, 0), 30);
                 show_levelcompleted();
-                restart(chicken_, gem_, smoke_);
+                restart(chicken_, gem_, smoke_, terrain_);
                 next_level(game_state.current_level + 1);
                 show_levelnumber();
                 game_state.mode = MODE_PLAYING;
@@ -293,7 +296,7 @@ void Game::run()
             {
                 smoke_[i].draw(render_context_);
             }
-            draw_sprite(assets.buffer, level.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
+            draw_sprite(assets.buffer, terrain_.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
             for (int i = 0; i < MAX_GEMS; ++i)
             {
                 gem_[i].draw(render_context_);

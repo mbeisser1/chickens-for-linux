@@ -1,5 +1,13 @@
 #include "smoke.h"
+
 #include <memory>
+
+#include "level.h"
+
+void Smoke::bind_level(Level* terrain)
+{
+    terrain_ = terrain;
+}
 
 int Smoke::run()
 {
@@ -44,7 +52,7 @@ void Smoke::release()
 
     explo_size = game_settings.ROCKET_SIZE;
     x = mouse_x;
-    y = level.height[mouse_x] - CHICKEN_HEIGHT;
+    y = terrain_->height[mouse_x] - CHICKEN_HEIGHT;
     w = 6;
     h = 4;
 

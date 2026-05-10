@@ -6,12 +6,13 @@
 #include "animation.h"
 #include "gore.h"
 
-extern Level level;
+struct Level;
 
 class Chicken
 {
   public:
     Chicken();
+    void bind_level(Level* terrain);
     void draw(const RenderContext& render_context);
     void reset();
     int run();
@@ -26,6 +27,9 @@ class Chicken
     int direction{};
     int flight{};
     int alive{};
+
+  private:
+    Level* terrain_{};
 };
 
 #endif

@@ -8,6 +8,8 @@
 #include "helper.h"
 #include "smoke.h"
 
+struct Level;
+
 int mode_manager();
 
 void show_startup();
@@ -19,7 +21,8 @@ void fadeout(int color, int duration);
 
 void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
              std::array<Gem, MAX_GEMS>& gem,
-             std::array<Smoke, MAX_SMOKE>& smoke);
+             std::array<Smoke, MAX_SMOKE>& smoke,
+             Level& terrain);
 
 void earn_bonus(int type);
 

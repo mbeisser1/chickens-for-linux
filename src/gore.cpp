@@ -1,5 +1,6 @@
 #include "gore.h"
 #include "asset_manager.h"
+#include "level.h"
 
 void Blood::release(const float X, const float Y, const float X_VEL, const float Y_VEL)
 {
@@ -32,7 +33,7 @@ Giblet::Giblet()
     image = rand() % items_in_datafile(asset_manager.assets().giblet_data);
 }
 
-void Kfc::explode()
+void Kfc::explode(Level& terrain)
 {
     if(!released)
     {
@@ -46,9 +47,9 @@ void Kfc::explode()
         { // Thank you Jarno!
 
             // If it hit the ground
-            if (chunk[i].y >= SCREEN_H - level.height[static_cast<int>(chunk[i].x)])
+            if (chunk[i].y >= SCREEN_H - terrain.height[static_cast<int>(chunk[i].x)])
             {
-                chunk[i].y = SCREEN_H - level.height[static_cast<int>(chunk[i].x)];
+                chunk[i].y = SCREEN_H - terrain.height[static_cast<int>(chunk[i].x)];
                 chunk[i].x_vel = int(chunk[i].x_vel * 0.3);
                 chunk[i].y_vel = -int(chunk[i].y_vel * 0.3);
 
@@ -63,11 +64,11 @@ void Kfc::explode()
 
                         if (v < SCREEN_W - 1 && v > 0)
                         {
-                            if (level.height[v] - level.height[v - 1] < 1)
+                            if (terrain.height[v] - terrain.height[v - 1] < 1)
                             {
-                                if (level.height[v] - level.height[v + 1] < 1)
+                                if (terrain.height[v] - terrain.height[v + 1] < 1)
                                 {
-                                    level.height[v]++;
+                                    terrain.height[v]++;
                                 }
                             }
                         }
@@ -76,11 +77,11 @@ void Kfc::explode()
                     // If the chunk is visible on the screen
                     if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
                     {
-                        draw_sprite(level.image,
+                        draw_sprite(terrain.image,
                                     static_cast<BITMAP*>(
                                         asset_manager.assets().giblet_data[chunk[i].image].dat),
                                     static_cast<int>(chunk[i].x),
-                                    MAX_LEVELHEIGHT - level.height[static_cast<int>(chunk[i].x)]);
+                                    MAX_LEVELHEIGHT - terrain.height[static_cast<int>(chunk[i].x)]);
                     }
                 }
             }

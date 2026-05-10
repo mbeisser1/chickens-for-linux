@@ -6,12 +6,11 @@
 #include <allegro.h>
 
 #include "helper.h"
-#include "level.h"
+
+struct Level;
 
 constexpr int MAX_SMOKE = 20;
 constexpr int MAX_SMOKEPUFFS = 20;
-
-extern Level level;
 
 struct SmokePuff
 {
@@ -26,14 +25,16 @@ class Smoke
 {
   public:
     Smoke() = default;
+    void bind_level(Level* terrain);
     int draw(const RenderContext& render_context);
     int run();
     void release();
 
     std::unique_ptr<SmokePuff[]> puff{};
     bool active{};
-    
-    private:
+
+  private:
+    Level* terrain_{};
     int explo_size{};
     int x{};
     int y{};

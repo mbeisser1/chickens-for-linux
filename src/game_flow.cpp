@@ -10,7 +10,6 @@
 
 extern Settings game_settings;
 extern GameState game_state;
-extern Level level;
 extern AppAssets& assets;
 
 int mode_manager()
@@ -425,7 +424,8 @@ void show_levelcompleted()
 
 void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
              std::array<Gem, MAX_GEMS>& gem,
-             std::array<Smoke, MAX_SMOKE>& smoke)
+             std::array<Smoke, MAX_SMOKE>& smoke,
+             Level& terrain)
 {
     for (int i = 0; i < game_settings.MAX_CHICKENS; ++i)
     {
@@ -444,7 +444,7 @@ void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
 
     assets.background = static_cast<BITMAP*>(
         assets.background_data[rand() % items_in_datafile(assets.background_data)].dat);
-    level.create();
+    terrain.create();
 
     game_settings.ROCKET_SIZE = game_state.tmp_rocket_size;
     game_state.tenderizers = 1;

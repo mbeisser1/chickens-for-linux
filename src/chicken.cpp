@@ -1,20 +1,28 @@
 #include "chicken.h"
 #include "asset_manager.h"
+#include "level.h"
 
 Chicken::Chicken()
 {
     running.load(asset_manager.assets().chicken_data);
     flying.load(asset_manager.assets().flyingchicken_data);
     flying.slide = true;
-    reset();
 }
+
+void Chicken::bind_level(Level* terrain)
+{
+    terrain_ = terrain;
+}
+
 
 void Chicken::reset()
 {
+    Level& terrain = *terrain_;
+
     if (rand() % 2 == 1)
     {
         x = SCREEN_W + rand() % 500;
-        y = SCREEN_H - level.height[SCREEN_W - 1] - CHICKEN_HEIGHT;
+        y = SCREEN_H - terrain.height[SCREEN_W - 1] - CHICKEN_HEIGHT;
         running.hflip = true;
         flying.hflip = true;
         direction = LEFT;
@@ -22,7 +30,7 @@ void Chicken::reset()
     else
     {
         x = -(rand() % 500) - CHICKEN_WIDTH;
-        y = SCREEN_H - level.height[0] - CHICKEN_HEIGHT;
+        y = SCREEN_H - terrain.height[0] - CHICKEN_HEIGHT;
         running.hflip = false;
         flying.hflip = false;
         direction = RIGHT;
@@ -41,6 +49,8 @@ void Chicken::reset()
 
 int Chicken::run()
 {
+    Level& terrain = *terrain_;
+
     if (alive == NOT_KILLED)
     {
         int ground;
@@ -55,7 +65,7 @@ int Chicken::run()
         if (x >= 0 && x < SCREEN_W)
         { // Only if the chicken is visible on screen
 
-            ground = SCREEN_H - level.height[static_cast<int>(x)] - CHICKEN_HEIGHT;
+            ground = SCREEN_H - terrain.height[static_cast<int>(x)] - CHICKEN_HEIGHT;
 
             if (rand() % game_settings.CHANCE_OF_FLIGHT <= 1) // Chance of flying
             {
@@ -82,7 +92,7 @@ int Chicken::run()
 
         if (x < -20)
         {
-            y = SCREEN_H - level.height[0] - CHICKEN_HEIGHT;
+            y = SCREEN_H - terrain.height[0] - CHICKEN_HEIGHT;
         }
 
         if ((direction == LEFT && x < -CHICKEN_WIDTH) || (direction == RIGHT && x > SCREEN_W))
@@ -100,7 +110,7 @@ int Chicken::run()
             dead.release(x, y, mouse_x, alive, direction);
         }
 
-        dead.explode();
+        dead.explode(terrain);
 
         for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
         {
@@ -121,11 +131,13 @@ int Chicken::run()
 
 void Chicken::draw(const RenderContext& render_context)
 {
+    Level& terrain = *terrain_;
+
     if (x >= -CHICKEN_WIDTH && x < SCREEN_W)
     {
         if (alive == NOT_KILLED)
         {
-            if (y < SCREEN_H - level.height[static_cast<int>(x)] - CHICKEN_HEIGHT)
+            if (y < SCREEN_H - terrain.height[static_cast<int>(x)] - CHICKEN_HEIGHT)
             {
                 flying.play(render_context.target);
             }

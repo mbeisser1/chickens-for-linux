@@ -30,7 +30,6 @@
 #include "game.h"
 #include "game_state.h"
 #include "graphics_display.h"
-#include "level.h"
 #include "settings.h"
 
 int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed);
@@ -42,19 +41,9 @@ int ctoi(const char* t);
 
 volatile int game_time{};
 
-struct AppContext
-{
-    Settings& game_settings;
-    AssetManager& asset_manager;
-    Level& level;
-    GameState& game_state;
-};
-
 Settings game_settings{};
 AssetManager asset_manager{};
-Level level{};
 GameState game_state{};
-AppContext app_context{game_settings, asset_manager, level, game_state};
 AppAssets& assets{asset_manager.assets()};
 
 int main(int argc, char* argv[])
@@ -72,7 +61,6 @@ int main(int argc, char* argv[])
     const int requested_gfx_driver =
         GraphicsDisplay::preferred_driver(cli_force_windowed, game_settings.FULLSCREEN);
     game_settings.MAX_CHICKENS = std::min(game_settings.MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
-    srand(time(nullptr));
 
     initialize(requested_gfx_driver);
 
