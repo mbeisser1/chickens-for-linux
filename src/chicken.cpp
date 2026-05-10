@@ -3,8 +3,8 @@
 
 Chicken::Chicken()
 {
-    running.load(asset_manager.app_assets().chicken_data);
-    flying.load(asset_manager.app_assets().flyingchicken_data);
+    running.load(asset_manager.assets().chicken_data);
+    flying.load(asset_manager.assets().flyingchicken_data);
     flying.slide = true;
     reset();
 }

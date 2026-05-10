@@ -54,6 +54,13 @@ struct AppAssets
 class AssetManager
 {
   public:
+    ~AssetManager();
+    bool load_app_assets();
+    void clear();
+    AppAssets& assets();
+    const AppAssets& assets() const;
+
+  private:
     bool load_datafile(const std::string& key, const char* path);
     DATAFILE* get_datafile(const std::string& key);
     const DATAFILE* get_datafile(const std::string& key) const;
@@ -66,11 +73,7 @@ class AssetManager
     SAMPLE* get_sample(const std::string& key);
     const SAMPLE* get_sample(const std::string& key) const;
     void clear_samples();
-    const AppAssets& load_app_assets();
-    AppAssets& app_assets();
-    const AppAssets& app_assets() const;
 
-  private:
     std::unordered_map<std::string, DatafilePtr> datafiles_;
     std::unordered_map<std::string, FONT*> fonts_;
     std::unordered_map<std::string, SamplePtr> samples_;

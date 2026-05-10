@@ -2,6 +2,53 @@
 
 #include "helper.h"
 
+namespace
+{
+bool bitmap_belongs_to_datafile(const DATAFILE* datafile, const BITMAP* bitmap)
+{
+    if (datafile == nullptr || bitmap == nullptr)
+    {
+        return false;
+    }
+
+    const int item_count = items_in_datafile(datafile);
+    for (int i = 0; i < item_count; ++i)
+    {
+        if (static_cast<const BITMAP*>(datafile[i].dat) == bitmap)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+} // namespace
+
+AssetManager::~AssetManager()
+{
+    clear();
+}
+
+void AssetManager::clear()
+{
+    if (app_assets_.buffer != nullptr)
+    {
+        destroy_bitmap(app_assets_.buffer);
+        app_assets_.buffer = nullptr;
+    }
+
+    if (app_assets_.background != nullptr &&
+        !bitmap_belongs_to_datafile(app_assets_.background_data, app_assets_.background))
+    {
+        destroy_bitmap(app_assets_.background);
+        app_assets_.background = nullptr;
+    }
+
+    clear_samples();
+    clear_datafiles();
+    app_assets_ = {};
+}
+
 bool AssetManager::load_datafile(const std::string& key, const char* path)
 {
     DATAFILE* raw = ::load_datafile(path);
@@ -119,23 +166,22 @@ void AssetManager::clear_samples()
     samples_.clear();
 }
 
-const AppAssets& AssetManager::load_app_assets()
+bool AssetManager::load_app_assets()
 {
-    clear_samples();
-    clear_datafiles();
-    app_assets_ = {};
+    bool success{true};
+    clear();
 
-    load_datafile("background", CHICKENS_ASSETS_REL("dat/background.dat"));
-    load_datafile("bigchicken", CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
-    load_datafile("chicken", CHICKENS_ASSETS_REL("dat/chicken.dat"));
-    load_datafile("cursors", CHICKENS_ASSETS_REL("dat/cursors.dat"));
-    load_datafile("flyingchicken", CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
-    load_datafile("fonts", CHICKENS_ASSETS_REL("dat/fonts.dat"));
-    load_datafile("gem", CHICKENS_ASSETS_REL("dat/gem.dat"));
-    load_datafile("giblet", CHICKENS_ASSETS_REL("dat/giblets.dat"));
-    load_datafile("icons", CHICKENS_ASSETS_REL("dat/icons.dat"));
-    load_datafile("modechooser", CHICKENS_ASSETS_REL("dat/modechooser.dat"));
-    load_datafile("terrain", CHICKENS_ASSETS_REL("dat/terrain.dat"));
+    success &= load_datafile("background", CHICKENS_ASSETS_REL("dat/background.dat"));
+    success &= load_datafile("bigchicken", CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
+    success &= load_datafile("chicken", CHICKENS_ASSETS_REL("dat/chicken.dat"));
+    success &= load_datafile("cursors", CHICKENS_ASSETS_REL("dat/cursors.dat"));
+    success &= load_datafile("flyingchicken", CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
+    success &= load_datafile("fonts", CHICKENS_ASSETS_REL("dat/fonts.dat"));
+    success &= load_datafile("gem", CHICKENS_ASSETS_REL("dat/gem.dat"));
+    success &= load_datafile("giblet", CHICKENS_ASSETS_REL("dat/giblets.dat"));
+    success &= load_datafile("icons", CHICKENS_ASSETS_REL("dat/icons.dat"));
+    success &= load_datafile("modechooser", CHICKENS_ASSETS_REL("dat/modechooser.dat"));
+    success &= load_datafile("terrain", CHICKENS_ASSETS_REL("dat/terrain.dat"));
 
     app_assets_.background_data = get_datafile("background");
     app_assets_.bigchicken_data = get_datafile("bigchicken");
@@ -149,21 +195,21 @@ const AppAssets& AssetManager::load_app_assets()
     app_assets_.modechooser_data = get_datafile("modechooser");
     app_assets_.terrain_data = get_datafile("terrain");
 
-    register_font("font", app_assets_.fonts_data, 0);
-    register_font("font_big", app_assets_.fonts_data, 1);
-    register_font("font_interface", app_assets_.fonts_data, 2);
+    success &= register_font("font", app_assets_.fonts_data, 0);
+    success &= register_font("font_big", app_assets_.fonts_data, 1);
+    success &= register_font("font_interface", app_assets_.fonts_data, 2);
     app_assets_.font = get_font("font");
     app_assets_.font_big = get_font("font_big");
     app_assets_.font_interface = get_font("font_interface");
 
-    load_sample("sound_alarm", CHICKENS_ASSETS_REL("sound/alarm.wav"));
-    load_sample("sound_gameover", CHICKENS_ASSETS_REL("sound/gameover.wav"));
-    load_sample("sound_gemcollect", CHICKENS_ASSETS_REL("sound/gemcollect.wav"));
-    load_sample("sound_highscore", CHICKENS_ASSETS_REL("sound/highscore.wav"));
-    load_sample("sound_menu", CHICKENS_ASSETS_REL("sound/menu.wav"));
-    load_sample("sound_rocket", CHICKENS_ASSETS_REL("sound/rocket.wav"));
-    load_sample("sound_shotgun", CHICKENS_ASSETS_REL("sound/shotgun.wav"));
-    load_sample("sound_tenderizer", CHICKENS_ASSETS_REL("sound/tenderizer.wav"));
+    success &= load_sample("sound_alarm", CHICKENS_ASSETS_REL("sound/alarm.wav"));
+    success &= load_sample("sound_gameover", CHICKENS_ASSETS_REL("sound/gameover.wav"));
+    success &= load_sample("sound_gemcollect", CHICKENS_ASSETS_REL("sound/gemcollect.wav"));
+    success &= load_sample("sound_highscore", CHICKENS_ASSETS_REL("sound/highscore.wav"));
+    success &= load_sample("sound_menu", CHICKENS_ASSETS_REL("sound/menu.wav"));
+    success &= load_sample("sound_rocket", CHICKENS_ASSETS_REL("sound/rocket.wav"));
+    success &= load_sample("sound_shotgun", CHICKENS_ASSETS_REL("sound/shotgun.wav"));
+    success &= load_sample("sound_tenderizer", CHICKENS_ASSETS_REL("sound/tenderizer.wav"));
 
     app_assets_.sound_alarm = get_sample("sound_alarm");
     app_assets_.sound_gameover = get_sample("sound_gameover");
@@ -174,15 +220,15 @@ const AppAssets& AssetManager::load_app_assets()
     app_assets_.sound_shotgun = get_sample("sound_shotgun");
     app_assets_.sound_tenderizer = get_sample("sound_tenderizer");
 
-    return app_assets_;
+    return success;
 }
 
-AppAssets& AssetManager::app_assets()
+AppAssets& AssetManager::assets()
 {
     return app_assets_;
 }
 
-const AppAssets& AssetManager::app_assets() const
+const AppAssets& AssetManager::assets() const
 {
     return app_assets_;
 }

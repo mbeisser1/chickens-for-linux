@@ -29,7 +29,7 @@ void Blood::draw(const RenderContext& render_context)
 
 Giblet::Giblet()
 {
-    image = rand() % items_in_datafile(asset_manager.app_assets().giblet_data);
+    image = rand() % items_in_datafile(asset_manager.assets().giblet_data);
 }
 
 void Kfc::explode()
@@ -78,7 +78,7 @@ void Kfc::explode()
                     {
                         draw_sprite(level.image,
                                     static_cast<BITMAP*>(
-                                        asset_manager.app_assets().giblet_data[chunk[i].image].dat),
+                                        asset_manager.assets().giblet_data[chunk[i].image].dat),
                                     static_cast<int>(chunk[i].x),
                                     MAX_LEVELHEIGHT - level.height[static_cast<int>(chunk[i].x)]);
                     }

@@ -61,6 +61,18 @@ volatile int game_time{};
 
 struct GameState
 {
+    void apply_settings(const Settings& settings)
+    {
+        playername = getenv("USER");
+        if (playername == nullptr)
+        {
+            playername = "player";
+        }
+
+        mute_sound = settings.MUTE;
+        tmp_rocket_size = settings.ROCKET_SIZE;
+    }
+
     int chickens_left{};     // Number of chickens left to kill, for level mode only
     int current_level{1};    // Current level, level mode only
     int delay_of_levelend{}; // Delay so level end is visible
@@ -78,7 +90,7 @@ struct GameState
     bool mute_sound{};       // Shall we play sounds or not?
     bool not_dead{};         // If the player isn't dead yet
     const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configuration file
-    const char* playername{};
+    const char* playername{"player"};
 };
 
 struct AppContext
@@ -94,22 +106,12 @@ AssetManager asset_manager{};
 Level level{};
 GameState game_state{};
 AppContext app_context{game_settings, asset_manager, level, game_state};
-static AppAssets& assets{asset_manager.app_assets()};
+static AppAssets& assets{asset_manager.assets()};
 
 int main(int argc, char* argv[])
 {
-    int rank{HIGHSCORE_TABLE + 1}; // Player rank
-    int mx{};                      // Store previous mouse location
-    int my{};
-    bool alert_sound{}; // When true, the alert sound is playing
-    bool fire_rocket{};   // When true, a rocket is being fired
-    bool fire_shotgun{}; // When true, the shotgun is being fired
-
-    game_state.playername = getenv("USER");
-
     game_settings = Settings(game_state.config_path);
-
-    game_state.mute_sound = game_settings.MUTE;
+    game_state.apply_settings(game_settings);
 
     bool cli_force_windowed{};
     int windowmode{};
@@ -119,8 +121,7 @@ int main(int argc, char* argv[])
         return cmdline_result;
     }
 
-    windowmode = (cli_force_windowed || !game_settings.FULLSCREEN) ? GFX_AUTODETECT_WINDOWED
-                                                       : GFX_AUTODETECT_FULLSCREEN;
+    windowmode = (cli_force_windowed || !game_settings.FULLSCREEN) ? GFX_AUTODETECT_WINDOWED : GFX_AUTODETECT_FULLSCREEN;
     game_settings.MAX_CHICKENS = std::min(game_settings.MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
 
     srand(time(nullptr));
@@ -131,7 +132,8 @@ int main(int argc, char* argv[])
     assets.background =
         create_bitmap(SCREEN_W, SCREEN_H); // Prevent a segfault if they exit without playing
                                            // anything (ie no background image gets loaded)
-    game_state.tmp_rocket_size = game_settings.ROCKET_SIZE;
+
+    //////
 
     std::array<Smoke, MAX_SMOKE> smoke;
     std::array<Gem, MAX_GEMS> gem;
@@ -144,6 +146,12 @@ int main(int argc, char* argv[])
     fadeout(makecol(0, 0, 0), 50);
     show_modechooser();
 
+    int rank{HIGHSCORE_TABLE + 1}; // Player rank
+    bool alert_sound{}; // When true, the alert sound is playing
+    bool fire_rocket{};   // When true, a rocket is being fired
+    bool fire_shotgun{}; // When true, the shotgun is being fired
+    int mx{};                      // Store previous mouse location
+    int my{};
     do
     {
         while (game_time > 0)
@@ -535,13 +543,6 @@ int main(int argc, char* argv[])
 
     show_highscores(rank - 1, assets.buffer, assets.background);
 
-    // Let's free up some memory
-
-    asset_manager.clear_samples();
-    asset_manager.clear_datafiles();
-
-    destroy_bitmap(assets.buffer);
-
     allegro_exit();
 
     return 0;
@@ -584,6 +585,7 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
             {
                 game_state.config_path = argv[++i];
                 game_settings = Settings(game_state.config_path);
+                game_state.apply_settings(game_settings);
             }
             else
             {
@@ -595,6 +597,7 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
         else if (!strcmp(arg, "--stock"))
         {
             game_settings = Settings{};
+            game_state.apply_settings(game_settings);
         }
         else if (!strcmp(arg, "--mute"))
         {
@@ -666,7 +669,12 @@ void show_cli_version()
 
 void load_datafiles()
 {
-    asset_manager.load_app_assets();
+    if (!asset_manager.load_app_assets())
+    {
+        allegro_message("Failed to load one or more game assets.\n");
+        std::exit(EXIT_FAILURE);
+    }
+
     font = assets.font;
 }
 
@@ -963,6 +971,7 @@ void show_modechooser()
                         game_state.mode = MODE_RESTART;
                         game_state.level_mode = false;
                         game_settings = Settings(game_state.config_path); // Load original config settings (easier than a
+                        game_state.apply_settings(game_settings);
                                                   // having a ton of variables to remember them)
                         done = true;
                     }
