@@ -60,7 +60,7 @@ void Smoke::release()
     active = true;
 }
 
-int Smoke::draw()
+int Smoke::draw(BITMAP* target, const DATAFILE* icons_data)
 {
     BITMAP* light;
     BITMAP* cloud;
@@ -79,12 +79,12 @@ int Smoke::draw()
             {
                 set_trans_blender(255, 255, 255, 100);
                 draw_trans_sprite(
-                    buffer, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
+                    target, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
             }
             else
             {
                 draw_sprite(
-                    buffer, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
+                    target, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
             }
 
             destroy_bitmap(light);
@@ -106,12 +106,12 @@ int Smoke::draw()
                     {
                         set_trans_blender(255, 255, 255, puff[i].life * 2);
                         draw_trans_sprite(
-                            buffer, cloud, puff[i].x - w / 2, SCREEN_H - (y + puff[i].y) - h / 2);
+                            target, cloud, puff[i].x - w / 2, SCREEN_H - (y + puff[i].y) - h / 2);
                     }
                     else
                     {
                         draw_sprite(
-                            buffer, cloud, puff[i].x - w / 2, SCREEN_H - (y + puff[i].y) - h / 2);
+                            target, cloud, puff[i].x - w / 2, SCREEN_H - (y + puff[i].y) - h / 2);
                     }
                 }
             }

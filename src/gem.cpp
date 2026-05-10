@@ -1,10 +1,10 @@
 #include "gem.h"
 
-void Gem::draw() const
+void Gem::draw(BITMAP* target, const DATAFILE* gem_data) const
 {
     if (active)
     {
-        draw_sprite(buffer, (BITMAP*)gem_data[type].dat, (int)x, (int)y);
+        draw_sprite(target, (BITMAP*)gem_data[type].dat, (int)x, (int)y);
     }
 }
 

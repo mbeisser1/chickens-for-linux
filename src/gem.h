@@ -9,17 +9,12 @@ constexpr int BONUS_TIMER = 0;
 constexpr int BONUS_ROCKETSIZE = 1;
 constexpr int BONUS_SCORE = 2;
 
-extern BITMAP* buffer;
-extern DATAFILE* gem_data;
-// extern SAMPLE* sound_gemcollect;
-// extern int timer;
-
 class Gem
 {
   public:
     Gem() = default;
 
-    void draw() const;
+    void draw(BITMAP* target, const DATAFILE* gem_data) const;
     void launch(float x, float y);
     int run();
 

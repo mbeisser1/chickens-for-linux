@@ -523,19 +523,19 @@ int main(int argc, char* argv[])
 
             for (int i = 0; i < MAX_SMOKE; ++i)
             {
-                smoke[i].draw();
+                smoke[i].draw(buffer, icons_data);
             }
 
             draw_sprite(buffer, level.image, 0, SCREEN_H - MAX_LEVELHEIGHT);
 
             for (int i = 0; i < MAX_GEMS; ++i)
             {
-                gem[i].draw();
+                gem[i].draw(buffer, gem_data);
             }
 
             for (int i = 0; i < runners; ++i)
             {
-                chicken[i].draw();
+                chicken[i].draw(buffer, giblet_data);
             }
 
             show_statistics();

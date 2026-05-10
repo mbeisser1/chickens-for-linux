@@ -118,7 +118,7 @@ int Chicken::run()
     }
 }
 
-void Chicken::draw()
+void Chicken::draw(BITMAP* target, const DATAFILE* giblet_data)
 {
     if (x >= -CHICKEN_WIDTH && x < SCREEN_W)
     {
@@ -126,16 +126,16 @@ void Chicken::draw()
         {
             if (y < SCREEN_H - level.height[(int)x] - CHICKEN_HEIGHT)
             {
-                flying.play(buffer);
+                flying.play(target);
             }
             else
             {
-                running.play(buffer);
+                running.play(target);
             }
         }
         else
         {
-            dead.draw();
+            dead.draw(target, giblet_data);
         }
     }
 }

@@ -8,7 +8,6 @@
 #include "helper.h"
 #include "level.h"
 
-extern BITMAP* buffer;
 extern Level level;
 extern DATAFILE* giblet_data;
 
@@ -16,7 +15,7 @@ struct Blood
 {
     void release(const float x, const float y, const float x_vel, const float y_vel);
     void run();
-    void draw();
+    void draw(BITMAP* target);
 
   private:
     float x{};
@@ -44,7 +43,7 @@ struct Kfc
 
     void explode();
     void release(const float at_x, const float at_y, int accuracy, const int death, const int direction);
-    void draw();
+    void draw(BITMAP* target, const DATAFILE* giblet_data);
 
     bool released{};
 };

@@ -11,9 +11,7 @@
 constexpr int MAX_SMOKE = 20;
 constexpr int MAX_SMOKEPUFFS = 20;
 
-extern BITMAP* buffer;
 extern Level level;
-extern DATAFILE* icons_data;
 
 struct SmokePuff
 {
@@ -28,7 +26,7 @@ class Smoke
 {
   public:
     Smoke() = default;
-    int draw();
+    int draw(BITMAP* target, const DATAFILE* icons_data);
     int run();
     void release();
 
