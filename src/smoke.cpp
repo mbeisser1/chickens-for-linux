@@ -10,7 +10,7 @@ int Smoke::run()
         w++;
         h++;
 
-        for (int i = 0; i < SMOKE_PUFFS; ++i)
+        for (int i = 0; i < game_settings.SMOKE_PUFFS; ++i)
         {
             if (--puff[i].wait < 0)
             {
@@ -27,37 +27,36 @@ int Smoke::run()
             }
         }
 
-        return active = gone < SMOKE_PUFFS;
+        return active = gone < game_settings.SMOKE_PUFFS;
     }
 
-    explo_size = ROCKET_SIZE;
+    explo_size = game_settings.ROCKET_SIZE;
     w = 6;
     h = 4;
 
     return 0;
 }
 
-int Smoke::release()
+void Smoke::release()
 {
-    puff = new SmokePuff[SMOKE_PUFFS];
+    puff = new SmokePuff[game_settings.SMOKE_PUFFS];
 
-    explo_size = ROCKET_SIZE;
+    explo_size = game_settings.ROCKET_SIZE;
     x = mouse_x;
     y = level.height[mouse_x] - CHICKEN_HEIGHT;
     w = 6;
     h = 4;
 
-    for (int i = 0; i < SMOKE_PUFFS; ++i)
+    for (int i = 0; i < game_settings.SMOKE_PUFFS; ++i)
     {
         puff[i].x = mouse_x;
         puff[i].y = CHICKEN_HEIGHT - rand() % CHICKEN_HEIGHT + 15;
         puff[i].x_vel = rand() % 3 - rand() % 3;
         puff[i].wait = i;
-        puff[i].life = SMOKE_LINGERING;
+        puff[i].life = game_settings.SMOKE_LINGERING;
     }
 
     active = true;
-    return 0;
 }
 
 int Smoke::draw()
@@ -69,22 +68,22 @@ int Smoke::draw()
     {
         if (explo_size > 0)
         {
-            light = create_system_bitmap(ROCKET_SIZE * 2, ROCKET_SIZE * 2);
+            light = create_system_bitmap(game_settings.ROCKET_SIZE * 2, game_settings.ROCKET_SIZE * 2);
 
             clear_to_color(light, makecol(255, 0, 255));
 
-            circlefill(light, ROCKET_SIZE, ROCKET_SIZE, explo_size, makecol(255, rand() % 255, 0));
+            circlefill(light, game_settings.ROCKET_SIZE, game_settings.ROCKET_SIZE, explo_size, makecol(255, rand() % 255, 0));
 
-            if (TRANSLUCENT_SMOKE)
+            if (game_settings.TRANSLUCENT_SMOKE)
             {
                 set_trans_blender(255, 255, 255, 100);
                 draw_trans_sprite(
-                    buffer, light, x - ROCKET_SIZE, SCREEN_H - (y + ROCKET_SIZE + CHICKEN_HEIGHT));
+                    buffer, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
             }
             else
             {
                 draw_sprite(
-                    buffer, light, x - ROCKET_SIZE, SCREEN_H - (y + ROCKET_SIZE + CHICKEN_HEIGHT));
+                    buffer, light, x - game_settings.ROCKET_SIZE, SCREEN_H - (y + game_settings.ROCKET_SIZE + CHICKEN_HEIGHT));
             }
 
             destroy_bitmap(light);
@@ -92,7 +91,7 @@ int Smoke::draw()
 
         cloud = create_system_bitmap(w, h);
 
-        for (int i = 0; i < SMOKE_PUFFS; ++i)
+        for (int i = 0; i < game_settings.SMOKE_PUFFS; ++i)
         {
             if (--puff[i].wait < 0)
             {
@@ -102,7 +101,7 @@ int Smoke::draw()
                 {
                     stretch_sprite(cloud, (BITMAP*)icons_data[1].dat, 0, 0, w, h);
 
-                    if (TRANSLUCENT_SMOKE)
+                    if (game_settings.TRANSLUCENT_SMOKE)
                     {
                         set_trans_blender(255, 255, 255, puff[i].life * 2);
                         draw_trans_sprite(

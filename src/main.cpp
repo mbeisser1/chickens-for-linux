@@ -51,32 +51,7 @@ void show_statistics();
 void weapon_manager(bool*, bool*);
 void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
 
-// Configurable Variables
-bool FULLSCREEN{};
-bool MUTE{};
-bool TRANSLUCENT_SMOKE{};
-float GRAVITY{};
-int BLOOD_PER_CHUNK{};
-int CHANCE_OF_FLIGHT{};
-int CHANCE_OF_GEM{};
-float CHICKEN_SPEED{};
-int CHUNKS_PER_CHICKEN{};
-int GAME_SPEED_OFFSET{};
-int INITIAL_CHICKENS{};
-int MAX_CHICKENS{};
-int POINTS_FOR_ROCKET{};
-int POINTS_FOR_SHOTGUN{};
-int POINTS_FOR_TENDERIZER{};
-int RESPAWN_RATE{};
-int ROCKET_RELOAD{};
-int ROCKET_SIZE{};
-int SHOTGUN_RELOAD{};
-int SHOTGUN_SIZE{};
-int SMOKE_LINGERING{};
-int SMOKE_PUFFS{};
-int TIMER{};
-int VOLUME{};
-// End Configurable Variables
+Settings game_settings{};
 
 volatile int game_time{};
 
@@ -139,7 +114,7 @@ int main(int argc, char* argv[])
     load_stock_config();      // Load game defaults, in case of broken config file
     load_config(config_path); // Read in some game variables
 
-    mute_sound = MUTE;
+    mute_sound = game_settings.MUTE;
 
     bool cli_force_windowed{};
     int windowmode{};
@@ -233,7 +208,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    windowmode = (cli_force_windowed || !FULLSCREEN) ? GFX_AUTODETECT_WINDOWED
+    windowmode = (cli_force_windowed || !game_settings.FULLSCREEN) ? GFX_AUTODETECT_WINDOWED
                                                        : GFX_AUTODETECT_FULLSCREEN;
 
     srand(time(NULL));
@@ -244,11 +219,11 @@ int main(int argc, char* argv[])
     background =
         create_bitmap(SCREEN_W, SCREEN_H); // Prevent a segfault if they exit without playing
                                            // anything (ie no background image gets loaded)
-    tmp_rocket_size = ROCKET_SIZE;
+    tmp_rocket_size = game_settings.ROCKET_SIZE;
 
     Smoke smoke[MAX_SMOKE]; // Allegro needs to be running before we can initialize these!
     Gem gem[MAX_GEMS];
-    Chicken chicken[MAX_CHICKENS];
+    Chicken chicken[game_settings.MAX_CHICKENS];
 
     show_startup();
     fadeout(makecol(0, 0, 0), 50);
@@ -306,7 +281,7 @@ int main(int argc, char* argv[])
                     alert_mode = true;
                     if (!alert_sound)
                     { // Protect against playing the sound repeatedly with each cycle
-                        play_sound(sound_alarm, VOLUME, 128, FOREVER);
+                        play_sound(sound_alarm, game_settings.VOLUME, 128, FOREVER);
                         alert_sound = true;
                     }
                 }
@@ -329,21 +304,21 @@ int main(int argc, char* argv[])
                     if (fire_rocket)
                     {
                         if (chicken[i].alive == NOT_KILLED &&
-                            ((SCREEN_H - chicken[i].y) - level.height[mouse_x]) < ROCKET_SIZE &&
-                            (abs(mouse_x - (int)chicken[i].x) < ROCKET_SIZE ||
-                             abs(mouse_x - (int)chicken[i].x - CHICKEN_WIDTH) < ROCKET_SIZE))
+                            ((SCREEN_H - chicken[i].y) - level.height[mouse_x]) < game_settings.ROCKET_SIZE &&
+                            (abs(mouse_x - (int)chicken[i].x) < game_settings.ROCKET_SIZE ||
+                             abs(mouse_x - (int)chicken[i].x - CHICKEN_WIDTH) < game_settings.ROCKET_SIZE))
                         {
-                            score += POINTS_FOR_ROCKET;
+                            score += game_settings.POINTS_FOR_ROCKET;
                             chicken[i].alive = KILLED_WITH_ROCKET;
                             ++kills;
                             --chickens_left;
 
-                            if (runners < MAX_CHICKENS - 1 && rand() % RESPAWN_RATE <= 1)
+                            if (runners < game_settings.MAX_CHICKENS - 1 && rand() % game_settings.RESPAWN_RATE <= 1)
                             {
                                 runners++;
                             }
 
-                            if (rand() % CHANCE_OF_GEM <= 1)
+                            if (rand() % game_settings.CHANCE_OF_GEM <= 1)
                             {
                                 for (int j = 0; j < MAX_GEMS; ++j)
                                 {
@@ -360,24 +335,24 @@ int main(int argc, char* argv[])
                     if (fire_shotgun)
                     {
                         if (chicken[i].alive == NOT_KILLED &&
-                            (abs(mouse_x - (int)chicken[i].x) < SHOTGUN_SIZE ||
-                             abs(mouse_x - (int)chicken[i].x - CHICKEN_WIDTH) < SHOTGUN_SIZE) &&
-                            (abs(mouse_y - (int)chicken[i].y) < SHOTGUN_SIZE ||
-                             abs(mouse_y - (int)chicken[i].y - CHICKEN_HEIGHT) < SHOTGUN_SIZE))
+                            (abs(mouse_x - (int)chicken[i].x) < game_settings.SHOTGUN_SIZE ||
+                             abs(mouse_x - (int)chicken[i].x - CHICKEN_WIDTH) < game_settings.SHOTGUN_SIZE) &&
+                            (abs(mouse_y - (int)chicken[i].y) < game_settings.SHOTGUN_SIZE ||
+                             abs(mouse_y - (int)chicken[i].y - CHICKEN_HEIGHT) < game_settings.SHOTGUN_SIZE))
                         { // Look! it's the worlds longest line of code.
 
-                            score += POINTS_FOR_SHOTGUN;
+                            score += game_settings.POINTS_FOR_SHOTGUN;
                             chicken[i].alive = KILLED_WITH_SHOTGUN;
                             chicken[i].flight = chicken[i].direction;
                             ++kills;
                             --chickens_left;
 
-                            if (runners < MAX_CHICKENS - 1 && rand() % RESPAWN_RATE <= 1)
+                            if (runners < game_settings.MAX_CHICKENS - 1 && rand() % game_settings.RESPAWN_RATE <= 1)
                             {
                                 runners++;
                             }
 
-                            if (rand() % CHANCE_OF_GEM <= 1)
+                            if (rand() % game_settings.CHANCE_OF_GEM <= 1)
                             {
                                 for (int j = 0; j < MAX_GEMS; ++j)
                                 {
@@ -422,18 +397,18 @@ int main(int argc, char* argv[])
                     {
                         if (key[KEY_SPACE])
                         {
-                            for (int i = 0; i < MAX_CHICKENS; ++i)
+                            for (int i = 0; i < game_settings.MAX_CHICKENS; ++i)
                             {
                                 if (chicken[i].alive == NOT_KILLED)
                                 {
                                     chicken[i].alive = KILLED_WITH_TENDERIZER;
                                     chicken[i].flight = chicken[i].direction;
-                                    score += POINTS_FOR_TENDERIZER;
+                                    score += game_settings.POINTS_FOR_TENDERIZER;
                                     kills++;
                                 }
                             }
 
-                            play_sound(sound_tenderizer, VOLUME, 128, ONCE);
+                            play_sound(sound_tenderizer, game_settings.VOLUME, 128, ONCE);
                             tenderizers--;
                         }
                     }
@@ -511,11 +486,11 @@ int main(int argc, char* argv[])
 
                         if (rank <= HIGHSCORE_TABLE)
                         {
-                            play_sound(sound_highscore, VOLUME, 128, FOREVER);
+                            play_sound(sound_highscore, game_settings.VOLUME, 128, FOREVER);
                         }
                         else
                         {
-                            play_sound(sound_gameover, VOLUME, 128, ONCE);
+                            play_sound(sound_gameover, game_settings.VOLUME, 128, ONCE);
                         }
                     }
                 }
@@ -789,7 +764,7 @@ void initialize(int windowmode)
     LOCK_VARIABLE(game_time);
     LOCK_FUNCTION(Timer);
 
-    install_int_ex(Timer, BPS_TO_TIMER(60 + GAME_SPEED_OFFSET));
+    install_int_ex(Timer, BPS_TO_TIMER(60 + game_settings.GAME_SPEED_OFFSET));
 
     if (!try_set_gfx_mode(windowmode))
     {
@@ -980,7 +955,7 @@ void show_modechooser()
     stop_sample(sound_alarm);
     stop_sample(sound_highscore);
     stop_sample(sound_menu);
-    play_sound(sound_menu, VOLUME, 128, FOREVER);
+    play_sound(sound_menu, game_settings.VOLUME, 128, FOREVER);
 
     do
     {
@@ -1126,7 +1101,7 @@ void show_levelcompleted()
             if (a < accuracy && game_time % 300 == 0)
             {
                 a++;
-                play_sound(sound_count, int(float(a / accuracy) * VOLUME), 128, ONCE);
+                play_sound(sound_count, int(float(a / accuracy) * game_settings.VOLUME), 128, ONCE);
             }
 
         }
@@ -1179,7 +1154,7 @@ void show_levelcompleted()
 
 void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
 {
-    for (int i = 0; i < MAX_CHICKENS; ++i)
+    for (int i = 0; i < game_settings.MAX_CHICKENS; ++i)
     {
         chicken[i].reset();
     }
@@ -1197,12 +1172,12 @@ void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
     background = (BITMAP*)background_data[rand() % items_in_datafile(background_data)].dat;
     level.create();
 
-    ROCKET_SIZE = tmp_rocket_size;
+    game_settings.ROCKET_SIZE = tmp_rocket_size;
     tenderizers = 1;
 
     if (level_mode == false)
     {
-        timer = TIMER;
+        timer = game_settings.TIMER;
     }
 
     delay_of_levelend = 40;
@@ -1210,7 +1185,7 @@ void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
     score = 0;
     shots_fired = 0;
     kills = 0;
-    runners = INITIAL_CHICKENS;
+    runners = game_settings.INITIAL_CHICKENS;
     alert_mode = false;
     not_dead = true;
 
@@ -1222,7 +1197,7 @@ void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
 
 void earn_bonus(int type)
 {
-    play_sound(sound_gemcollect, VOLUME, int(mouse_x / 3.13), ONCE);
+    play_sound(sound_gemcollect, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
     switch (type)
     {
@@ -1242,7 +1217,7 @@ void earn_bonus(int type)
         {
             timer += 2;
         }
-        ROCKET_SIZE += 5;
+        game_settings.ROCKET_SIZE += 5;
         break;
 
     case BONUS_SCORE: // Red gem
@@ -1334,8 +1309,8 @@ void next_level(int level)
     stop_sample(sound_gameover);
 
     current_level = level;
-    chickens_left = INITIAL_CHICKENS + (level * 4);
-    CHICKEN_SPEED = (int)sqrt(chickens_left) / 2;
+    chickens_left = game_settings.INITIAL_CHICKENS + (level * 4);
+    game_settings.CHICKEN_SPEED = (int)sqrt(chickens_left) / 2;
     timer = 60;
 }
 
@@ -1417,17 +1392,17 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
 
     if (*fire_rocket)
     {
-        reloading_rocket = ROCKET_RELOAD; // reload time
-        play_sound(sound_rocket, VOLUME, int(mouse_x / 3.13), ONCE);
+        reloading_rocket = game_settings.ROCKET_RELOAD; // reload time
+        play_sound(sound_rocket, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
         --timer;
     }
 
     if (*fire_shotgun)
     {
-        reloading_shotgun = SHOTGUN_RELOAD; // reload time
+        reloading_shotgun = game_settings.SHOTGUN_RELOAD; // reload time
         play_sound(sound_shotgun,
-                   VOLUME,
+                   game_settings.VOLUME,
                    int(mouse_x / 3.13),
                    ONCE); // Pan speaker output to mouse location
 

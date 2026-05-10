@@ -5,32 +5,37 @@
 
 #include <string.h>
 
-extern bool FULLSCREEN;
-extern bool MUTE;
-extern bool TRANSLUCENT_SMOKE;
-extern float GRAVITY;
-extern int BLOOD_PER_CHUNK;
-extern int CHANCE_OF_FLIGHT;
-extern int CHANCE_OF_GEM;
-extern float CHICKEN_SPEED;
-extern int GAME_SPEED_OFFSET;
-extern int CHUNKS_PER_CHICKEN;
-extern int MAX_CHICKENS;
-extern int POINTS_FOR_ROCKET;
-extern int POINTS_FOR_SHOTGUN;
-extern int POINTS_FOR_TENDERIZER;
-extern int INITIAL_CHICKENS;
-extern int RESPAWN_RATE;
-extern int ROCKET_RELOAD;
-extern int ROCKET_SIZE;
-extern int SHOTGUN_RELOAD;
-extern int SHOTGUN_SIZE;
-extern int SMOKE_LINGERING;
-extern int SMOKE_PUFFS;
-extern int TIMER;
-extern int VOLUME;
+struct Settings
+{
+    bool FULLSCREEN{false};
+    bool MUTE{false};
+    bool TRANSLUCENT_SMOKE{true};
+    float GRAVITY{0.7F};
+    int BLOOD_PER_CHUNK{30};
+    int CHANCE_OF_FLIGHT{2000};
+    int CHANCE_OF_GEM{25};
+    float CHICKEN_SPEED{5.0F};
+    int GAME_SPEED_OFFSET{0};
+    int CHUNKS_PER_CHICKEN{20};
+    int MAX_CHICKENS{80};
+    int POINTS_FOR_ROCKET{100};
+    int POINTS_FOR_SHOTGUN{250};
+    int POINTS_FOR_TENDERIZER{100};
+    int INITIAL_CHICKENS{4};
+    int RESPAWN_RATE{6};
+    int ROCKET_RELOAD{10};
+    int ROCKET_SIZE{50};
+    int SHOTGUN_RELOAD{55};
+    int SHOTGUN_SIZE{40};
+    int SMOKE_LINGERING{30};
+    int SMOKE_PUFFS{20};
+    int TIMER{120};
+    int VOLUME{255};
+};
 
-int load_config(const char*);
-int load_stock_config();
+extern Settings game_settings;
+
+void load_config(const char* path);
+void load_stock_config();
 
 #endif

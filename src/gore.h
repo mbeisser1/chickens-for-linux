@@ -6,8 +6,6 @@
 #include "helper.h"
 #include "level.h"
 
-extern int CHUNKS_PER_CHICKEN;
-extern int BLOOD_PER_CHUNK;
 extern BITMAP* buffer;
 extern Level level;
 extern DATAFILE* giblet_data;

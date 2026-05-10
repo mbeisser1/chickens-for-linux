@@ -3,6 +3,8 @@
 
 #include <allegro.h>
 
+#include "settings.h"
+
 /* Packaged data lives under assets/ (paths relative to the process cwd; run from repo root). */
 #define CHICKENS_ASSETS_REL(relative_path) ("assets/" relative_path)
 
@@ -34,14 +36,6 @@ constexpr int CROSSED_THE_ROAD = 2;
 
 int items_in_datafile(const DATAFILE* data);
 void Timer();
-
-extern bool TRANSLUCENT_SMOKE;
-extern float GRAVITY;
-extern int CHANCE_OF_FLIGHT;
-extern float CHICKEN_SPEED;
-extern int ROCKET_SIZE;
-extern int SMOKE_PUFFS;
-extern int SMOKE_LINGERING;
 
 extern volatile int game_time;
 

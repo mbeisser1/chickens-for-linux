@@ -83,10 +83,10 @@ int Cutscene::play(BITMAP* target)
     if (step == frames)
     {
         --step;
-        return {};
+        return 0;
     }
     else
     {
-        return {1};
+        return 1;
     }
 }

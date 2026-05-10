@@ -10,7 +10,7 @@ void Blood::release(const float X, const float Y, const float X_VEL, const float
 
 void Blood::run()
 {
-    y_vel += GRAVITY;
+    y_vel += game_settings.GRAVITY;
     x += x_vel;
     y += y_vel;
 }
@@ -35,7 +35,7 @@ void Kfc::explode()
 {
     if (released)
     {
-        for (int i = 0; i < CHUNKS_PER_CHICKEN; ++i)
+        for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
         {
             // If the chunk is visible on the screen
             if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
@@ -85,12 +85,12 @@ void Kfc::explode()
                 chunk[i].landed = true;
             }
 
-            chunk[i].y_vel += GRAVITY;
+            chunk[i].y_vel += game_settings.GRAVITY;
 
             chunk[i].x += chunk[i].x_vel;
             chunk[i].y += chunk[i].y_vel;
 
-            for (int j = 0; j < BLOOD_PER_CHUNK; ++j)
+            for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
             {
                 chunk[i].blood[j].run();
             }
@@ -102,7 +102,7 @@ void Kfc::draw()
 {
     if (released)
     {
-        for (int i = 0; i < CHUNKS_PER_CHICKEN; ++i)
+        for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
         {
             if (chunk[i].landed == false)
             {
@@ -112,7 +112,7 @@ void Kfc::draw()
                             (int)chunk[i].y);
             }
 
-            for (int j = 0; j < BLOOD_PER_CHUNK; ++j)
+            for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
             {
                 chunk[i].blood[j].draw();
             }
@@ -122,14 +122,14 @@ void Kfc::draw()
 
 void Kfc::release(const float at_x, const float at_y, int accuracy, const int death, const int direction)
 {
-    chunk = new Giblet[CHUNKS_PER_CHICKEN];
+    chunk = new Giblet[game_settings.CHUNKS_PER_CHICKEN];
 
     accuracy -=
         CHICKEN_WIDTH / 2; // Base accuracy off the center of chicken, not its actual x position.
 
-    for (int i = 0; i < CHUNKS_PER_CHICKEN; ++i)
+    for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
     {
-        chunk[i].blood = new Blood[BLOOD_PER_CHUNK];
+        chunk[i].blood = new Blood[game_settings.BLOOD_PER_CHUNK];
 
         chunk[i].landed = false;
         chunk[i].x = at_x + rand() % CHICKEN_WIDTH;
@@ -141,19 +141,19 @@ void Kfc::release(const float at_x, const float at_y, int accuracy, const int de
             chunk[i].x_vel =
                 float(rand() % 5) / float(1 + rand() % 10) * (rand() % 2 == 1 ? 1 : -1) +
                 (at_x - accuracy) / 3;
-            chunk[i].y_vel = -ROCKET_SIZE / 3 - rand() % 6;
+            chunk[i].y_vel = -game_settings.ROCKET_SIZE / 3 - rand() % 6;
             break;
         case KILLED_WITH_SHOTGUN:
-            chunk[i].x_vel = CHICKEN_SPEED * direction + rand() % 4 - rand() % 4;
+            chunk[i].x_vel = game_settings.CHICKEN_SPEED * direction + rand() % 4 - rand() % 4;
             chunk[i].y_vel = -rand() % 6;
             break;
         case KILLED_WITH_TENDERIZER:
-            chunk[i].x_vel = CHICKEN_SPEED * direction;
+            chunk[i].x_vel = game_settings.CHICKEN_SPEED * direction;
             chunk[i].y_vel = -rand() % 25 - 5;
             break;
         }
 
-        for (int j = 0; j < BLOOD_PER_CHUNK; ++j)
+        for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
         {
             chunk[i].blood[j].release(chunk[i].x, chunk[i].y, chunk[i].x_vel, chunk[i].y_vel);
         }

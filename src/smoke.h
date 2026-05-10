@@ -12,7 +12,6 @@ constexpr int MAX_SMOKEPUFFS = 20;
 extern BITMAP* buffer;
 extern Level level;
 extern DATAFILE* icons_data;
-extern int ROCKET_SIZE;
 
 struct SmokePuff
 {
@@ -27,13 +26,14 @@ class Smoke
 {
   public:
     Smoke() = default;
-
-    SmokePuff* puff{};
-
     int draw();
     int run();
-    int release();
+    void release();
 
+    SmokePuff* puff{};
+    bool active{};
+    
+    private:
     int explo_size{};
     int x{};
     int y{};
@@ -41,7 +41,6 @@ class Smoke
     int h{};
     int ratio_w{};
     int ratio_h{};
-    bool active{};
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "settings.h"
 
-int load_config(const char* path)
+void load_config(const char* path)
 {
     std::fstream file(path);
 
@@ -13,99 +13,99 @@ int load_config(const char* path)
         {
             if (key == "CHANCE_OF_FLIGHT")
             {
-                file >> CHANCE_OF_FLIGHT;
+                file >> game_settings.CHANCE_OF_FLIGHT;
             }
             if (key == "CHANCE_OF_GEM")
             {
-                file >> CHANCE_OF_GEM;
+                file >> game_settings.CHANCE_OF_GEM;
             }
             if (key == "CHICKEN_SPEED")
             {
-                file >> CHICKEN_SPEED;
+                file >> game_settings.CHICKEN_SPEED;
             }
             if (key == "FULLSCREEN")
             {
-                file >> FULLSCREEN;
+                file >> game_settings.FULLSCREEN;
             }
             if (key == "GAME_SPEED_OFFSET")
             {
-                file >> GAME_SPEED_OFFSET;
+                file >> game_settings.GAME_SPEED_OFFSET;
             }
             if (key == "BLOOD_PER_CHUNK")
             {
-                file >> BLOOD_PER_CHUNK;
+                file >> game_settings.BLOOD_PER_CHUNK;
             }
             if (key == "CHUNKS_PER_CHICKEN")
             {
-                file >> CHUNKS_PER_CHICKEN;
+                file >> game_settings.CHUNKS_PER_CHICKEN;
             }
             if (key == "GRAVITY")
             {
-                file >> GRAVITY;
+                file >> game_settings.GRAVITY;
             }
             if (key == "MAX_CHICKENS")
             {
-                file >> MAX_CHICKENS;
+                file >> game_settings.MAX_CHICKENS;
             }
             if (key == "MUTE")
             {
-                file >> MUTE;
+                file >> game_settings.MUTE;
             }
             if (key == "POINTS_FOR_ROCKET")
             {
-                file >> POINTS_FOR_ROCKET;
+                file >> game_settings.POINTS_FOR_ROCKET;
             }
             if (key == "POINTS_FOR_SHOTGUN")
             {
-                file >> POINTS_FOR_SHOTGUN;
+                file >> game_settings.POINTS_FOR_SHOTGUN;
             }
             if (key == "POINTS_FOR_TENDERIZER")
             {
-                file >> POINTS_FOR_TENDERIZER;
+                file >> game_settings.POINTS_FOR_TENDERIZER;
             }
             if (key == "INITIAL_CHICKENS")
             {
-                file >> INITIAL_CHICKENS;
+                file >> game_settings.INITIAL_CHICKENS;
             }
             if (key == "RESPAWN_RATE")
             {
-                file >> RESPAWN_RATE;
+                file >> game_settings.RESPAWN_RATE;
             }
             if (key == "ROCKET_RELOAD")
             {
-                file >> ROCKET_RELOAD;
+                file >> game_settings.ROCKET_RELOAD;
             }
             if (key == "ROCKET_SIZE")
             {
-                file >> ROCKET_SIZE;
+                file >> game_settings.ROCKET_SIZE;
             }
             if (key == "SHOTGUN_RELOAD")
             {
-                file >> SHOTGUN_RELOAD;
+                file >> game_settings.SHOTGUN_RELOAD;
             }
             if (key == "SHOTGUN_SIZE")
             {
-                file >> SHOTGUN_SIZE;
+                file >> game_settings.SHOTGUN_SIZE;
             }
             if (key == "SMOKE_LINGERING")
             {
-                file >> SMOKE_LINGERING;
+                file >> game_settings.SMOKE_LINGERING;
             }
             if (key == "SMOKE_PUFFS")
             {
-                file >> SMOKE_PUFFS;
+                file >> game_settings.SMOKE_PUFFS;
             }
             if (key == "TIMER")
             {
-                file >> TIMER;
+                file >> game_settings.TIMER;
             }
             if (key == "TRANSLUCENT_SMOKE")
             {
-                file >> TRANSLUCENT_SMOKE;
+                file >> game_settings.TRANSLUCENT_SMOKE;
             }
             if (key == "VOLUME")
             {
-                file >> VOLUME;
+                file >> game_settings.VOLUME;
             }
         }
         else
@@ -115,38 +115,9 @@ int load_config(const char* path)
     }
 
     file.close();
-
-    return 0;
 }
 
-int load_stock_config()
+void load_stock_config()
 {
-    // Load the default settings!
-
-    BLOOD_PER_CHUNK = 30;
-    CHANCE_OF_FLIGHT = 2000;
-    CHANCE_OF_GEM = 25;
-    CHICKEN_SPEED = 5;
-    CHUNKS_PER_CHICKEN = 20;
-    FULLSCREEN = 0;
-    GAME_SPEED_OFFSET = 0;
-    GRAVITY = 0.7;
-    MAX_CHICKENS = 80;
-    MUTE = 0;
-    POINTS_FOR_ROCKET = 100;
-    POINTS_FOR_SHOTGUN = 250;
-    POINTS_FOR_TENDERIZER = 100;
-    INITIAL_CHICKENS = 4;
-    RESPAWN_RATE = 6;
-    ROCKET_RELOAD = 10;
-    ROCKET_SIZE = 50;
-    SHOTGUN_RELOAD = 55;
-    SHOTGUN_SIZE = 40;
-    SMOKE_LINGERING = 30;
-    SMOKE_PUFFS = 20;
-    TIMER = 120;
-    TRANSLUCENT_SMOKE = 1;
-    VOLUME = 255;
-
-    return 0;
+    game_settings = Settings{};
 }

@@ -48,21 +48,21 @@ int Chicken::run()
         flying.x = x;
         flying.y = y;
 
-        x += CHICKEN_SPEED * direction;
+        x += game_settings.CHICKEN_SPEED * direction;
 
         if (x >= 0 && x < SCREEN_W)
         { // Only if the chicken is visible on screen
 
             ground = SCREEN_H - level.height[(int)x] - CHICKEN_HEIGHT;
 
-            if (rand() % CHANCE_OF_FLIGHT <= 1) // Chance of flying
+            if (rand() % game_settings.CHANCE_OF_FLIGHT <= 1) // Chance of flying
             {
                 flight = -1 - (rand() % 300) - rand() % 100;
             }
 
             if (flight < 0)
             {
-                y_vel -= GRAVITY * 3;
+                y_vel -= game_settings.GRAVITY * 3;
                 flight++;
             }
 
@@ -70,7 +70,7 @@ int Chicken::run()
 
             if (y < ground)
             {
-                y_vel += GRAVITY;
+                y_vel += game_settings.GRAVITY;
             }
             else
             {
@@ -100,14 +100,14 @@ int Chicken::run()
 
         dead.explode();
 
-        for (int i = 0; i < CHUNKS_PER_CHICKEN; ++i)
+        for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
         {
             if (!dead.chunk[i].landed)
             {
                 break;
             }
 
-            if (i == CHUNKS_PER_CHICKEN - 1)
+            if (i == game_settings.CHUNKS_PER_CHICKEN - 1)
             {
                 reset();
             }

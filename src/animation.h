@@ -7,8 +7,9 @@
 
 extern BITMAP* buffer;
 
-struct Animation
+class Animation
 {
+  public:
     Animation() = default;
     void load(const DATAFILE* data);
     void play(BITMAP* target); // Play the animation!
@@ -31,8 +32,9 @@ struct Animation
     bool played_once{};    // This is only used when loop == false
 };
 
-struct Cutscene
+class Cutscene
 {
+public:  
     Cutscene() = default;
     void load(const char* path);
     int play(BITMAP* target); // Play the cutscene!

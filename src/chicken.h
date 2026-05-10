@@ -6,8 +6,6 @@
 #include "animation.h"
 #include "gore.h"
 
-extern float CHICKEN_SPEED;
-extern int MAX_CHICKENS;
 extern DATAFILE* chicken_data;
 extern DATAFILE* flyingchicken_data;
 extern Level level;
