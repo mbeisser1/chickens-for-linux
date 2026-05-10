@@ -28,6 +28,7 @@
 
 #include "animation.h"
 #include "asset_manager.h"
+#include "graphics_display.h"
 #include "chicken.h"
 #include "gem.h"
 #include "helper.h"
@@ -41,7 +42,7 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed);
 void show_cli_help();
 void show_cli_version();
 void load_datafiles();
-void initialize(int);
+void initialize(int requested_gfx_driver);
 void show_startup();
 void show_modechooser();
 void show_levelcompleted();
@@ -114,19 +115,18 @@ int main(int argc, char* argv[])
     game_state.apply_settings(game_settings);
 
     bool cli_force_windowed{};
-    int windowmode{};
     const int cmdline_result = process_command_line_args(argc, argv, cli_force_windowed);
     if (cmdline_result != 0)
     {
         return cmdline_result;
     }
 
-    windowmode = (cli_force_windowed || !game_settings.FULLSCREEN) ? GFX_AUTODETECT_WINDOWED : GFX_AUTODETECT_FULLSCREEN;
+    const int requested_gfx_driver =
+        GraphicsDisplay::preferred_driver(cli_force_windowed, game_settings.FULLSCREEN);
     game_settings.MAX_CHICKENS = std::min(game_settings.MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
-
     srand(time(nullptr));
 
-    initialize(windowmode);
+    initialize(requested_gfx_driver);
 
     assets.buffer = create_system_bitmap(SCREEN_W, SCREEN_H);
     assets.background =
@@ -678,57 +678,7 @@ void load_datafiles()
     font = assets.font;
 }
 
-static bool try_depths_for_driver(int gfx_driver)
-{
-    static const int depths[] = {24, 32, 16};
-
-    for (int d = 0; d < 3; ++d)
-    {
-        set_color_depth(depths[d]);
-        if (set_gfx_mode(gfx_driver, 800, 600, 0, 0) == 0)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-static bool try_set_gfx_mode(int requested_mode)
-{
-    if (try_depths_for_driver(requested_mode))
-    {
-        return true;
-    }
-
-#ifdef GFX_XWINDOWS
-    if (requested_mode != GFX_XWINDOWS)
-    {
-        if (try_depths_for_driver(GFX_XWINDOWS))
-        {
-            return true;
-        }
-    }
-#endif
-
-    if (requested_mode == GFX_AUTODETECT_FULLSCREEN)
-    {
-        allegro_message("Fullscreen game_state.mode failed; trying windowed.\n%s\n", allegro_error);
-        if (try_depths_for_driver(GFX_AUTODETECT_WINDOWED))
-        {
-            return true;
-        }
-#ifdef GFX_XWINDOWS
-        if (try_depths_for_driver(GFX_XWINDOWS))
-        {
-            return true;
-        }
-#endif
-    }
-
-    return false;
-}
-
-void initialize(int windowmode)
+void initialize(int requested_gfx_driver)
 {
     allegro_init();
     install_mouse();
@@ -743,9 +693,13 @@ void initialize(int windowmode)
 
     install_int_ex(Timer, BPS_TO_TIMER(60 + game_settings.GAME_SPEED_OFFSET));
 
-    if (!try_set_gfx_mode(windowmode))
+    if (!GraphicsDisplay::try_set_mode(requested_gfx_driver))
     {
-        allegro_message("Unable to set graphics game_state.mode 800x600.\n%s\n", allegro_error);
+        allegro_message(
+            "Unable to set graphics mode %dx%d.\n%s\n",
+            GraphicsDisplay::WIDTH,
+            GraphicsDisplay::HEIGHT,
+            allegro_error);
         std::exit(EXIT_FAILURE);
     }
 

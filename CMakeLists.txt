@@ -62,6 +62,7 @@ ExternalProject_Add(chickens_allegro4
 
 add_executable(chickens4linux
     src/main.cpp
+    src/graphics_display.cpp
     src/asset_manager.cpp
     src/animation.cpp
     src/chicken.cpp
