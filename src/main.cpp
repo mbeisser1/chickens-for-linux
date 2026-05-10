@@ -37,8 +37,6 @@
 
 int mode_manager();
 void load_datafiles();
-void load_fonts();
-void load_sounds();
 void initialize(int);
 void show_startup();
 void show_modechooser();
@@ -79,27 +77,6 @@ const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configur
 const char* playername{};
 
 Level level{};
-FONT* font_big{};
-FONT* font_interface{};
-SAMPLE* sound_alarm{};
-SAMPLE* sound_gameover{};
-SAMPLE* sound_gemcollect{};
-SAMPLE* sound_highscore{};
-SAMPLE* sound_menu{};
-SAMPLE* sound_rocket{};
-SAMPLE* sound_shotgun{};
-SAMPLE* sound_tenderizer{};
-
-static DATAFILE* load_managed_datafile(const char* key, const char* path)
-{
-    if (!asset_manager.load_datafile(key, path))
-    {
-        return nullptr;
-    }
-
-    return asset_manager.get_datafile(key);
-}
-
 int main(int argc, char* argv[])
 {
     int rank{HIGHSCORE_TABLE + 1}; // Player rank
@@ -623,13 +600,8 @@ int main(int argc, char* argv[])
 
     // Let's free up some memory
 
+    asset_manager.clear_samples();
     asset_manager.clear_datafiles();
-
-    destroy_sample(sound_alarm);
-    destroy_sample(sound_gameover);
-    destroy_sample(sound_gemcollect);
-    destroy_sample(sound_rocket);
-    destroy_sample(sound_shotgun);
 
     destroy_bitmap(buffer);
 
@@ -660,37 +632,29 @@ int mode_manager()
 
 void load_datafiles()
 {
-    background_data = load_managed_datafile("background", CHICKENS_ASSETS_REL("dat/background.dat"));
-    bigchicken_data = load_managed_datafile("bigchicken", CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
-    chicken_data = load_managed_datafile("chicken", CHICKENS_ASSETS_REL("dat/chicken.dat"));
-    cursors_data = load_managed_datafile("cursors", CHICKENS_ASSETS_REL("dat/cursors.dat"));
-    flyingchicken_data =
-        load_managed_datafile("flyingchicken", CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
-    fonts_data = load_managed_datafile("fonts", CHICKENS_ASSETS_REL("dat/fonts.dat"));
-    gem_data = load_managed_datafile("gem", CHICKENS_ASSETS_REL("dat/gem.dat"));
-    giblet_data = load_managed_datafile("giblet", CHICKENS_ASSETS_REL("dat/giblets.dat"));
-    icons_data = load_managed_datafile("icons", CHICKENS_ASSETS_REL("dat/icons.dat"));
-    modechooser_data = load_managed_datafile("modechooser", CHICKENS_ASSETS_REL("dat/modechooser.dat"));
-    terrain_data = load_managed_datafile("terrain", CHICKENS_ASSETS_REL("dat/terrain.dat"));
-}
-
-void load_fonts()
-{
-    font = static_cast<FONT*>(fonts_data[0].dat);
-    font_big = static_cast<FONT*>(fonts_data[1].dat);
-    font_interface = static_cast<FONT*>(fonts_data[2].dat);
-}
-
-void load_sounds()
-{
-    sound_alarm = load_sample(CHICKENS_ASSETS_REL("sound/alarm.wav"));
-    sound_gameover = load_sample(CHICKENS_ASSETS_REL("sound/gameover.wav"));
-    sound_gemcollect = load_sample(CHICKENS_ASSETS_REL("sound/gemcollect.wav"));
-    sound_highscore = load_sample(CHICKENS_ASSETS_REL("sound/highscore.wav"));
-    sound_menu = load_sample(CHICKENS_ASSETS_REL("sound/menu.wav"));
-    sound_rocket = load_sample(CHICKENS_ASSETS_REL("sound/rocket.wav"));
-    sound_shotgun = load_sample(CHICKENS_ASSETS_REL("sound/shotgun.wav"));
-    sound_tenderizer = load_sample(CHICKENS_ASSETS_REL("sound/tenderizer.wav"));
+    const AppAssets& assets = asset_manager.load_app_assets();
+    background_data = assets.background_data;
+    bigchicken_data = assets.bigchicken_data;
+    chicken_data = assets.chicken_data;
+    cursors_data = assets.cursors_data;
+    flyingchicken_data = assets.flyingchicken_data;
+    fonts_data = assets.fonts_data;
+    gem_data = assets.gem_data;
+    giblet_data = assets.giblet_data;
+    icons_data = assets.icons_data;
+    modechooser_data = assets.modechooser_data;
+    terrain_data = assets.terrain_data;
+    font = assets.font;
+    font_big = assets.font_big;
+    font_interface = assets.font_interface;
+    sound_alarm = assets.sound_alarm;
+    sound_gameover = assets.sound_gameover;
+    sound_gemcollect = assets.sound_gemcollect;
+    sound_highscore = assets.sound_highscore;
+    sound_menu = assets.sound_menu;
+    sound_rocket = assets.sound_rocket;
+    sound_shotgun = assets.sound_shotgun;
+    sound_tenderizer = assets.sound_tenderizer;
 }
 
 static bool try_depths_for_driver(int gfx_driver)
@@ -765,8 +729,6 @@ void initialize(int windowmode)
     }
 
     load_datafiles();
-    load_fonts();
-    load_sounds();
 
     set_mouse_sprite(static_cast<BITMAP*>(cursors_data[0].dat));
 }

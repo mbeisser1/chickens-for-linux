@@ -16,5 +16,15 @@ extern DATAFILE* giblet_data;
 extern DATAFILE* icons_data;
 extern DATAFILE* fonts_data;
 extern DATAFILE* modechooser_data;
+extern FONT* font_big;
+extern FONT* font_interface;
+extern SAMPLE* sound_alarm;
+extern SAMPLE* sound_gameover;
+extern SAMPLE* sound_gemcollect;
+extern SAMPLE* sound_highscore;
+extern SAMPLE* sound_menu;
+extern SAMPLE* sound_rocket;
+extern SAMPLE* sound_shotgun;
+extern SAMPLE* sound_tenderizer;
 
 #endif
