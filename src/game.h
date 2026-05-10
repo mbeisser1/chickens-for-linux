@@ -3,6 +3,7 @@
 
 #include <array>
 
+#include "app_context.h"
 #include "chicken.h"
 #include "gem.h"
 #include "helper.h"
@@ -13,13 +14,14 @@
 class Game
 {
   public:
-    explicit Game(const RenderContext& render_context);
+    Game(AppContext ctx, const RenderContext& render_context);
 
     void run();
 
   private:
     void show_highscores(int player_rank_one_based);
 
+    AppContext ctx_;
     Level terrain_{};
     std::array<Smoke, MAX_SMOKE> smoke_{};
     std::array<Gem, MAX_GEMS> gem_{};

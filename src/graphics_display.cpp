@@ -2,10 +2,10 @@
 
 #include <allegro.h>
 
-int GraphicsDisplay::preferred_driver(bool cli_force_windowed, bool settings_fullscreen)
+int GraphicsDisplay::requested_driver(const GfxLaunchRequest& launch)
 {
-    return (cli_force_windowed || !settings_fullscreen) ? GFX_AUTODETECT_WINDOWED
-                                                         : GFX_AUTODETECT_FULLSCREEN;
+    return (launch.cli_force_windowed || !launch.settings_fullscreen) ? GFX_AUTODETECT_WINDOWED
+                                                                       : GFX_AUTODETECT_FULLSCREEN;
 }
 
 bool GraphicsDisplay::try_depths_for_driver(int gfx_driver)

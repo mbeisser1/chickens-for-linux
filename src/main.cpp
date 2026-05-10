@@ -20,59 +20,60 @@
 
 #include <cstdlib>
 #include <algorithm>
-#include <iostream>
-
 #include <allegro.h>
 #include <math.h>
 
 #include "allegro_runtime.h"
+#include "app_context.h"
 #include "asset_manager.h"
 #include "game.h"
 #include "game_state.h"
 #include "graphics_display.h"
 #include "settings.h"
 
-int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed);
-void show_cli_help();
+int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed, AppContext& app);
+void show_cli_help(const AppContext& app);
 void show_cli_version();
-void load_datafiles();
-void initialize(int requested_gfx_driver);
+void load_datafiles(AssetManager& asset_manager);
+void initialize(AppContext& app, int requested_gfx_driver);
 int ctoi(const char* t);
 
 volatile int game_time{};
 
-Settings game_settings{};
-AssetManager asset_manager{};
-GameState game_state{};
-AppAssets& assets{asset_manager.assets()};
-
 int main(int argc, char* argv[])
 {
-    game_settings = Settings(game_state.config_path);
-    game_state.apply_settings(game_settings);
+    Settings settings{};
+    GameState state{};
+    AssetManager asset_manager{};
+    AppContext app{settings, state, asset_manager};
+
+    state.seed_default_playername();
+    settings = Settings(state.config_path);
+    state.apply_settings(settings);
 
     bool cli_force_windowed{};
-    const int cmdline_result = process_command_line_args(argc, argv, cli_force_windowed);
+    const int cmdline_result = process_command_line_args(argc, argv, cli_force_windowed, app);
     if (cmdline_result != 0)
     {
         return cmdline_result;
     }
 
-    const int requested_gfx_driver =
-        GraphicsDisplay::preferred_driver(cli_force_windowed, game_settings.FULLSCREEN);
-    game_settings.MAX_CHICKENS = std::min(game_settings.MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
+    const GfxLaunchRequest gfx_launch{cli_force_windowed, settings.FULLSCREEN};
+    const int requested_gfx_driver = GraphicsDisplay::requested_driver(gfx_launch);
+    settings.MAX_CHICKENS = std::min(settings.MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
 
-    initialize(requested_gfx_driver);
+    initialize(app, requested_gfx_driver);
 
-    assets.buffer = create_system_bitmap(SCREEN_W, SCREEN_H);
-    assets.background =
+    AppAssets& a = asset_manager.assets();
+    a.buffer = create_system_bitmap(SCREEN_W, SCREEN_H);
+    a.background =
         create_bitmap(SCREEN_W, SCREEN_H); // Prevent a segfault if they exit without playing
                                            // anything (ie no background image gets loaded)
 
     const RenderContext render_context{
-        assets.buffer, assets.gem_data, assets.icons_data, assets.giblet_data};
+        a.buffer, a.gem_data, a.icons_data, a.giblet_data};
 
-    Game game(render_context);
+    Game game(app, render_context);
     game.run();
 
     allegro_exit();
@@ -81,9 +82,11 @@ int main(int argc, char* argv[])
 }
 END_OF_MAIN();
 
-int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
+int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed, AppContext& app)
 {
-    // Process those pesky command line parameters
+    Settings& settings = app.settings;
+    GameState& state = app.state;
+
     for (int i = 1; i < argc; ++i)
     {
         const char* arg = argv[i];
@@ -96,9 +99,9 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
         {
             if (i < argc - 1)
             {
-                game_state.config_path = argv[++i];
-                game_settings = Settings(game_state.config_path);
-                game_state.apply_settings(game_settings);
+                state.config_path = argv[++i];
+                settings = Settings(state.config_path);
+                state.apply_settings(settings);
             }
             else
             {
@@ -109,18 +112,19 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
         }
         else if (!strcmp(arg, "--stock"))
         {
-            game_settings = Settings{};
-            game_state.apply_settings(game_settings);
+            settings = Settings{};
+            state.apply_settings(settings);
         }
         else if (!strcmp(arg, "--mute"))
         {
-            game_state.mute_sound = true;
+            state.mute_via_cli = true;
+            state.mute_sound = true;
         }
         else if (!strcmp(arg, "-u") && argc > i)
         {
             if (i < argc - 1)
             {
-                game_state.playername = argv[++i];
+                state.playername = argv[++i];
             }
             else
             {
@@ -133,7 +137,7 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
         {
             if (i < argc - 1)
             {
-                game_state.current_level = ctoi(argv[++i]);
+                state.current_level = ctoi(argv[++i]);
             }
             else
             {
@@ -144,7 +148,7 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
         }
         else if (!strcmp(arg, "--help") || !strcmp(arg, "-h"))
         {
-            show_cli_help();
+            show_cli_help(app);
             return 1;
         }
         else if (!strcmp(arg, "--version"))
@@ -162,10 +166,10 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
     return 0;
 }
 
-void show_cli_help()
+void show_cli_help(const AppContext& app)
 {
     show_cli_version();
-    allegro_message("  -u %smaster\tSpecify player name (default is $USER)\n", game_state.playername);
+    allegro_message("  -u %smaster\tSpecify player name (default is $USER)\n", app.state.playername);
     allegro_message("  -s file.cfg\t\tSpecify config file\n");
     allegro_message("  --warp x\t\tWarp to level 'x'\n");
     allegro_message("  --window\t\tRun in windowed mode\n");
@@ -180,7 +184,7 @@ void show_cli_version()
     allegro_message("Chickens for Linux! 0.2.4\n");
 }
 
-void load_datafiles()
+void load_datafiles(AssetManager& asset_manager)
 {
     if (!asset_manager.load_app_assets())
     {
@@ -188,14 +192,17 @@ void load_datafiles()
         std::exit(EXIT_FAILURE);
     }
 
-    font = assets.font;
+    font = asset_manager.assets().font;
 }
 
-void initialize(int requested_gfx_driver)
+static void install_allegro_core(const Settings& settings)
 {
-    AllegroRuntime::install_core(game_settings);
+    AllegroRuntime::install_core(settings);
+}
 
-    if (!GraphicsDisplay::try_set_mode(requested_gfx_driver))
+static void set_gfx_mode_or_exit(int gfx_driver)
+{
+    if (!GraphicsDisplay::try_set_mode(gfx_driver))
     {
         allegro_message(
             "Unable to set graphics mode %dx%d.\n%s\n",
@@ -204,10 +211,15 @@ void initialize(int requested_gfx_driver)
             allegro_error);
         std::exit(EXIT_FAILURE);
     }
+}
 
-    load_datafiles();
+void initialize(AppContext& app, int requested_gfx_driver)
+{
+    install_allegro_core(app.settings);
+    set_gfx_mode_or_exit(requested_gfx_driver);
+    load_datafiles(app.asset_manager);
 
-    set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[0].dat));
+    set_mouse_sprite(static_cast<BITMAP*>(app.assets().cursors_data[0].dat));
 }
 
 int ctoi(const char* t)

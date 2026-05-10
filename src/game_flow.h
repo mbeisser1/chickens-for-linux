@@ -3,6 +3,7 @@
 
 #include <array>
 
+#include "app_context.h"
 #include "chicken.h"
 #include "gem.h"
 #include "helper.h"
@@ -10,28 +11,29 @@
 
 struct Level;
 
-int mode_manager();
+int mode_manager(AppContext& ctx);
 
-void show_startup();
-void show_modechooser();
-void show_levelcompleted();
-void show_levelnumber();
+void show_startup(AppContext& ctx);
+void show_modechooser(AppContext& ctx);
+void show_levelcompleted(AppContext& ctx);
+void show_levelnumber(AppContext& ctx);
 
-void fadeout(int color, int duration);
+void fadeout(AppContext& ctx, int color, int duration);
 
 void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
              std::array<Gem, MAX_GEMS>& gem,
              std::array<Smoke, MAX_SMOKE>& smoke,
-             Level& terrain);
+             Level& terrain,
+             AppContext& ctx);
 
-void earn_bonus(int type);
+void earn_bonus(AppContext& ctx, int type);
 
-void next_level(int level_number);
+void next_level(AppContext& ctx, int level_number);
 
-void show_statistics();
+void show_statistics(AppContext& ctx);
 
-void weapon_manager(bool* fire_rocket, bool* fire_shotgun);
+void weapon_manager(AppContext& ctx, bool* fire_rocket, bool* fire_shotgun);
 
-void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
+void play_sound(AppContext& ctx, const SAMPLE* snd, int volume, int pan, bool loop);
 
 #endif

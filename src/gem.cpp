@@ -1,5 +1,12 @@
 #include "gem.h"
 
+#include "settings.h"
+
+void Gem::bind_settings(Settings* settings)
+{
+    settings_ = settings;
+}
+
 void Gem::draw(const RenderContext& render_context) const
 {
     if (active)
@@ -26,7 +33,7 @@ int Gem::run()
 {
     if (active)
     {
-        y_vel += game_settings.GRAVITY / 2;
+        y_vel += settings_->GRAVITY / 2;
         x += x_vel;
         y += y_vel;
 

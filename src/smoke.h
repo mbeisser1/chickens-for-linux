@@ -8,6 +8,7 @@
 #include "helper.h"
 
 struct Level;
+struct Settings;
 
 constexpr int MAX_SMOKE = 20;
 constexpr int MAX_SMOKEPUFFS = 20;
@@ -26,6 +27,7 @@ class Smoke
   public:
     Smoke() = default;
     void bind_level(Level* terrain);
+    void bind_settings(Settings* settings);
     int draw(const RenderContext& render_context);
     int run();
     void release();
@@ -35,6 +37,7 @@ class Smoke
 
   private:
     Level* terrain_{};
+    Settings* settings_{};
     int explo_size{};
     int x{};
     int y{};

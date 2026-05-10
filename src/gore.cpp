@@ -1,6 +1,7 @@
 #include "gore.h"
 #include "asset_manager.h"
 #include "level.h"
+#include "settings.h"
 
 void Blood::release(const float X, const float Y, const float X_VEL, const float Y_VEL)
 {
@@ -10,9 +11,9 @@ void Blood::release(const float X, const float Y, const float X_VEL, const float
     y_vel = Y_VEL + float(rand() % 5) / float(1 + rand() % 10) * (rand() % 2 == 1 ? 1 : -1);
 }
 
-void Blood::run()
+void Blood::run(Settings& settings)
 {
-    y_vel += game_settings.GRAVITY;
+    y_vel += settings.GRAVITY;
     x += x_vel;
     y += y_vel;
 }
@@ -28,19 +29,14 @@ void Blood::draw(const RenderContext& render_context)
     }
 }
 
-Giblet::Giblet()
+void Kfc::explode(Level& terrain, Settings& settings, AppAssets& app_assets)
 {
-    image = rand() % items_in_datafile(asset_manager.assets().giblet_data);
-}
-
-void Kfc::explode(Level& terrain)
-{
-    if(!released)
+    if (!released)
     {
         return;
     }
 
-    for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
+    for (int i = 0; i < settings.CHUNKS_PER_CHICKEN; ++i)
     {
         // If the chunk is visible on the screen
         if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
@@ -78,8 +74,7 @@ void Kfc::explode(Level& terrain)
                     if (chunk[i].x >= 0 && chunk[i].x < SCREEN_W)
                     {
                         draw_sprite(terrain.image,
-                                    static_cast<BITMAP*>(
-                                        asset_manager.assets().giblet_data[chunk[i].image].dat),
+                                    static_cast<BITMAP*>(app_assets.giblet_data[chunk[i].image].dat),
                                     static_cast<int>(chunk[i].x),
                                     MAX_LEVELHEIGHT - terrain.height[static_cast<int>(chunk[i].x)]);
                     }
@@ -91,27 +86,26 @@ void Kfc::explode(Level& terrain)
             chunk[i].landed = true;
         }
 
-        chunk[i].y_vel += game_settings.GRAVITY;
+        chunk[i].y_vel += settings.GRAVITY;
 
         chunk[i].x += chunk[i].x_vel;
         chunk[i].y += chunk[i].y_vel;
 
-        for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
+        for (int j = 0; j < settings.BLOOD_PER_CHUNK; ++j)
         {
-            chunk[i].blood[j].run();
+            chunk[i].blood[j].run(settings);
         }
     }
 }
 
-
-void Kfc::draw(const RenderContext& render_context)
+void Kfc::draw(const RenderContext& render_context, Settings& settings)
 {
-    if(!released)
+    if (!released)
     {
         return;
     }
 
-    for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
+    for (int i = 0; i < settings.CHUNKS_PER_CHICKEN; ++i)
     {
         if (chunk[i].landed == false)
         {
@@ -121,23 +115,30 @@ void Kfc::draw(const RenderContext& render_context)
                         static_cast<int>(chunk[i].y));
         }
 
-        for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
+        for (int j = 0; j < settings.BLOOD_PER_CHUNK; ++j)
         {
             chunk[i].blood[j].draw(render_context);
         }
     }
 }
 
-void Kfc::release(const float at_x, const float at_y, int accuracy, const int death, const int direction)
+void Kfc::release(const float at_x,
+                  const float at_y,
+                  int accuracy,
+                  const int death,
+                  const int direction,
+                  Settings& settings,
+                  AppAssets& app_assets)
 {
-    chunk = std::unique_ptr<Giblet[]>(new Giblet[game_settings.CHUNKS_PER_CHICKEN]);
+    chunk = std::unique_ptr<Giblet[]>(new Giblet[settings.CHUNKS_PER_CHICKEN]);
 
     accuracy -=
         CHICKEN_WIDTH / 2; // Base accuracy off the center of chicken, not its actual x position.
 
-    for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
+    for (int i = 0; i < settings.CHUNKS_PER_CHICKEN; ++i)
     {
-        chunk[i].blood = std::unique_ptr<Blood[]>(new Blood[game_settings.BLOOD_PER_CHUNK]);
+        chunk[i].blood = std::unique_ptr<Blood[]>(new Blood[settings.BLOOD_PER_CHUNK]);
+        chunk[i].image = rand() % items_in_datafile(app_assets.giblet_data);
 
         chunk[i].landed = false;
         chunk[i].x = at_x + rand() % CHICKEN_WIDTH;
@@ -149,19 +150,19 @@ void Kfc::release(const float at_x, const float at_y, int accuracy, const int de
             chunk[i].x_vel =
                 float(rand() % 5) / float(1 + rand() % 10) * (rand() % 2 == 1 ? 1 : -1) +
                 (at_x - accuracy) / 3;
-            chunk[i].y_vel = -game_settings.ROCKET_SIZE / 3 - rand() % 6;
+            chunk[i].y_vel = -settings.ROCKET_SIZE / 3 - rand() % 6;
             break;
         case KILLED_WITH_SHOTGUN:
-            chunk[i].x_vel = game_settings.CHICKEN_SPEED * direction + rand() % 4 - rand() % 4;
+            chunk[i].x_vel = settings.CHICKEN_SPEED * direction + rand() % 4 - rand() % 4;
             chunk[i].y_vel = -rand() % 6;
             break;
         case KILLED_WITH_TENDERIZER:
-            chunk[i].x_vel = game_settings.CHICKEN_SPEED * direction;
+            chunk[i].x_vel = settings.CHICKEN_SPEED * direction;
             chunk[i].y_vel = -rand() % 25 - 5;
             break;
         }
 
-        for (int j = 0; j < game_settings.BLOOD_PER_CHUNK; ++j)
+        for (int j = 0; j < settings.BLOOD_PER_CHUNK; ++j)
         {
             chunk[i].blood[j].release(chunk[i].x, chunk[i].y, chunk[i].x_vel, chunk[i].y_vel);
         }

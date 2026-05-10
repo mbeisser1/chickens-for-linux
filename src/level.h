@@ -4,11 +4,13 @@
 #include <allegro.h>
 #include <math.h>
 
+struct AppAssets;
+
 constexpr int MAX_LEVELHEIGHT = 150;
 
 struct Level
 {
-    void create();
+    void create(AppAssets& app_assets);
 
     BITMAP* image{};
     BITMAP* terrain{};

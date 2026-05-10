@@ -8,11 +8,13 @@
 #include "helper.h"
 
 struct Level;
+struct Settings;
+struct AppAssets;
 
 struct Blood
 {
     void release(const float x, const float y, const float x_vel, const float y_vel);
-    void run();
+    void run(Settings& settings);
     void draw(const RenderContext& render_context);
 
   private:
@@ -24,7 +26,6 @@ struct Blood
 
 struct Giblet
 {
-    Giblet();
     std::unique_ptr<Blood[]> blood{};
     float x{};
     float y{};
@@ -39,9 +40,15 @@ struct Kfc
     Kfc() = default;
     std::unique_ptr<Giblet[]> chunk{};
 
-    void explode(Level& terrain);
-    void release(const float at_x, const float at_y, int accuracy, const int death, const int direction);
-    void draw(const RenderContext& render_context);
+    void explode(Level& terrain, Settings& settings, AppAssets& app_assets);
+    void release(const float at_x,
+                   const float at_y,
+                   int accuracy,
+                   const int death,
+                   const int direction,
+                   Settings& settings,
+                   AppAssets& app_assets);
+    void draw(const RenderContext& render_context, Settings& settings);
 
     bool released{};
 };

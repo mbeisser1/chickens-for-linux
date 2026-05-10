@@ -1,12 +1,17 @@
 #include "chicken.h"
-#include "asset_manager.h"
-#include "level.h"
 
-Chicken::Chicken()
+#include "level.h"
+#include "settings.h"
+#include "asset_manager.h"
+
+Chicken::Chicken() = default;
+
+void Chicken::load_sprites(AppAssets& app_assets)
 {
-    running.load(asset_manager.assets().chicken_data);
-    flying.load(asset_manager.assets().flyingchicken_data);
+    running.load(app_assets.chicken_data);
+    flying.load(app_assets.flyingchicken_data);
     flying.slide = true;
+    app_assets_ = &app_assets;
 }
 
 void Chicken::bind_level(Level* terrain)
@@ -14,6 +19,10 @@ void Chicken::bind_level(Level* terrain)
     terrain_ = terrain;
 }
 
+void Chicken::bind_settings(Settings* settings)
+{
+    settings_ = settings;
+}
 
 void Chicken::reset()
 {
@@ -50,6 +59,7 @@ void Chicken::reset()
 int Chicken::run()
 {
     Level& terrain = *terrain_;
+    Settings& tune = *settings_;
 
     if (alive == NOT_KILLED)
     {
@@ -60,21 +70,21 @@ int Chicken::run()
         flying.x = x;
         flying.y = y;
 
-        x += game_settings.CHICKEN_SPEED * direction;
+        x += tune.CHICKEN_SPEED * direction;
 
         if (x >= 0 && x < SCREEN_W)
         { // Only if the chicken is visible on screen
 
             ground = SCREEN_H - terrain.height[static_cast<int>(x)] - CHICKEN_HEIGHT;
 
-            if (rand() % game_settings.CHANCE_OF_FLIGHT <= 1) // Chance of flying
+            if (rand() % tune.CHANCE_OF_FLIGHT <= 1) // Chance of flying
             {
                 flight = -1 - (rand() % 300) - rand() % 100;
             }
 
             if (flight < 0)
             {
-                y_vel -= game_settings.GRAVITY * 3;
+                y_vel -= tune.GRAVITY * 3;
                 flight++;
             }
 
@@ -82,7 +92,7 @@ int Chicken::run()
 
             if (y < ground)
             {
-                y_vel += game_settings.GRAVITY;
+                y_vel += tune.GRAVITY;
             }
             else
             {
@@ -107,19 +117,19 @@ int Chicken::run()
     {
         if (!dead.released)
         {
-            dead.release(x, y, mouse_x, alive, direction);
+            dead.release(x, y, mouse_x, alive, direction, tune, *app_assets_);
         }
 
-        dead.explode(terrain);
+        dead.explode(terrain, tune, *app_assets_);
 
-        for (int i = 0; i < game_settings.CHUNKS_PER_CHICKEN; ++i)
+        for (int i = 0; i < tune.CHUNKS_PER_CHICKEN; ++i)
         {
             if (!dead.chunk[i].landed)
             {
                 break;
             }
 
-            if (i == game_settings.CHUNKS_PER_CHICKEN - 1)
+            if (i == tune.CHUNKS_PER_CHICKEN - 1)
             {
                 reset();
             }
@@ -132,6 +142,7 @@ int Chicken::run()
 void Chicken::draw(const RenderContext& render_context)
 {
     Level& terrain = *terrain_;
+    Settings& tune = *settings_;
 
     if (x >= -CHICKEN_WIDTH && x < SCREEN_W)
     {
@@ -148,7 +159,7 @@ void Chicken::draw(const RenderContext& render_context)
         }
         else
         {
-            dead.draw(render_context);
+            dead.draw(render_context, tune);
         }
     }
 }

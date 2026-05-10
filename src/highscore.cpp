@@ -2,7 +2,7 @@
 #include "highscore.h"
 #include "asset_manager.h"
 
-void show_highscores(int rank, BITMAP* target, BITMAP* background)
+void show_highscores(int rank, BITMAP* target, BITMAP* background, AppAssets& app_assets)
 {
     std::fstream file(CHICKENS_ASSETS_REL("HighScores"));
 
@@ -23,7 +23,7 @@ void show_highscores(int rank, BITMAP* target, BITMAP* background)
         draw_sprite(target, background, 0, 0);
 
         CHICKENS_TEXTOUT_CENTRE(
-            target, asset_manager.assets().font_big, "High Scores", SCREEN_W / 2, 5, makecol(220, 0, 0));
+            target, app_assets.font_big, "High Scores", SCREEN_W / 2, 5, makecol(220, 0, 0));
 
         for (int i = 0; i < HIGHSCORE_TABLE; ++i)
         {
@@ -37,14 +37,14 @@ void show_highscores(int rank, BITMAP* target, BITMAP* background)
             }
 
             CHICKENS_TEXTPRINTF(target,
-                                asset_manager.assets().font_interface,
+                                app_assets.font_interface,
                                 130 + (i > 8 ? 20 : 0),
                                 75 + m,
                                 col,
                                 "%s",
                                 players[i].c_str());
             CHICKENS_TEXTPRINTF(target,
-                                asset_manager.assets().font_big,
+                                app_assets.font_big,
                                 100,
                                 70 + m,
                                 makecol(d, d, 0),

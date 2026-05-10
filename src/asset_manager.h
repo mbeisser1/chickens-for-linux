@@ -80,6 +80,4 @@ class AssetManager
     AppAssets app_assets_{};
 };
 
-extern AssetManager asset_manager;
-
 #endif

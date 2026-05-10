@@ -34,6 +34,4 @@ struct Settings
     int VOLUME{255};
 };
 
-extern Settings game_settings;
-
 #endif

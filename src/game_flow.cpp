@@ -5,33 +5,32 @@
 
 #include "animation.h"
 #include "asset_manager.h"
+#include "app_context.h"
 #include "game_state.h"
 #include "level.h"
+#include "settings.h"
 
-extern Settings game_settings;
-extern GameState game_state;
-extern AppAssets& assets;
 
-int mode_manager()
+int mode_manager(AppContext& ctx)
 {
-    if (game_state.mode == MODE_PLAYING)
+    if (ctx.state.mode == MODE_PLAYING)
     {
-        set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[1].dat));
+        set_mouse_sprite(static_cast<BITMAP*>(ctx.assets().cursors_data[1].dat));
 
         if (key[KEY_ESC] || key[KEY_PAUSE])
         {
-            game_state.mode = MODE_PAUSED;
+            ctx.state.mode = MODE_PAUSED;
         }
     }
     else
     {
-        set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[0].dat));
+        set_mouse_sprite(static_cast<BITMAP*>(ctx.assets().cursors_data[0].dat));
     }
 
-    return game_state.mode;
+    return ctx.state.mode;
 }
 
-void show_startup()
+void show_startup(AppContext& ctx)
 {
     int mx{};
     int my{};
@@ -45,117 +44,117 @@ void show_startup()
             game_time--;
         }
 
-        clear(assets.buffer);
+        clear(ctx.assets().buffer);
 
         draw_sprite(
-            assets.buffer, static_cast<BITMAP*>(assets.icons_data[2].dat), SCREEN_W / 2 - 177, 4);
+            ctx.assets().buffer, static_cast<BITMAP*>(ctx.assets().icons_data[2].dat), SCREEN_W / 2 - 177, 4);
         draw_sprite(
-            assets.buffer,
-            static_cast<BITMAP*>(assets.gem_data[1].dat),
+            ctx.assets().buffer,
+            static_cast<BITMAP*>(ctx.assets().gem_data[1].dat),
             SCREEN_W / 2 - 143,
             SCREEN_H / 2 + 100);
-        draw_sprite(assets.buffer,
-                    static_cast<BITMAP*>(assets.gem_data[0].dat),
+        draw_sprite(ctx.assets().buffer,
+                    static_cast<BITMAP*>(ctx.assets().gem_data[0].dat),
                     SCREEN_W / 2 - 3,
                     SCREEN_H / 2 + 100);
         draw_sprite(
-            assets.buffer,
-            static_cast<BITMAP*>(assets.gem_data[2].dat),
+            ctx.assets().buffer,
+            static_cast<BITMAP*>(ctx.assets().gem_data[2].dat),
             SCREEN_W / 2 + 147,
             SCREEN_H / 2 + 100);
 
-        line(assets.buffer, 0, 104, SCREEN_W, 104, makecol(100, 0, 0));
-        line(assets.buffer, 0, SCREEN_H - 30, SCREEN_W, SCREEN_H - 30, makecol(100, 0, 0));
+        line(ctx.assets().buffer, 0, 104, SCREEN_W, 104, makecol(100, 0, 0));
+        line(ctx.assets().buffer, 0, SCREEN_H - 30, SCREEN_W, SCREEN_H - 30, makecol(100, 0, 0));
 
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "In the final days of Armageddon, the chickens are preparing",
             SCREEN_W / 2,
             130,
             makecol(200, 200, 200));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "to detonate our planet. They are trying to run across your",
             SCREEN_W / 2,
             145,
             makecol(200, 200, 200));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "screen, and if even a single chicken succeeds, it's all over.",
             SCREEN_W / 2,
             160,
             makecol(200, 200, 200));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "Please look in README for info about LEVEL MODE--this screen is temporary!",
             SCREEN_W / 2,
             180,
             makecol(220, 0, 0));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+            ctx.assets().buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
-                                "You are on a 2 minute game_state.timer. Each time that you shoot, you",
+                                "You are on a 2 minute timer. Each time that you shoot, you",
                                 SCREEN_W / 2,
                                 215,
                                 makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
                                 "lose an additional second, so try to kill as many chickens",
                                 SCREEN_W / 2,
                                 230,
                                 makecol(255, 255, 255));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "per click as possible. Killing chickens with rockets gives",
             SCREEN_W / 2,
             245,
             makecol(255, 255, 255));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "you 100 points. A shotgun kill earns you 250, but it takes",
             SCREEN_W / 2,
             260,
             makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
                                 "longer to reload. Chickens high up in flight must be shot",
                                 SCREEN_W / 2,
                                 275,
                                 makecol(255, 255, 255));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "with the shotgun, as rockets can only shoot at ground level.",
             SCREEN_W / 2,
             290,
             makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
                                 "You are given 1 tenderizer. In case of emergency hit SPACE.",
                                 SCREEN_W / 2,
                                 305,
                                 makecol(255, 70, 70));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
                                 "Occasionally, cool gems fly out of exploding chickens. Catch",
                                 SCREEN_W / 2,
                                 320,
                                 makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
                                 "them with your mouse cursor (don't click!) to earn bonuses.",
                                 SCREEN_W / 2,
                                 335,
                                 makecol(255, 255, 255));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "All gems automatically give you 2 extra seconds.",
             SCREEN_W / 2,
@@ -163,15 +162,15 @@ void show_startup()
             makecol(255, 255, 255));
 
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer,
+            ctx.assets().buffer,
             font,
             "+5 radius",
             SCREEN_W / 2 - 140,
             SCREEN_H / 2 + 120,
             makecol(255, 255, 255));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer, font, "+8 sec", SCREEN_W / 2, SCREEN_H / 2 + 120, makecol(255, 255, 255));
-        CHICKENS_TEXTOUT_CENTRE(assets.buffer,
+            ctx.assets().buffer, font, "+8 sec", SCREEN_W / 2, SCREEN_H / 2 + 120, makecol(255, 255, 255));
+        CHICKENS_TEXTOUT_CENTRE(ctx.assets().buffer,
                                 font,
                                 "+5000 pts",
                                 SCREEN_W / 2 + 152,
@@ -179,19 +178,19 @@ void show_startup()
                                 makecol(255, 255, 255));
 
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer, font, "Rocket: Left-click", SCREEN_W / 2 - 100, SCREEN_H - 50, makecol(255, 30, 30));
+            ctx.assets().buffer, font, "Rocket: Left-click", SCREEN_W / 2 - 100, SCREEN_H - 50, makecol(255, 30, 30));
         CHICKENS_TEXTOUT_CENTRE(
-            assets.buffer, font, "Shotgun: Right-click", SCREEN_W / 2 + 100, SCREEN_H - 50, makecol(255, 30, 30));
+            ctx.assets().buffer, font, "Shotgun: Right-click", SCREEN_W / 2 + 100, SCREEN_H - 50, makecol(255, 30, 30));
 
-        CHICKENS_TEXTOUT_RIGHT(assets.buffer,
+        CHICKENS_TEXTOUT_RIGHT(ctx.assets().buffer,
                                font,
                                "moistrous software 2004 (0.2.4)",
                                SCREEN_W - 10,
                                SCREEN_H - 25,
                                makecol(255, 255, 255));
 
-        draw_sprite(assets.buffer, mouse_sprite, mx, my);
-        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(ctx.assets().buffer, mouse_sprite, mx, my);
+        blit(ctx.assets().buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -200,7 +199,7 @@ void show_startup()
     } while (!keypressed() && mouse_b != 1);
 }
 
-void show_modechooser()
+void show_modechooser(AppContext& ctx)
 {
     Animation bigchick;
 
@@ -214,14 +213,14 @@ void show_modechooser()
     float bigchick_xspeed{};
     float bigchick_yspeed{};
 
-    bigchick.load(assets.bigchicken_data);
+    bigchick.load(ctx.assets().bigchicken_data);
     bigchick.x = 100;
     bigchick.y = 100;
 
-    stop_sample(assets.sound_alarm);
-    stop_sample(assets.sound_highscore);
-    stop_sample(assets.sound_menu);
-    play_sound(assets.sound_menu, game_settings.VOLUME, 128, FOREVER);
+    stop_sample(ctx.assets().sound_alarm);
+    stop_sample(ctx.assets().sound_highscore);
+    stop_sample(ctx.assets().sound_menu);
+    play_sound(ctx, ctx.assets().sound_menu, ctx.settings.VOLUME, 128, FOREVER);
 
     do
     {
@@ -252,11 +251,11 @@ void show_modechooser()
                 {
                     if (mouse_y > SCREEN_H - 160 && mouse_y < SCREEN_H - 90)
                     {
-                        game_state.mode = MODE_RESTART;
-                        game_state.level_mode = false;
-                        game_settings = Settings(
-                            game_state.config_path); // Load original config settings (easier than a
-                        game_state.apply_settings(game_settings);
+                        ctx.state.mode = MODE_RESTART;
+                        ctx.state.level_mode = false;
+                        ctx.settings = Settings(
+                            ctx.state.config_path); // Load original config settings (easier than a
+                        ctx.state.apply_settings(ctx.settings);
                         // having a ton of variables to remember them)
                         done = true;
                     }
@@ -267,7 +266,7 @@ void show_modechooser()
                 {
                     if (mouse_y > SCREEN_H - 100)
                     {
-                        game_state.mode = MODE_QUIT;
+                        ctx.state.mode = MODE_QUIT;
                         done = true;
                     }
                 }
@@ -277,9 +276,9 @@ void show_modechooser()
                 {
                     if (mouse_y > 280 && mouse_y < 380)
                     {
-                        game_state.mode = MODE_RESTART;
-                        game_state.level_mode = true;
-                        next_level(game_state.current_level);
+                        ctx.state.mode = MODE_RESTART;
+                        ctx.state.level_mode = true;
+                        next_level(ctx, ctx.state.current_level);
                         done = true;
                     }
                 }
@@ -290,7 +289,7 @@ void show_modechooser()
             game_time--;
         }
 
-        clear(assets.buffer);
+        clear(ctx.assets().buffer);
 
         bigchick.x -= bigchick_xspeed;
         bigchick.y -= bigchick_yspeed;
@@ -306,12 +305,12 @@ void show_modechooser()
             clear_to_color(track, makecol(255, 0, 255));
 
             rotate_sprite(track,
-                          static_cast<BITMAP*>(assets.modechooser_data[1].dat),
+                          static_cast<BITMAP*>(ctx.assets().modechooser_data[1].dat),
                           0,
                           0,
                           itofix(static_cast<int>(bigchick.angle) + rand() % 6 - rand() % 6));
             set_trans_blender(255, 255, 255, bigchick_bloodyfeet * 10);
-            draw_trans_sprite(static_cast<BITMAP*>(assets.modechooser_data[0].dat),
+            draw_trans_sprite(static_cast<BITMAP*>(ctx.assets().modechooser_data[0].dat),
                               track,
                               static_cast<int>(bigchick.x) + 15 - rand() % 20,
                               static_cast<int>(bigchick.y) + 30 - rand() % 20);
@@ -322,11 +321,11 @@ void show_modechooser()
             right_foot = !right_foot;
         }
 
-        draw_sprite(assets.buffer, static_cast<BITMAP*>(assets.modechooser_data[0].dat), 0, 0);
-        bigchick.play(assets.buffer);
+        draw_sprite(ctx.assets().buffer, static_cast<BITMAP*>(ctx.assets().modechooser_data[0].dat), 0, 0);
+        bigchick.play(ctx.assets().buffer);
 
-        draw_sprite(assets.buffer, mouse_sprite, mx, my);
-        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(ctx.assets().buffer, mouse_sprite, mx, my);
+        blit(ctx.assets().buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -334,15 +333,15 @@ void show_modechooser()
 
     } while (!done);
 
-    fadeout(makecol(0, 0, 0), 40);
+    fadeout(ctx, makecol(0, 0, 0), 40);
 
-    if (game_state.mode == MODE_RESTART && game_state.level_mode == true)
+    if (ctx.state.mode == MODE_RESTART && ctx.state.level_mode == true)
     {
-        show_levelnumber();
+        show_levelnumber(ctx);
     }
 }
 
-void show_levelcompleted()
+void show_levelcompleted(AppContext& ctx)
 {
     SAMPLE* sound_count = load_sample(CHICKENS_ASSETS_REL("sound/counter.wav"));
 
@@ -350,8 +349,8 @@ void show_levelcompleted()
     int mx{};
     int my{};
     float a{};
-    float accuracy = ((static_cast<float>(game_state.kills) / static_cast<float>(game_state.shots_fired)) * 70)
-                     + ((game_state.timer / 60) * 30);
+    float accuracy = ((static_cast<float>(ctx.state.kills) / static_cast<float>(ctx.state.shots_fired)) * 70)
+                     + ((ctx.state.timer / 60) * 30);
     float bonus{};
 
     if (accuracy > 100)
@@ -372,24 +371,24 @@ void show_levelcompleted()
             if (a < accuracy && game_time % 300 == 0)
             {
                 a++;
-                play_sound(sound_count, int(float(a / accuracy) * game_settings.VOLUME), 128, ONCE);
+                play_sound(ctx, sound_count, int(float(a / accuracy) * ctx.settings.VOLUME), 128, ONCE);
             }
         }
 
-        clear(assets.buffer);
+        clear(ctx.assets().buffer);
 
-        CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
-                                   assets.font_big,
+        CHICKENS_TEXTPRINTF_CENTRE(ctx.assets().buffer,
+                                   ctx.assets().font_big,
                                    SCREEN_W / 2,
                                    SCREEN_H / 2,
                                    makecol(255, 255, 255),
                                    "Level %d Completed!",
-                                   game_state.current_level);
+                                   ctx.state.current_level);
         {
             /* a>100: green text here; old inner loop only set unused `color`. */
             const int acc_fg = (a > 100.0f) ? makecol(0, 255, 0) : makecol(255, 255, 255);
-            CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
-                                       assets.font_interface,
+            CHICKENS_TEXTPRINTF_CENTRE(ctx.assets().buffer,
+                                       ctx.assets().font_interface,
                                        SCREEN_W / 2,
                                        SCREEN_H / 2 + 90,
                                        acc_fg,
@@ -398,8 +397,8 @@ void show_levelcompleted()
         }
         if (a == 100 && b > 0)
         {
-            CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
-                                       assets.font_interface,
+            CHICKENS_TEXTPRINTF_CENTRE(ctx.assets().buffer,
+                                       ctx.assets().font_interface,
                                        SCREEN_W / 2 + 60,
                                        SCREEN_H / 2 + 90 - (255 - b),
                                        makecol(0, b, 0),
@@ -408,8 +407,8 @@ void show_levelcompleted()
             b -= 2;
         }
 
-        draw_sprite(assets.buffer, mouse_sprite, mx, my);
-        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(ctx.assets().buffer, mouse_sprite, mx, my);
+        blit(ctx.assets().buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -419,15 +418,16 @@ void show_levelcompleted()
 
     destroy_sample(sound_count);
 
-    fadeout(makecol(0, 0, 0), 40);
+    fadeout(ctx, makecol(0, 0, 0), 40);
 }
 
 void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
              std::array<Gem, MAX_GEMS>& gem,
              std::array<Smoke, MAX_SMOKE>& smoke,
-             Level& terrain)
+             Level& terrain,
+             AppContext& ctx)
 {
-    for (int i = 0; i < game_settings.MAX_CHICKENS; ++i)
+    for (int i = 0; i < ctx.settings.MAX_CHICKENS; ++i)
     {
         chicken[i].reset();
     }
@@ -442,67 +442,67 @@ void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
         smoke[i].active = false;
     }
 
-    assets.background = static_cast<BITMAP*>(
-        assets.background_data[rand() % items_in_datafile(assets.background_data)].dat);
-    terrain.create();
+    ctx.assets().background = static_cast<BITMAP*>(
+        ctx.assets().background_data[rand() % items_in_datafile(ctx.assets().background_data)].dat);
+    terrain.create(ctx.assets());
 
-    game_settings.ROCKET_SIZE = game_state.tmp_rocket_size;
-    game_state.tenderizers = 1;
+    ctx.settings.ROCKET_SIZE = ctx.state.tmp_rocket_size;
+    ctx.state.tenderizers = 1;
 
-    if (game_state.level_mode == false)
+    if (ctx.state.level_mode == false)
     {
-        game_state.timer = game_settings.TIMER;
+        ctx.state.timer = ctx.settings.TIMER;
     }
 
-    game_state.delay_of_levelend = 40;
-    game_state.timer_delay = 0;
-    game_state.score = 0;
-    game_state.shots_fired = 0;
-    game_state.kills = 0;
-    game_state.runners = game_settings.INITIAL_CHICKENS;
-    game_state.alert_mode = false;
-    game_state.not_dead = true;
+    ctx.state.delay_of_levelend = 40;
+    ctx.state.timer_delay = 0;
+    ctx.state.score = 0;
+    ctx.state.shots_fired = 0;
+    ctx.state.kills = 0;
+    ctx.state.runners = ctx.settings.INITIAL_CHICKENS;
+    ctx.state.alert_mode = false;
+    ctx.state.not_dead = true;
 
-    stop_sample(assets.sound_gameover); // They might not always be playing but stop them anyway
-    stop_sample(assets.sound_highscore);
-    stop_sample(assets.sound_tenderizer);
-    stop_sample(assets.sound_menu);
+    stop_sample(ctx.assets().sound_gameover); // They might not always be playing but stop them anyway
+    stop_sample(ctx.assets().sound_highscore);
+    stop_sample(ctx.assets().sound_tenderizer);
+    stop_sample(ctx.assets().sound_menu);
 }
 
-void earn_bonus(int type)
+void earn_bonus(AppContext& ctx, int type)
 {
-    play_sound(assets.sound_gemcollect, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
+    play_sound(ctx, ctx.assets().sound_gemcollect, ctx.settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
     switch (type)
     {
     case BONUS_TIMER: // Blue gem
-        if (game_state.level_mode == false)
+        if (ctx.state.level_mode == false)
         {
-            game_state.timer += 6;
+            ctx.state.timer += 6;
         }
         else
         {
-            game_state.timer++;
+            ctx.state.timer++;
         }
         break;
 
     case BONUS_ROCKETSIZE: // Green gem
-        if (game_state.level_mode == false)
+        if (ctx.state.level_mode == false)
         {
-            game_state.timer += 2;
+            ctx.state.timer += 2;
         }
-        game_settings.ROCKET_SIZE += 5;
+        ctx.settings.ROCKET_SIZE += 5;
         break;
 
     case BONUS_SCORE: // Red gem
-        if (game_state.level_mode == false)
+        if (ctx.state.level_mode == false)
         {
-            game_state.score += 5000;
-            game_state.timer += 2;
+            ctx.state.score += 5000;
+            ctx.state.timer += 2;
         }
         else
         {
-            game_state.timer += 3;
+            ctx.state.timer += 3;
         }
         break;
 
@@ -511,7 +511,7 @@ void earn_bonus(int type)
     }
 }
 
-void show_levelnumber()
+void show_levelnumber(AppContext& ctx)
 {
     int mx{};
     int my{};
@@ -525,18 +525,18 @@ void show_levelnumber()
             game_time--;
         }
 
-        clear(assets.buffer);
+        clear(ctx.assets().buffer);
 
-        CHICKENS_TEXTPRINTF_CENTRE(assets.buffer,
-                                   assets.font_big,
+        CHICKENS_TEXTPRINTF_CENTRE(ctx.assets().buffer,
+                                   ctx.assets().font_big,
                                    SCREEN_W / 2,
                                    SCREEN_H / 2,
                                    makecol(255, 255, 255),
                                    "Level %d",
-                                   game_state.current_level);
+                                   ctx.state.current_level);
 
-        draw_sprite(assets.buffer, mouse_sprite, mx, my);
-        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(ctx.assets().buffer, mouse_sprite, mx, my);
+        blit(ctx.assets().buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -544,10 +544,10 @@ void show_levelnumber()
 
     } while (mouse_b != 1);
 
-    fadeout(makecol(0, 0, 0), 30);
+    fadeout(ctx, makecol(0, 0, 0), 30);
 }
 
-void fadeout(int color, int duration)
+void fadeout(AppContext& ctx, int color, int duration)
 {
     int fader{255};
     int fader_step{duration % fader};
@@ -565,9 +565,9 @@ void fadeout(int color, int duration)
         }
 
         set_trans_blender(255, 255, 255, 60);
-        draw_trans_sprite(assets.buffer, fading, 0, 0);
+        draw_trans_sprite(ctx.assets().buffer, fading, 0, 0);
 
-        blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        blit(ctx.assets().buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         while (game_time <= 0)
         {
@@ -576,61 +576,61 @@ void fadeout(int color, int duration)
     } while (duration > 0);
 }
 
-void next_level(int level_number)
+void next_level(AppContext& ctx, int level_number)
 {
-    stop_sample(assets.sound_alarm);
-    stop_sample(assets.sound_highscore);
-    stop_sample(assets.sound_gameover);
+    stop_sample(ctx.assets().sound_alarm);
+    stop_sample(ctx.assets().sound_highscore);
+    stop_sample(ctx.assets().sound_gameover);
 
-    game_state.current_level = level_number;
-    game_state.chickens_left = game_settings.INITIAL_CHICKENS + (level_number * 4);
-    game_settings.CHICKEN_SPEED = static_cast<int>(sqrt(static_cast<double>(game_state.chickens_left))) / 2;
-    game_state.timer = 60;
+    ctx.state.current_level = level_number;
+    ctx.state.chickens_left = ctx.settings.INITIAL_CHICKENS + (level_number * 4);
+    ctx.settings.CHICKEN_SPEED = static_cast<int>(sqrt(static_cast<double>(ctx.state.chickens_left))) / 2;
+    ctx.state.timer = 60;
 }
 
-void show_statistics()
+void show_statistics(AppContext& ctx)
 {
-    int minutes{game_state.timer / 60};
-    int seconds{game_state.timer - (minutes * 60)};
+    int minutes{ctx.state.timer / 60};
+    int seconds{ctx.state.timer - (minutes * 60)};
     const char* format{(seconds < 10) ? "%d:0%d" : "%d:%d"};
 
-    if (game_state.level_mode == true)
+    if (ctx.state.level_mode == true)
     {
         // Level Mode:
         CHICKENS_TEXTPRINTF(
-            assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", game_state.current_level);
-        CHICKENS_TEXTPRINTF(assets.buffer,
-                            assets.font_interface,
+            ctx.assets().buffer, ctx.assets().font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", ctx.state.current_level);
+        CHICKENS_TEXTPRINTF(ctx.assets().buffer,
+                            ctx.assets().font_interface,
                             20,
                             25,
                             makecol(255, 255, 255),
                             "Chickens: %d    ",
-                            game_state.chickens_left);
+                            ctx.state.chickens_left);
         CHICKENS_TEXTPRINTF(
-            assets.buffer, assets.font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
+            ctx.assets().buffer, ctx.assets().font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
     }
     else
     {
         // Classic Mode:
         CHICKENS_TEXTPRINTF(
-            assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", game_state.score);
+            ctx.assets().buffer, ctx.assets().font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", ctx.state.score);
         CHICKENS_TEXTPRINTF(
-            assets.buffer, assets.font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", game_state.kills);
+            ctx.assets().buffer, ctx.assets().font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", ctx.state.kills);
         CHICKENS_TEXTPRINTF(
-            assets.buffer, assets.font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
+            ctx.assets().buffer, ctx.assets().font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
 
-        if (game_state.alert_mode)
+        if (ctx.state.alert_mode)
         {
             set_trans_blender(255, 255, 255, 150);
             draw_trans_sprite(
-                assets.buffer, static_cast<BITMAP*>(assets.icons_data[0].dat), SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
+                ctx.assets().buffer, static_cast<BITMAP*>(ctx.assets().icons_data[0].dat), SCREEN_W / 2 - 50, SCREEN_H / 2 - 50);
             CHICKENS_TEXTOUT_CENTRE(
-                assets.buffer, assets.font_big, "ALERT", SCREEN_W / 2, SCREEN_H / 2 - 30, makecol(255, 255, 255));
+                ctx.assets().buffer, ctx.assets().font_big, "ALERT", SCREEN_W / 2, SCREEN_H / 2 - 30, makecol(255, 255, 255));
         }
     }
 }
 
-void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
+void weapon_manager(AppContext& ctx, bool* fire_rocket, bool* fire_shotgun)
 {
     static int reloading_rocket = 0;
     static int reloading_shotgun = 0;
@@ -652,29 +652,29 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
 
     if (*fire_rocket)
     {
-        reloading_rocket = game_settings.ROCKET_RELOAD; // reload time
-        play_sound(assets.sound_rocket, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
+        reloading_rocket = ctx.settings.ROCKET_RELOAD; // reload time
+        play_sound(ctx, ctx.assets().sound_rocket, ctx.settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
-        --game_state.timer;
+        --ctx.state.timer;
     }
 
     if (*fire_shotgun)
     {
-        reloading_shotgun = game_settings.SHOTGUN_RELOAD; // reload time
-        play_sound(assets.sound_shotgun,
-                   game_settings.VOLUME,
+        reloading_shotgun = ctx.settings.SHOTGUN_RELOAD; // reload time
+        play_sound(ctx, ctx.assets().sound_shotgun,
+                   ctx.settings.VOLUME,
                    int(mouse_x / 3.13),
                    ONCE); // Pan speaker output to mouse location
 
-        --game_state.timer;
+        --ctx.state.timer;
     }
 
     return;
 }
 
-void play_sound(const SAMPLE* snd, int volume, int pan, bool loop)
+void play_sound(AppContext& ctx, const SAMPLE* snd, int volume, int pan, bool loop)
 {
-    if (game_state.mute_sound == false)
+    if (ctx.state.mute_sound == false)
     {
         play_sample(snd, volume, pan, 1000, loop);
     }
