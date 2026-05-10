@@ -5,14 +5,8 @@
 #include "level.h"
 #include "settings.h"
 
-void Smoke::bind_level(Level* terrain)
+Smoke::Smoke(Level& terrain, Settings& settings) : terrain_{&terrain}, settings_{&settings}
 {
-    terrain_ = terrain;
-}
-
-void Smoke::bind_settings(Settings* settings)
-{
-    settings_ = settings;
 }
 
 int Smoke::run()

@@ -34,7 +34,6 @@ constexpr bool ONCE = false;
 constexpr int RIGHT = 1;
 constexpr int CROSSED_THE_ROAD = 2;
 
-int items_in_datafile(const DATAFILE* data);
 void Timer();
 
 struct RenderContext

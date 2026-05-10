@@ -54,6 +54,9 @@ struct AppAssets
 class AssetManager
 {
   public:
+    /** Count of usable objects in an Allegro `DATAFILE` (excludes `DAT_END` sentinel). */
+    static int items_in_datafile(const DATAFILE* data);
+
     ~AssetManager();
     bool load_app_assets();
     void clear();

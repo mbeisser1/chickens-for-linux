@@ -138,7 +138,7 @@ void Kfc::release(const float at_x,
     for (int i = 0; i < settings.CHUNKS_PER_CHICKEN; ++i)
     {
         chunk[i].blood = std::unique_ptr<Blood[]>(new Blood[settings.BLOOD_PER_CHUNK]);
-        chunk[i].image = rand() % items_in_datafile(app_assets.giblet_data);
+        chunk[i].image = rand() % AssetManager::items_in_datafile(app_assets.giblet_data);
 
         chunk[i].landed = false;
         chunk[i].x = at_x + rand() % CHICKEN_WIDTH;

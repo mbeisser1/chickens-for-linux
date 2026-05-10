@@ -13,11 +13,8 @@ struct AppAssets;
 class Chicken
 {
   public:
-    Chicken();
-    /** Call after Allegro loads datafiles (`chicken_data`, `flyingchicken_data`). */
-    void load_sprites(AppAssets& app_assets);
-    void bind_level(Level* terrain);
-    void bind_settings(Settings* settings);
+    /** Loads sprite datafiles and binds level/settings; calls `reset()` for initial placement. */
+    Chicken(AppAssets& app_assets, Level& terrain, Settings& settings);
 
     void draw(const RenderContext& render_context);
     void reset();
@@ -37,7 +34,8 @@ class Chicken
   private:
     Level* terrain_{};
     Settings* settings_{};
-    AppAssets* app_assets_{};
+    /** One `AppAssets` bundle per run; set from each `Chicken` construction. */
+    static AppAssets* session_assets_;
 };
 
 #endif

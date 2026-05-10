@@ -240,21 +240,23 @@ Game::Game(AppContext& app) : ctx_(app)
 
     set_mouse_sprite(static_cast<BITMAP*>(ctx_.assets().cursors_data[0].dat));
 
-    for (auto& puff : smoke_)
+    smoke_.clear();
+    smoke_.reserve(MAX_SMOKE);
+    for (int i = 0; i < MAX_SMOKE; ++i)
     {
-        puff.bind_level(&terrain_);
-        puff.bind_settings(&ctx_.settings);
+        smoke_.emplace_back(terrain_, ctx_.settings);
     }
-    for (auto& rock : gem_)
+    gem_.clear();
+    gem_.reserve(MAX_GEMS);
+    for (int i = 0; i < MAX_GEMS; ++i)
     {
-        rock.bind_settings(&ctx_.settings);
+        gem_.emplace_back(ctx_.settings);
     }
-    for (auto& hen : chicken_)
+    chickens_.clear();
+    chickens_.reserve(MAX_CHICKENS_CAPACITY);
+    for (int i = 0; i < MAX_CHICKENS_CAPACITY; ++i)
     {
-        hen.load_sprites(ctx_.assets());
-        hen.bind_level(&terrain_);
-        hen.bind_settings(&ctx_.settings);
-        hen.reset();
+        chickens_.emplace_back(ctx_.assets(), terrain_, ctx_.settings);
     }
 }
 
@@ -481,10 +483,10 @@ void Game::show_modechooser()
                     {
                         ctx_.state.mode = MODE_RESTART;
                         ctx_.state.level_mode = false;
-                        ctx_.settings = Settings(
-                            ctx_.settings.config_path); // Load original config settings (easier than a
+                        // Load original config settings (easier than having a ton of variables to remember them)
+                        ctx_.settings = Settings(ctx_.settings.config_path); 
                         ctx_.state.apply_settings(ctx_.settings);
-                        // having a ton of variables to remember them)
+                        
                         done = true;
                     }
                 }
@@ -654,7 +656,7 @@ void Game::restart()
 
     for (int i = 0; i < ctx_.settings.MAX_CHICKENS; ++i)
     {
-        chicken_[i].reset();
+        chickens_[i].reset();
     }
 
     for (int i = 0; i < MAX_GEMS; ++i)
@@ -668,7 +670,7 @@ void Game::restart()
     }
 
     ctx_.assets().background = static_cast<BITMAP*>(
-        ctx_.assets().background_data[rand() % items_in_datafile(ctx_.assets().background_data)].dat);
+        ctx_.assets().background_data[rand() % AssetManager::items_in_datafile(ctx_.assets().background_data)].dat);
     terrain_.create(ctx_.assets());
 
     ctx_.settings.ROCKET_SIZE = ctx_.state.tmp_rocket_size;
@@ -826,20 +828,20 @@ void Game::tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket
     weapon_manager(c, &fire_rocket, &fire_shotgun);
     for (int i = 0; i < c.state.runners; ++i)
     {
-        if (chicken_[i].run() == CROSSED_THE_ROAD)
+        if (chickens_[i].run() == CROSSED_THE_ROAD)
         {
             c.state.mode = MODE_GAMEOVER;
         }
 
         if (fire_rocket)
         {
-            if (chicken_[i].alive == NOT_KILLED &&
-                ((SCREEN_H - chicken_[i].y) - terrain_.height[mouse_x]) < c.settings.ROCKET_SIZE &&
-                (abs(mouse_x - static_cast<int>(chicken_[i].x)) < c.settings.ROCKET_SIZE ||
-                 abs(mouse_x - static_cast<int>(chicken_[i].x) - CHICKEN_WIDTH) < c.settings.ROCKET_SIZE))
+            if (chickens_[i].alive == NOT_KILLED &&
+                ((SCREEN_H - chickens_[i].y) - terrain_.height[mouse_x]) < c.settings.ROCKET_SIZE &&
+                (abs(mouse_x - static_cast<int>(chickens_[i].x)) < c.settings.ROCKET_SIZE ||
+                 abs(mouse_x - static_cast<int>(chickens_[i].x) - CHICKEN_WIDTH) < c.settings.ROCKET_SIZE))
             {
                 c.state.score += c.settings.POINTS_FOR_ROCKET;
-                chicken_[i].alive = KILLED_WITH_ROCKET;
+                chickens_[i].alive = KILLED_WITH_ROCKET;
                 ++c.state.kills;
                 --c.state.chickens_left;
 
@@ -855,7 +857,7 @@ void Game::tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket
                     {
                         if (gem_[j].active == false)
                         {
-                            gem_[j].launch(chicken_[i].x, chicken_[i].y);
+                            gem_[j].launch(chickens_[i].x, chickens_[i].y);
                             break;
                         }
                     }
@@ -865,15 +867,15 @@ void Game::tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket
 
         if (fire_shotgun)
         {
-            if (chicken_[i].alive == NOT_KILLED &&
-                (abs(mouse_x - static_cast<int>(chicken_[i].x)) < c.settings.SHOTGUN_SIZE ||
-                 abs(mouse_x - static_cast<int>(chicken_[i].x) - CHICKEN_WIDTH) < c.settings.SHOTGUN_SIZE) &&
-                (abs(mouse_y - static_cast<int>(chicken_[i].y)) < c.settings.SHOTGUN_SIZE ||
-                 abs(mouse_y - static_cast<int>(chicken_[i].y) - CHICKEN_HEIGHT) < c.settings.SHOTGUN_SIZE))
+            if (chickens_[i].alive == NOT_KILLED &&
+                (abs(mouse_x - static_cast<int>(chickens_[i].x)) < c.settings.SHOTGUN_SIZE ||
+                 abs(mouse_x - static_cast<int>(chickens_[i].x) - CHICKEN_WIDTH) < c.settings.SHOTGUN_SIZE) &&
+                (abs(mouse_y - static_cast<int>(chickens_[i].y)) < c.settings.SHOTGUN_SIZE ||
+                 abs(mouse_y - static_cast<int>(chickens_[i].y) - CHICKEN_HEIGHT) < c.settings.SHOTGUN_SIZE))
             {
                 c.state.score += c.settings.POINTS_FOR_SHOTGUN;
-                chicken_[i].alive = KILLED_WITH_SHOTGUN;
-                chicken_[i].flight = chicken_[i].direction;
+                chickens_[i].alive = KILLED_WITH_SHOTGUN;
+                chickens_[i].flight = chickens_[i].direction;
                 ++c.state.kills;
                 --c.state.chickens_left;
 
@@ -889,7 +891,7 @@ void Game::tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket
                     {
                         if (gem_[j].active == false)
                         {
-                            gem_[j].launch(chicken_[i].x, chicken_[i].y);
+                            gem_[j].launch(chickens_[i].x, chickens_[i].y);
                             break;
                         }
                     }
@@ -922,10 +924,10 @@ void Game::tick_mode_playing(AppContext& c, bool& alert_sound, bool& fire_rocket
             {
                 for (int i = 0; i < c.settings.MAX_CHICKENS; ++i)
                 {
-                    if (chicken_[i].alive == NOT_KILLED)
+                    if (chickens_[i].alive == NOT_KILLED)
                     {
-                        chicken_[i].alive = KILLED_WITH_TENDERIZER;
-                        chicken_[i].flight = chicken_[i].direction;
+                        chickens_[i].alive = KILLED_WITH_TENDERIZER;
+                        chickens_[i].flight = chickens_[i].direction;
                         c.state.score += c.settings.POINTS_FOR_TENDERIZER;
                         c.state.kills++;
                     }
@@ -1035,7 +1037,7 @@ void Game::draw_frame_playing(AppContext& c)
     }
     for (int i = 0; i < c.state.runners; ++i)
     {
-        chicken_[i].draw(c.render_context);
+        chickens_[i].draw(c.render_context);
     }
     show_statistics(c);
 }

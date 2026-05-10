@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <array>
+#include <vector>
 
 #include "app_context.h"
 #include "chicken.h"
@@ -40,9 +40,9 @@ class Game
 
     AppContext& ctx_;
     Level terrain_{};
-    std::array<Smoke, MAX_SMOKE> smoke_{};
-    std::array<Gem, MAX_GEMS> gem_{};
-    std::array<Chicken, MAX_CHICKENS_CAPACITY> chicken_{};
+    std::vector<Smoke> smoke_{};
+    std::vector<Gem> gem_{};
+    std::vector<Chicken> chickens_{};
 };
 
 #endif

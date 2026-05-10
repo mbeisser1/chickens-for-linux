@@ -14,9 +14,8 @@ struct Settings;
 class Gem
 {
   public:
-    Gem() = default;
+    explicit Gem(Settings& settings);
 
-    void bind_settings(Settings* settings);
     void draw(const RenderContext& render_context) const;
     void launch(float x, float y);
     int run();

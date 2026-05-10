@@ -11,7 +11,7 @@ bool bitmap_belongs_to_datafile(const DATAFILE* datafile, const BITMAP* bitmap)
         return false;
     }
 
-    const int item_count = items_in_datafile(datafile);
+    const int item_count = AssetManager::items_in_datafile(datafile);
     for (int i = 0; i < item_count; ++i)
     {
         if (static_cast<const BITMAP*>(datafile[i].dat) == bitmap)
@@ -243,4 +243,15 @@ AppAssets& AssetManager::assets()
 const AppAssets& AssetManager::assets() const
 {
     return app_assets_;
+}
+
+int AssetManager::items_in_datafile(const DATAFILE* data)
+{
+    int len = 0;
+    while (data[len].type != DAT_END)
+    {
+        len++;
+    }
+
+    return len - 1;
 }

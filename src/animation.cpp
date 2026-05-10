@@ -1,9 +1,11 @@
 #include "animation.h"
 
+#include "asset_manager.h"
+
 void Animation::load(const DATAFILE* d)
 {
     data = d;
-    frames = items_in_datafile(data);
+    frames = AssetManager::items_in_datafile(data);
     step = {};
     angle = {};
     old_angle = {};
@@ -78,7 +80,7 @@ void Animation::reverse()
 void Cutscene::load(const char* path)
 {
     data = load_datafile(path);
-    frames = items_in_datafile(data);
+    frames = AssetManager::items_in_datafile(data);
     step = {};
 }
 

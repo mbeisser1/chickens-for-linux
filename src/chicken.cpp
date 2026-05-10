@@ -4,24 +4,17 @@
 #include "settings.h"
 #include "asset_manager.h"
 
-Chicken::Chicken() = default;
+AppAssets* Chicken::session_assets_{};
 
-void Chicken::load_sprites(AppAssets& app_assets)
+Chicken::Chicken(AppAssets& app_assets, Level& terrain, Settings& settings)
+    : terrain_{&terrain}
+    , settings_{&settings}
 {
+    session_assets_ = &app_assets;
     running.load(app_assets.chicken_data);
     flying.load(app_assets.flyingchicken_data);
     flying.slide = true;
-    app_assets_ = &app_assets;
-}
-
-void Chicken::bind_level(Level* terrain)
-{
-    terrain_ = terrain;
-}
-
-void Chicken::bind_settings(Settings* settings)
-{
-    settings_ = settings;
+    reset();
 }
 
 void Chicken::reset()
@@ -117,10 +110,10 @@ int Chicken::run()
     {
         if (!dead.released)
         {
-            dead.release(x, y, mouse_x, alive, direction, tune, *app_assets_);
+            dead.release(x, y, mouse_x, alive, direction, tune, *session_assets_);
         }
 
-        dead.explode(terrain, tune, *app_assets_);
+        dead.explode(terrain, tune, *session_assets_);
 
         for (int i = 0; i < tune.CHUNKS_PER_CHICKEN; ++i)
         {

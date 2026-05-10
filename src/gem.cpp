@@ -2,9 +2,8 @@
 
 #include "settings.h"
 
-void Gem::bind_settings(Settings* settings)
+Gem::Gem(Settings& settings) : settings_{&settings}
 {
-    settings_ = settings;
 }
 
 void Gem::draw(const RenderContext& render_context) const

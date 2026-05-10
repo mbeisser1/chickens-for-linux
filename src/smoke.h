@@ -25,9 +25,8 @@ struct SmokePuff
 class Smoke
 {
   public:
-    Smoke() = default;
-    void bind_level(Level* terrain);
-    void bind_settings(Settings* settings);
+    Smoke(Level& terrain, Settings& settings);
+
     int draw(const RenderContext& render_context);
     int run();
     void release();
