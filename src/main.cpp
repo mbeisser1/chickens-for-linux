@@ -38,6 +38,8 @@
 
 int mode_manager();
 int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed);
+void show_cli_help();
+void show_cli_version();
 void load_datafiles();
 void initialize(int);
 void show_startup();
@@ -55,32 +57,43 @@ void show_statistics();
 void weapon_manager(bool*, bool*);
 void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
 
-Settings game_settings{};
-AssetManager asset_manager{};
-
 volatile int game_time{};
 
-int chickens_left{};     // Number of chickens left to kill, for levelmode only
-int current_level{1};    // Current level, levelmode only
-int delay_of_levelend{}; // Set a delay so the level doesn't end until you actually see the final
-                         // chicken die
-int mode{MODE_PLAYING};  // Current game mode
-int kills{};             // Number of chickens killed
-int runners{};           // Number of chickens currently in game
-int score{};             // Current game score
-int shots_fired{};       // Number of rockets/shotguns fired
-int timer{};             // Game time
-int timer_delay{};       // Keeps track of each second
-int tenderizers{};       // Number of tenderizers available (you can really only have 1)
-int tmp_rocket_size{};   // Used for remembering the default rocket size
-bool alert_mode{};       // Alert mode!
-bool level_mode{};       // Whether level mode is on
-bool mute_sound{};       // Shall we play sounds or not?
-bool not_dead{};         // If the player isn't dead yet
-const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configuration file
-const char* playername{};
+struct GameState
+{
+    int chickens_left{};     // Number of chickens left to kill, for level mode only
+    int current_level{1};    // Current level, level mode only
+    int delay_of_levelend{}; // Delay so level end is visible
+    int mode{MODE_PLAYING};  // Current game mode
+    int kills{};             // Number of chickens killed
+    int runners{};           // Number of chickens currently in game
+    int score{};             // Current game score
+    int shots_fired{};       // Number of rockets/shotguns fired
+    int timer{};             // Game time
+    int timer_delay{};       // Keeps track of each second
+    int tenderizers{};       // Number of tenderizers available
+    int tmp_rocket_size{};   // Used for remembering the default rocket size
+    bool alert_mode{};       // Alert mode
+    bool level_mode{};       // Whether level mode is on
+    bool mute_sound{};       // Shall we play sounds or not?
+    bool not_dead{};         // If the player isn't dead yet
+    const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configuration file
+    const char* playername{};
+};
 
+struct AppContext
+{
+    Settings& game_settings;
+    AssetManager& asset_manager;
+    Level& level;
+    GameState& game_state;
+};
+
+Settings game_settings{};
+AssetManager asset_manager{};
 Level level{};
+GameState game_state{};
+AppContext app_context{game_settings, asset_manager, level, game_state};
 static AppAssets& assets{asset_manager.app_assets()};
 
 int main(int argc, char* argv[])
@@ -92,11 +105,11 @@ int main(int argc, char* argv[])
     bool fire_rocket{};   // When true, a rocket is being fired
     bool fire_shotgun{}; // When true, the shotgun is being fired
 
-    playername = getenv("USER");
+    game_state.playername = getenv("USER");
 
-    game_settings = Settings(config_path);
+    game_settings = Settings(game_state.config_path);
 
-    mute_sound = game_settings.MUTE;
+    game_state.mute_sound = game_settings.MUTE;
 
     bool cli_force_windowed{};
     int windowmode{};
@@ -118,7 +131,7 @@ int main(int argc, char* argv[])
     assets.background =
         create_bitmap(SCREEN_W, SCREEN_H); // Prevent a segfault if they exit without playing
                                            // anything (ie no background image gets loaded)
-    tmp_rocket_size = game_settings.ROCKET_SIZE;
+    game_state.tmp_rocket_size = game_settings.ROCKET_SIZE;
 
     std::array<Smoke, MAX_SMOKE> smoke;
     std::array<Gem, MAX_GEMS> gem;
@@ -135,28 +148,28 @@ int main(int argc, char* argv[])
     {
         while (game_time > 0)
         {
-            mode_manager(); // Check for user input and change game mode as needed
+            mode_manager(); // Check for user input and change game game_state.mode as needed
             mx = mouse_x;
             my = mouse_y;
 
             // Logic
-            switch (mode)
+            switch (game_state.mode)
             {
             case MODE_RESTART:
                 restart(chicken, gem, smoke);
-                mode = MODE_PLAYING;
-                if (level_mode == true)
+                game_state.mode = MODE_PLAYING;
+                if (game_state.level_mode == true)
                 {
-                    next_level(current_level);
+                    next_level(game_state.current_level);
                 }
 
                 break;
 
             case MODE_PLAYING:
 
-                if (chickens_left < 0)
+                if (game_state.chickens_left < 0)
                 {
-                    chickens_left = 0;
+                    game_state.chickens_left = 0;
                 }
 
                 for (int i = 0; i < MAX_SMOKE; ++i)
@@ -172,35 +185,35 @@ int main(int argc, char* argv[])
                     }
                 }
 
-                if (timer_delay-- == 0)
+                if (game_state.timer_delay-- == 0)
                 {
-                    timer_delay = 60;
-                    timer--;
+                    game_state.timer_delay = 60;
+                    game_state.timer--;
                 }
 
-                if (timer <= 10)
-                { // When the timer starts getting low, enter Alert Mode
-                    alert_mode = true;
+                if (game_state.timer <= 10)
+                { // When the game_state.timer starts getting low, enter Alert Mode
+                    game_state.alert_mode = true;
                     if (!alert_sound)
                     { // Protect against playing the sound repeatedly with each cycle
                         play_sound(assets.sound_alarm, game_settings.VOLUME, 128, FOREVER);
                         alert_sound = true;
                     }
                 }
-                else if (alert_mode)
+                else if (game_state.alert_mode)
                 {
                     stop_sample(assets.sound_alarm);
                     alert_sound = false;
-                    alert_mode = false;
+                    game_state.alert_mode = false;
                 }
 
                 weapon_manager(&fire_rocket, &fire_shotgun); // Determine if a weapon is being fired
 
-                for (int i = 0; i < runners; ++i)
+                for (int i = 0; i < game_state.runners; ++i)
                 {
                     if (chicken[i].run() == CROSSED_THE_ROAD)
                     {
-                        mode = MODE_GAMEOVER;
+                        game_state.mode = MODE_GAMEOVER;
                     }
 
                     if (fire_rocket)
@@ -210,14 +223,14 @@ int main(int argc, char* argv[])
                             (abs(mouse_x - static_cast<int>(chicken[i].x)) < game_settings.ROCKET_SIZE ||
                              abs(mouse_x - static_cast<int>(chicken[i].x) - CHICKEN_WIDTH) < game_settings.ROCKET_SIZE))
                         {
-                            score += game_settings.POINTS_FOR_ROCKET;
+                            game_state.score += game_settings.POINTS_FOR_ROCKET;
                             chicken[i].alive = KILLED_WITH_ROCKET;
-                            ++kills;
-                            --chickens_left;
+                            ++game_state.kills;
+                            --game_state.chickens_left;
 
-                            if (runners < game_settings.MAX_CHICKENS - 1 && rand() % game_settings.RESPAWN_RATE <= 1)
+                            if (game_state.runners < game_settings.MAX_CHICKENS - 1 && rand() % game_settings.RESPAWN_RATE <= 1)
                             {
-                                runners++;
+                                game_state.runners++;
                             }
 
                             if (rand() % game_settings.CHANCE_OF_GEM <= 1)
@@ -243,15 +256,15 @@ int main(int argc, char* argv[])
                              abs(mouse_y - static_cast<int>(chicken[i].y) - CHICKEN_HEIGHT) < game_settings.SHOTGUN_SIZE))
                         { // Look! it's the worlds longest line of code.
 
-                            score += game_settings.POINTS_FOR_SHOTGUN;
+                            game_state.score += game_settings.POINTS_FOR_SHOTGUN;
                             chicken[i].alive = KILLED_WITH_SHOTGUN;
                             chicken[i].flight = chicken[i].direction;
-                            ++kills;
-                            --chickens_left;
+                            ++game_state.kills;
+                            --game_state.chickens_left;
 
-                            if (runners < game_settings.MAX_CHICKENS - 1 && rand() % game_settings.RESPAWN_RATE <= 1)
+                            if (game_state.runners < game_settings.MAX_CHICKENS - 1 && rand() % game_settings.RESPAWN_RATE <= 1)
                             {
-                                runners++;
+                                game_state.runners++;
                             }
 
                             if (rand() % game_settings.CHANCE_OF_GEM <= 1)
@@ -282,20 +295,20 @@ int main(int argc, char* argv[])
                         }
                     }
 
-                    ++shots_fired;
+                    ++game_state.shots_fired;
                 }
 
                 if (fire_shotgun)
                 {
-                    ++shots_fired;
+                    ++game_state.shots_fired;
                 }
 
-                if (level_mode == false)
+                if (game_state.level_mode == false)
                 {
                     // Don't allow the Tenderizer in Level Mode
 
                     // Emergency chicken tenderizer (kill all chickens instantly)
-                    if (tenderizers > 0)
+                    if (game_state.tenderizers > 0)
                     {
                         if (key[KEY_SPACE])
                         {
@@ -305,48 +318,48 @@ int main(int argc, char* argv[])
                                 {
                                     chicken[i].alive = KILLED_WITH_TENDERIZER;
                                     chicken[i].flight = chicken[i].direction;
-                                    score += game_settings.POINTS_FOR_TENDERIZER;
-                                    kills++;
+                                    game_state.score += game_settings.POINTS_FOR_TENDERIZER;
+                                    game_state.kills++;
                                 }
                             }
 
                             play_sound(assets.sound_tenderizer, game_settings.VOLUME, 128, ONCE);
-                            tenderizers--;
+                            game_state.tenderizers--;
                         }
                     }
                 }
 
-                if (timer <= 0)
+                if (game_state.timer <= 0)
                 {
-                    mode = MODE_GAMEOVER;
+                    game_state.mode = MODE_GAMEOVER;
                 }
 
                 if (key[KEY_R])
                 {
-                    mode = MODE_RESTART;
+                    game_state.mode = MODE_RESTART;
                     fadeout(makecol(0, 0, 0), 20);
                 }
 
-                if (level_mode == true)
+                if (game_state.level_mode == true)
                 {
-                    if (chickens_left < 1)
+                    if (game_state.chickens_left < 1)
                     {
-                        if (delay_of_levelend-- == 0)
+                        if (game_state.delay_of_levelend-- == 0)
                         {
-                            mode = MODE_NEXTLEVEL;
+                            game_state.mode = MODE_NEXTLEVEL;
                         }
                     }
                 }
 
                 // Protect against getting a Gameover in between the time you killed the last
                 // remaining chicken and the rollover delay time.
-                if (mode == MODE_GAMEOVER)
+                if (game_state.mode == MODE_GAMEOVER)
                 {
-                    if (level_mode == true)
+                    if (game_state.level_mode == true)
                     {
-                        if (chickens_left < 1)
+                        if (game_state.chickens_left < 1)
                         {
-                            mode = MODE_PLAYING;
+                            game_state.mode = MODE_PLAYING;
                         }
                     }
                 }
@@ -357,15 +370,15 @@ int main(int argc, char* argv[])
                 fadeout(makecol(0, 0, 0), 30);
                 show_levelcompleted();
                 restart(chicken, gem, smoke);
-                next_level(current_level + 1);
+                next_level(game_state.current_level + 1);
                 show_levelnumber();
-                mode = MODE_PLAYING;
+                game_state.mode = MODE_PLAYING;
                 break;
 
             case MODE_PAUSED:
                 if (key[KEY_C])
                 {
-                    mode = MODE_PLAYING;
+                    game_state.mode = MODE_PLAYING;
                 }
 
                 if (key[KEY_Q])
@@ -378,13 +391,13 @@ int main(int argc, char* argv[])
 
             case MODE_GAMEOVER:
 
-                if (level_mode == false)
+                if (game_state.level_mode == false)
                 {
-                    if (not_dead)
+                    if (game_state.not_dead)
                     {
-                        rank = save_highscore(playername, score);
+                        rank = save_highscore(game_state.playername, game_state.score);
                         stop_sample(assets.sound_alarm);
-                        not_dead = false;
+                        game_state.not_dead = false;
 
                         if (rank <= HIGHSCORE_TABLE)
                         {
@@ -399,7 +412,7 @@ int main(int argc, char* argv[])
 
                 if (key[KEY_R])
                 {
-                    mode = MODE_RESTART;
+                    game_state.mode = MODE_RESTART;
                     fadeout(makecol(0, 0, 0), 30);
                 }
 
@@ -420,7 +433,7 @@ int main(int argc, char* argv[])
         clear(assets.buffer);
         draw_sprite(assets.buffer, assets.background, 0, 0);
 
-        switch (mode)
+        switch (game_state.mode)
         {
         case MODE_PLAYING:
 
@@ -436,7 +449,7 @@ int main(int argc, char* argv[])
                 gem[i].draw(render_context);
             }
 
-            for (int i = 0; i < runners; ++i)
+            for (int i = 0; i < game_state.runners; ++i)
             {
                 chicken[i].draw(render_context);
             }
@@ -504,7 +517,7 @@ int main(int argc, char* argv[])
                                   SCREEN_H / 2 + 65,
                                   makecol(0, 220, 0),
                                   "But you did get a High Score of %d points in rank %d!",
-                                  score,
+                                  game_state.score,
                                   rank);
             }
 
@@ -518,7 +531,7 @@ int main(int argc, char* argv[])
         {
         }
 
-    } while (mode != MODE_QUIT);
+    } while (game_state.mode != MODE_QUIT);
 
     show_highscores(rank - 1, assets.buffer, assets.background);
 
@@ -537,13 +550,13 @@ END_OF_MAIN();
 
 int mode_manager()
 {
-    if (mode == MODE_PLAYING)
+    if (game_state.mode == MODE_PLAYING)
     {
         set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[1].dat));
 
         if (key[KEY_ESC] || key[KEY_PAUSE])
         {
-            mode = MODE_PAUSED;
+            game_state.mode = MODE_PAUSED;
         }
     }
     else
@@ -551,7 +564,7 @@ int mode_manager()
         set_mouse_sprite(static_cast<BITMAP*>(assets.cursors_data[0].dat));
     }
 
-    return mode;
+    return game_state.mode;
 }
 
 int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
@@ -559,17 +572,18 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
     // Process those pesky command line parameters
     for (int i = 1; i < argc; ++i)
     {
-        if (!strcmp(argv[i], "--window"))
+        const char* arg = argv[i];
+
+        if (!strcmp(arg, "--window"))
         {
             cli_force_windowed = true;
         }
-
-        else if (!strcmp(argv[i], "-s"))
+        else if (!strcmp(arg, "-s"))
         {
             if (i < argc - 1)
             {
-                config_path = argv[++i];
-                game_settings = Settings(config_path);
+                game_state.config_path = argv[++i];
+                game_settings = Settings(game_state.config_path);
             }
             else
             {
@@ -578,22 +592,19 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
                 return 4;
             }
         }
-
-        else if (!strcmp(argv[i], "--stock"))
+        else if (!strcmp(arg, "--stock"))
         {
             game_settings = Settings{};
         }
-
-        else if (!strcmp(argv[i], "--mute"))
+        else if (!strcmp(arg, "--mute"))
         {
-            mute_sound = true;
+            game_state.mute_sound = true;
         }
-
-        else if (!strcmp(argv[i], "-u") && argc > i)
+        else if (!strcmp(arg, "-u") && argc > i)
         {
             if (i < argc - 1)
             {
-                playername = argv[++i];
+                game_state.playername = argv[++i];
             }
             else
             {
@@ -602,12 +613,11 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
                 return 4;
             }
         }
-
-        else if (!strcmp(argv[i], "--warp") && argc > i)
+        else if (!strcmp(arg, "--warp") && argc > i)
         {
             if (i < argc - 1)
             {
-                current_level = ctoi(argv[++i]);
+                game_state.current_level = ctoi(argv[++i]);
             }
             else
             {
@@ -616,35 +626,42 @@ int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
                 return 4;
             }
         }
-
-        else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h"))
+        else if (!strcmp(arg, "--help") || !strcmp(arg, "-h"))
         {
-            allegro_message("Chickens for Linux! 0.2.4\n");
-            allegro_message("  -u %smaster\tSpecify player name (default is $USER)\n", playername);
-            allegro_message("  -s file.cfg\t\tSpecify config file\n");
-            allegro_message("  --warp x\t\tWarp to level 'x'\n");
-            allegro_message("  --window\t\tRun in windowed mode\n");
-            allegro_message("  --mute\t\tDon't play any sound or music\n");
-            allegro_message("  --stock\t\tUse stock settings\n");
-            allegro_message("  --help | -h\t\tDisplay this informative help screen\n");
-            allegro_message("  --version\t\tShow version number\n");
+            show_cli_help();
             return 1;
         }
-
-        else if (!strcmp(argv[i], "--version"))
+        else if (!strcmp(arg, "--version"))
         {
-            allegro_message("Chickens for Linux! 0.2.4\n");
+            show_cli_version();
             return 2;
         }
-
         else
         {
-            allegro_message("Error - Unknown Parameter '%s'\n", argv[i]);
+            allegro_message("Error - Unknown Parameter '%s'\n", arg);
             return 3;
         }
     }
 
     return 0;
+}
+
+void show_cli_help()
+{
+    show_cli_version();
+    allegro_message("  -u %smaster\tSpecify player name (default is $USER)\n", game_state.playername);
+    allegro_message("  -s file.cfg\t\tSpecify config file\n");
+    allegro_message("  --warp x\t\tWarp to level 'x'\n");
+    allegro_message("  --window\t\tRun in windowed game_state.mode\n");
+    allegro_message("  --mute\t\tDon't play any sound or music\n");
+    allegro_message("  --stock\t\tUse stock settings\n");
+    allegro_message("  --help | -h\t\tDisplay this informative help screen\n");
+    allegro_message("  --version\t\tShow version number\n");
+}
+
+void show_cli_version()
+{
+    allegro_message("Chickens for Linux! 0.2.4\n");
 }
 
 void load_datafiles()
@@ -687,7 +704,7 @@ static bool try_set_gfx_mode(int requested_mode)
 
     if (requested_mode == GFX_AUTODETECT_FULLSCREEN)
     {
-        allegro_message("Fullscreen mode failed; trying windowed.\n%s\n", allegro_error);
+        allegro_message("Fullscreen game_state.mode failed; trying windowed.\n%s\n", allegro_error);
         if (try_depths_for_driver(GFX_AUTODETECT_WINDOWED))
         {
             return true;
@@ -720,7 +737,7 @@ void initialize(int windowmode)
 
     if (!try_set_gfx_mode(windowmode))
     {
-        allegro_message("Unable to set graphics mode 800x600.\n%s\n", allegro_error);
+        allegro_message("Unable to set graphics game_state.mode 800x600.\n%s\n", allegro_error);
         std::exit(EXIT_FAILURE);
     }
 
@@ -786,7 +803,7 @@ void show_startup()
         CHICKENS_TEXTOUT_CENTRE(assets.buffer, font, "CLASSIC MODE:", SCREEN_W / 2, 200, makecol(220, 0, 0));
         CHICKENS_TEXTOUT_CENTRE(assets.buffer,
                        font,
-                       "You are on a 2 minute timer. Each time that you shoot, you",
+                       "You are on a 2 minute game_state.timer. Each time that you shoot, you",
                        SCREEN_W / 2,
                        215,
                        makecol(255, 255, 255));
@@ -943,9 +960,9 @@ void show_modechooser()
                 {
                     if (mouse_y > SCREEN_H - 160 && mouse_y < SCREEN_H - 90)
                     {
-                        mode = MODE_RESTART;
-                        level_mode = false;
-                        game_settings = Settings(config_path); // Load original config settings (easier than a
+                        game_state.mode = MODE_RESTART;
+                        game_state.level_mode = false;
+                        game_settings = Settings(game_state.config_path); // Load original config settings (easier than a
                                                   // having a ton of variables to remember them)
                         done = true;
                     }
@@ -956,7 +973,7 @@ void show_modechooser()
                 {
                     if (mouse_y > SCREEN_H - 100)
                     {
-                        mode = MODE_QUIT;
+                        game_state.mode = MODE_QUIT;
                         done = true;
                     }
                 }
@@ -966,9 +983,9 @@ void show_modechooser()
                 {
                     if (mouse_y > 280 && mouse_y < 380)
                     {
-                        mode = MODE_RESTART;
-                        level_mode = true;
-                        next_level(current_level);
+                        game_state.mode = MODE_RESTART;
+                        game_state.level_mode = true;
+                        next_level(game_state.current_level);
                         done = true;
                     }
                 }
@@ -1024,7 +1041,7 @@ void show_modechooser()
 
     fadeout(makecol(0, 0, 0), 40);
 
-    if (mode == MODE_RESTART && level_mode == true)
+    if (game_state.mode == MODE_RESTART && game_state.level_mode == true)
     {
         show_levelnumber();
     }
@@ -1038,8 +1055,8 @@ void show_levelcompleted()
     int mx{};
     int my{};
     float a{};
-    float accuracy = ((static_cast<float>(kills) / static_cast<float>(shots_fired)) * 70)
-                     + ((timer / 60) * 30);
+    float accuracy = ((static_cast<float>(game_state.kills) / static_cast<float>(game_state.shots_fired)) * 70)
+                     + ((game_state.timer / 60) * 30);
     float bonus{};
 
     if (accuracy > 100)
@@ -1073,7 +1090,7 @@ void show_levelcompleted()
                                     SCREEN_H / 2,
                                     makecol(255, 255, 255),
                                     "Level %d Completed!",
-                                    current_level);
+                                    game_state.current_level);
         {
             /* a>100: green text here; old inner loop only set unused `color`. */
             const int acc_fg = (a > 100.0f) ? makecol(0, 255, 0) : makecol(255, 255, 255);
@@ -1134,22 +1151,22 @@ void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
         assets.background_data[rand() % items_in_datafile(assets.background_data)].dat);
     level.create();
 
-    game_settings.ROCKET_SIZE = tmp_rocket_size;
-    tenderizers = 1;
+    game_settings.ROCKET_SIZE = game_state.tmp_rocket_size;
+    game_state.tenderizers = 1;
 
-    if (level_mode == false)
+    if (game_state.level_mode == false)
     {
-        timer = game_settings.TIMER;
+        game_state.timer = game_settings.TIMER;
     }
 
-    delay_of_levelend = 40;
-    timer_delay = 0;
-    score = 0;
-    shots_fired = 0;
-    kills = 0;
-    runners = game_settings.INITIAL_CHICKENS;
-    alert_mode = false;
-    not_dead = true;
+    game_state.delay_of_levelend = 40;
+    game_state.timer_delay = 0;
+    game_state.score = 0;
+    game_state.shots_fired = 0;
+    game_state.kills = 0;
+    game_state.runners = game_settings.INITIAL_CHICKENS;
+    game_state.alert_mode = false;
+    game_state.not_dead = true;
 
     stop_sample(assets.sound_gameover); // They might not always be playing but stop them anyway
     stop_sample(assets.sound_highscore);
@@ -1164,33 +1181,33 @@ void earn_bonus(int type)
     switch (type)
     {
     case BONUS_TIMER: // Blue gem
-        if (level_mode == false)
+        if (game_state.level_mode == false)
         {
-            timer += 6;
+            game_state.timer += 6;
         }
         else
         {
-            timer++;
+            game_state.timer++;
         }
         break;
 
     case BONUS_ROCKETSIZE: // Green gem
-        if (level_mode == false)
+        if (game_state.level_mode == false)
         {
-            timer += 2;
+            game_state.timer += 2;
         }
         game_settings.ROCKET_SIZE += 5;
         break;
 
     case BONUS_SCORE: // Red gem
-        if (level_mode == false)
+        if (game_state.level_mode == false)
         {
-            score += 5000;
-            timer += 2;
+            game_state.score += 5000;
+            game_state.timer += 2;
         }
         else
         {
-            timer += 3;
+            game_state.timer += 3;
         }
         break;
 
@@ -1221,7 +1238,7 @@ void show_levelnumber()
                           SCREEN_H / 2,
                           makecol(255, 255, 255),
                           "Level %d",
-                          current_level);
+                          game_state.current_level);
 
         draw_sprite(assets.buffer, mouse_sprite, mx, my);
         blit(assets.buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -1270,10 +1287,10 @@ void next_level(int level)
     stop_sample(assets.sound_highscore);
     stop_sample(assets.sound_gameover);
 
-    current_level = level;
-    chickens_left = game_settings.INITIAL_CHICKENS + (level * 4);
-    game_settings.CHICKEN_SPEED = static_cast<int>(sqrt(chickens_left)) / 2;
-    timer = 60;
+    game_state.current_level = level;
+    game_state.chickens_left = game_settings.INITIAL_CHICKENS + (level * 4);
+    game_settings.CHICKEN_SPEED = static_cast<int>(sqrt(game_state.chickens_left)) / 2;
+    game_state.timer = 60;
 }
 
 int ctoi(const char* t)
@@ -1294,34 +1311,34 @@ int ctoi(const char* t)
 
 void show_statistics()
 {
-    int minutes{timer / 60};
-    int seconds{timer - (minutes * 60)};
+    int minutes{game_state.timer / 60};
+    int seconds{game_state.timer - (minutes * 60)};
     const char* format{(seconds < 10) ? "%d:0%d" : "%d:%d"};
 
-    if (level_mode == true)
+    if (game_state.level_mode == true)
     {
         // Level Mode:
         CHICKENS_TEXTPRINTF(
-            assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", current_level);
+            assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Level: %d", game_state.current_level);
         CHICKENS_TEXTPRINTF(assets.buffer,
                    assets.font_interface,
                    20,
                    25,
                    makecol(255, 255, 255),
                    "Chickens: %d    ",
-                   chickens_left);
+                   game_state.chickens_left);
         CHICKENS_TEXTPRINTF(
             assets.buffer, assets.font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
     }
     else
     {
         // Classic Mode:
-        CHICKENS_TEXTPRINTF(assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", score);
-        CHICKENS_TEXTPRINTF(assets.buffer, assets.font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", kills);
+        CHICKENS_TEXTPRINTF(assets.buffer, assets.font_interface, 20, 5, makecol(255, 255, 255), "Score: %d    ", game_state.score);
+        CHICKENS_TEXTPRINTF(assets.buffer, assets.font_interface, 20, 25, makecol(255, 255, 255), "Kills: %d    ", game_state.kills);
         CHICKENS_TEXTPRINTF(
             assets.buffer, assets.font_big, SCREEN_W - 90, 0, makecol(255, 255, 255), format, minutes, seconds);
 
-        if (alert_mode)
+        if (game_state.alert_mode)
         {
             set_trans_blender(255, 255, 255, 150);
             draw_trans_sprite(
@@ -1357,7 +1374,7 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
         reloading_rocket = game_settings.ROCKET_RELOAD; // reload time
         play_sound(assets.sound_rocket, game_settings.VOLUME, int(mouse_x / 3.13), ONCE);
 
-        --timer;
+        --game_state.timer;
     }
 
     if (*fire_shotgun)
@@ -1368,7 +1385,7 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
                    int(mouse_x / 3.13),
                    ONCE); // Pan speaker output to mouse location
 
-        --timer;
+        --game_state.timer;
     }
 
     return;
@@ -1376,7 +1393,7 @@ void weapon_manager(bool* fire_rocket, bool* fire_shotgun)
 
 void play_sound(const SAMPLE* snd, int volume, int pan, bool loop)
 {
-    if (mute_sound == false)
+    if (game_state.mute_sound == false)
     {
         play_sample(snd, volume, pan, 1000, loop);
     }
