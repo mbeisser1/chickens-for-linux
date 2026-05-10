@@ -19,6 +19,8 @@
 */
 
 #include <cstdlib>
+#include <algorithm>
+#include <array>
 #include <iostream>
 
 #include <allegro.h>
@@ -35,12 +37,15 @@
 #include "smoke.h"
 
 int mode_manager();
+int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed);
 void load_datafiles();
 void initialize(int);
 void show_startup();
 void show_modechooser();
 void show_levelcompleted();
-void restart(Chicken[], Gem[MAX_GEMS], Smoke[MAX_SMOKE]);
+void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>&,
+             std::array<Gem, MAX_GEMS>&,
+             std::array<Smoke, MAX_SMOKE>&);
 void earn_bonus(int);
 void show_levelnumber();
 void fadeout(int, int);
@@ -95,98 +100,15 @@ int main(int argc, char* argv[])
 
     bool cli_force_windowed{};
     int windowmode{};
-
-    // Process those pesky command line parameters
-
-    for (int i = 1; i < argc; ++i)
+    const int cmdline_result = process_command_line_args(argc, argv, cli_force_windowed);
+    if (cmdline_result != 0)
     {
-        if (!strcmp(argv[i], "--window"))
-        {
-            cli_force_windowed = true;
-        }
-
-        else if (!strcmp(argv[i], "-s"))
-        {
-            if (i < argc - 1)
-            {
-                config_path = argv[++i];
-                game_settings = Settings(config_path);
-            }
-            else
-            {
-                allegro_message("Error - Terrible Syntax. The -s parameter requires a path to a "
-                                "config file.\n");
-                return 4;
-            }
-        }
-
-        else if (!strcmp(argv[i], "--stock"))
-        {
-            game_settings = Settings{};
-        }
-
-        else if (!strcmp(argv[i], "--mute"))
-        {
-            mute_sound = true;
-        }
-
-        else if (!strcmp(argv[i], "-u") && argc > i)
-        {
-            if (i < argc - 1)
-            {
-                playername = argv[++i];
-            }
-            else
-            {
-                allegro_message(
-                    "Error - Terrible Syntax. The -u parameter requires a player name.\n");
-                return 4;
-            }
-        }
-
-        else if (!strcmp(argv[i], "--warp") && argc > i)
-        {
-            if (i < argc - 1)
-            {
-                current_level = ctoi(argv[++i]);
-            }
-            else
-            {
-                allegro_message(
-                    "Error - Terrible Syntax. The --warp parameter requires a level number.\n");
-                return 4;
-            }
-        }
-
-        else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h"))
-        {
-            allegro_message("Chickens for Linux! 0.2.4\n");
-            allegro_message("  -u %smaster\tSpecify player name (default is $USER)\n", playername);
-            allegro_message("  -s file.cfg\t\tSpecify config file\n");
-            allegro_message("  --warp x\t\tWarp to level 'x'\n");
-            allegro_message("  --window\t\tRun in windowed mode\n");
-            allegro_message("  --mute\t\tDon't play any sound or music\n");
-            allegro_message("  --stock\t\tUse stock settings\n");
-            allegro_message("  --help | -h\t\tDisplay this informative help screen\n");
-            allegro_message("  --version\t\tShow version number\n");
-            return 1;
-        }
-
-        else if (!strcmp(argv[i], "--version"))
-        {
-            allegro_message("Chickens for Linux! 0.2.4\n");
-            return 2;
-        }
-
-        else
-        {
-            allegro_message("Error - Unknown Parameter '%s'\n", argv[i]);
-            return 3;
-        }
+        return cmdline_result;
     }
 
     windowmode = (cli_force_windowed || !game_settings.FULLSCREEN) ? GFX_AUTODETECT_WINDOWED
                                                        : GFX_AUTODETECT_FULLSCREEN;
+    game_settings.MAX_CHICKENS = std::min(game_settings.MAX_CHICKENS, MAX_CHICKENS_CAPACITY);
 
     srand(time(nullptr));
 
@@ -198,9 +120,9 @@ int main(int argc, char* argv[])
                                            // anything (ie no background image gets loaded)
     tmp_rocket_size = game_settings.ROCKET_SIZE;
 
-    Smoke smoke[MAX_SMOKE]; // Allegro needs to be running before we can initialize these!
-    Gem gem[MAX_GEMS];
-    Chicken chicken[game_settings.MAX_CHICKENS];
+    std::array<Smoke, MAX_SMOKE> smoke;
+    std::array<Gem, MAX_GEMS> gem;
+    std::array<Chicken, MAX_CHICKENS_CAPACITY> chicken;
 
     const RenderContext render_context{
         assets.buffer, assets.gem_data, assets.icons_data, assets.giblet_data};
@@ -630,6 +552,99 @@ int mode_manager()
     }
 
     return mode;
+}
+
+int process_command_line_args(int argc, char* argv[], bool& cli_force_windowed)
+{
+    // Process those pesky command line parameters
+    for (int i = 1; i < argc; ++i)
+    {
+        if (!strcmp(argv[i], "--window"))
+        {
+            cli_force_windowed = true;
+        }
+
+        else if (!strcmp(argv[i], "-s"))
+        {
+            if (i < argc - 1)
+            {
+                config_path = argv[++i];
+                game_settings = Settings(config_path);
+            }
+            else
+            {
+                allegro_message("Error - Terrible Syntax. The -s parameter requires a path to a "
+                                "config file.\n");
+                return 4;
+            }
+        }
+
+        else if (!strcmp(argv[i], "--stock"))
+        {
+            game_settings = Settings{};
+        }
+
+        else if (!strcmp(argv[i], "--mute"))
+        {
+            mute_sound = true;
+        }
+
+        else if (!strcmp(argv[i], "-u") && argc > i)
+        {
+            if (i < argc - 1)
+            {
+                playername = argv[++i];
+            }
+            else
+            {
+                allegro_message(
+                    "Error - Terrible Syntax. The -u parameter requires a player name.\n");
+                return 4;
+            }
+        }
+
+        else if (!strcmp(argv[i], "--warp") && argc > i)
+        {
+            if (i < argc - 1)
+            {
+                current_level = ctoi(argv[++i]);
+            }
+            else
+            {
+                allegro_message(
+                    "Error - Terrible Syntax. The --warp parameter requires a level number.\n");
+                return 4;
+            }
+        }
+
+        else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h"))
+        {
+            allegro_message("Chickens for Linux! 0.2.4\n");
+            allegro_message("  -u %smaster\tSpecify player name (default is $USER)\n", playername);
+            allegro_message("  -s file.cfg\t\tSpecify config file\n");
+            allegro_message("  --warp x\t\tWarp to level 'x'\n");
+            allegro_message("  --window\t\tRun in windowed mode\n");
+            allegro_message("  --mute\t\tDon't play any sound or music\n");
+            allegro_message("  --stock\t\tUse stock settings\n");
+            allegro_message("  --help | -h\t\tDisplay this informative help screen\n");
+            allegro_message("  --version\t\tShow version number\n");
+            return 1;
+        }
+
+        else if (!strcmp(argv[i], "--version"))
+        {
+            allegro_message("Chickens for Linux! 0.2.4\n");
+            return 2;
+        }
+
+        else
+        {
+            allegro_message("Error - Unknown Parameter '%s'\n", argv[i]);
+            return 3;
+        }
+    }
+
+    return 0;
 }
 
 void load_datafiles()
@@ -1096,7 +1111,9 @@ void show_levelcompleted()
     fadeout(makecol(0, 0, 0), 40);
 }
 
-void restart(Chicken chicken[], Gem gem[MAX_GEMS], Smoke smoke[MAX_SMOKE])
+void restart(std::array<Chicken, MAX_CHICKENS_CAPACITY>& chicken,
+             std::array<Gem, MAX_GEMS>& gem,
+             std::array<Smoke, MAX_SMOKE>& smoke)
 {
     for (int i = 0; i < game_settings.MAX_CHICKENS; ++i)
     {

@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+constexpr int MAX_CHICKENS_CAPACITY{512};
+
 struct Settings
 {
     Settings() = default;
@@ -16,7 +18,7 @@ struct Settings
     float CHICKEN_SPEED{5.0F};
     int GAME_SPEED_OFFSET{0};
     int CHUNKS_PER_CHICKEN{20};
-    int MAX_CHICKENS{80};
+    int MAX_CHICKENS{MAX_CHICKENS_CAPACITY};
     int POINTS_FOR_ROCKET{100};
     int POINTS_FOR_SHOTGUN{250};
     int POINTS_FOR_TENDERIZER{100};
