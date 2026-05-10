@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include "animation.h"
+#include "app_assets.h"
 #include "asset_manager.h"
 #include "chicken.h"
 #include "gem.h"
@@ -77,19 +78,6 @@ bool not_dead{};         // If the player isn't dead yet
 const char* config_path{CHICKENS_ASSETS_REL("options.cfg")}; // Path to configuration file
 const char* playername{};
 
-BITMAP* background{};
-BITMAP* buffer{};
-DATAFILE* background_data{};
-DATAFILE* bigchicken_data{};
-DATAFILE* cursors_data{};
-DATAFILE* chicken_data{};
-DATAFILE* flyingchicken_data{};
-DATAFILE* terrain_data{};
-DATAFILE* gem_data{};
-DATAFILE* giblet_data{};
-DATAFILE* icons_data{};
-DATAFILE* fonts_data{};
-DATAFILE* modechooser_data{};
 Level level{};
 FONT* font_big{};
 FONT* font_interface{};
@@ -635,10 +623,6 @@ int main(int argc, char* argv[])
 
     // Let's free up some memory
 
-    unload_datafile(bigchicken_data);
-    unload_datafile(chicken_data);
-    unload_datafile(flyingchicken_data);
-    unload_datafile(terrain_data);
     asset_manager.clear_datafiles();
 
     destroy_sample(sound_alarm);
@@ -677,16 +661,17 @@ int mode_manager()
 void load_datafiles()
 {
     background_data = load_managed_datafile("background", CHICKENS_ASSETS_REL("dat/background.dat"));
-    bigchicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
-    chicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/chicken.dat"));
+    bigchicken_data = load_managed_datafile("bigchicken", CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
+    chicken_data = load_managed_datafile("chicken", CHICKENS_ASSETS_REL("dat/chicken.dat"));
     cursors_data = load_managed_datafile("cursors", CHICKENS_ASSETS_REL("dat/cursors.dat"));
-    flyingchicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
+    flyingchicken_data =
+        load_managed_datafile("flyingchicken", CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
     fonts_data = load_managed_datafile("fonts", CHICKENS_ASSETS_REL("dat/fonts.dat"));
     gem_data = load_managed_datafile("gem", CHICKENS_ASSETS_REL("dat/gem.dat"));
     giblet_data = load_managed_datafile("giblet", CHICKENS_ASSETS_REL("dat/giblets.dat"));
     icons_data = load_managed_datafile("icons", CHICKENS_ASSETS_REL("dat/icons.dat"));
     modechooser_data = load_managed_datafile("modechooser", CHICKENS_ASSETS_REL("dat/modechooser.dat"));
-    terrain_data = load_datafile(CHICKENS_ASSETS_REL("dat/terrain.dat"));
+    terrain_data = load_managed_datafile("terrain", CHICKENS_ASSETS_REL("dat/terrain.dat"));
 }
 
 void load_fonts()
