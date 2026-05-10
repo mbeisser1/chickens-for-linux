@@ -43,8 +43,7 @@ struct Kfc
     std::unique_ptr<Giblet[]> chunk{};
 
     void explode();
-    void release(
-        const float at_x, const float at_y, int accuracy, const int death, const int direction);
+    void release(const float at_x, const float at_y, int accuracy, const int death, const int direction);
     void draw();
 
     bool released{};

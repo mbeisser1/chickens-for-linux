@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
     windowmode = (cli_force_windowed || !game_settings.FULLSCREEN) ? GFX_AUTODETECT_WINDOWED
                                                        : GFX_AUTODETECT_FULLSCREEN;
 
-    srand(time(NULL));
+    srand(time(nullptr));
 
     initialize(windowmode);
 
@@ -755,7 +755,7 @@ void initialize(int windowmode)
     allegro_init();
     install_mouse();
     install_keyboard();
-    install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL);
+    install_sound(DIGI_AUTODETECT, MIDI_NONE, nullptr);
     install_timer();
 
     LOCK_VARIABLE(CONTROLLING_FRAMERATE);

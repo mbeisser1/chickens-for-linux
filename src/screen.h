@@ -28,13 +28,13 @@ constexpr int DOUBLEBUFFER = 4;
 
 static int updatemethod = 0;
 static bool waitforvsync = 0;
-static BITMAP *pages[3] = {NULL, NULL, NULL}, *active_page, *current_page;
+static BITMAP *pages[3] = {nullptr, nullptr, nullptr}, *active_page, *current_page;
 
 // helper function
 static BITMAP* erase_bitmap(BITMAP* bmp)
 {
     destroy_bitmap(bmp);
-    return NULL;
+    return nullptr;
 }
 
 void InitializeScreenUpdate(int i)

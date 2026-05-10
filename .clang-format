@@ -38,7 +38,7 @@ KeepEmptyLines:
   AtStartOfFile: false
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
-ColumnLimit: 100
+ColumnLimit: 120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 IndentCaseLabels: false
 IndentWidth: 4
