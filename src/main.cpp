@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include "animation.h"
+#include "asset_manager.h"
 #include "chicken.h"
 #include "gem.h"
 #include "helper.h"
@@ -52,6 +53,7 @@ void weapon_manager(bool*, bool*);
 void play_sound(const SAMPLE* snd, int volume, int pan, bool loop);
 
 Settings game_settings{};
+AssetManager asset_manager{};
 
 volatile int game_time{};
 
@@ -99,6 +101,16 @@ SAMPLE* sound_menu{};
 SAMPLE* sound_rocket{};
 SAMPLE* sound_shotgun{};
 SAMPLE* sound_tenderizer{};
+
+static DATAFILE* load_managed_datafile(const char* key, const char* path)
+{
+    if (!asset_manager.load_datafile(key, path))
+    {
+        return nullptr;
+    }
+
+    return asset_manager.get_datafile(key);
+}
 
 int main(int argc, char* argv[])
 {
@@ -623,17 +635,11 @@ int main(int argc, char* argv[])
 
     // Let's free up some memory
 
-    unload_datafile(background_data);
     unload_datafile(bigchicken_data);
     unload_datafile(chicken_data);
-    unload_datafile(cursors_data);
-    unload_datafile(fonts_data);
     unload_datafile(flyingchicken_data);
-    unload_datafile(gem_data);
-    unload_datafile(giblet_data);
-    unload_datafile(icons_data);
-    unload_datafile(modechooser_data);
     unload_datafile(terrain_data);
+    asset_manager.clear_datafiles();
 
     destroy_sample(sound_alarm);
     destroy_sample(sound_gameover);
@@ -670,16 +676,16 @@ int mode_manager()
 
 void load_datafiles()
 {
-    background_data = load_datafile(CHICKENS_ASSETS_REL("dat/background.dat"));
+    background_data = load_managed_datafile("background", CHICKENS_ASSETS_REL("dat/background.dat"));
     bigchicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/bigchicken.dat"));
     chicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/chicken.dat"));
-    cursors_data = load_datafile(CHICKENS_ASSETS_REL("dat/cursors.dat"));
+    cursors_data = load_managed_datafile("cursors", CHICKENS_ASSETS_REL("dat/cursors.dat"));
     flyingchicken_data = load_datafile(CHICKENS_ASSETS_REL("dat/flyingchicken.dat"));
-    fonts_data = load_datafile(CHICKENS_ASSETS_REL("dat/fonts.dat"));
-    gem_data = load_datafile(CHICKENS_ASSETS_REL("dat/gem.dat"));
-    giblet_data = load_datafile(CHICKENS_ASSETS_REL("dat/giblets.dat"));
-    icons_data = load_datafile(CHICKENS_ASSETS_REL("dat/icons.dat"));
-    modechooser_data = load_datafile(CHICKENS_ASSETS_REL("dat/modechooser.dat"));
+    fonts_data = load_managed_datafile("fonts", CHICKENS_ASSETS_REL("dat/fonts.dat"));
+    gem_data = load_managed_datafile("gem", CHICKENS_ASSETS_REL("dat/gem.dat"));
+    giblet_data = load_managed_datafile("giblet", CHICKENS_ASSETS_REL("dat/giblets.dat"));
+    icons_data = load_managed_datafile("icons", CHICKENS_ASSETS_REL("dat/icons.dat"));
+    modechooser_data = load_managed_datafile("modechooser", CHICKENS_ASSETS_REL("dat/modechooser.dat"));
     terrain_data = load_datafile(CHICKENS_ASSETS_REL("dat/terrain.dat"));
 }
 
