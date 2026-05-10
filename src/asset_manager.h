@@ -51,6 +51,15 @@ struct AppAssets
     SAMPLE* sound_tenderizer{};
 };
 
+/** Draw-time view of bitmap + datafile pointers (built from loaded `AppAssets`). */
+struct RenderContext
+{
+    BITMAP* target{};
+    const DATAFILE* gem_data{};
+    const DATAFILE* icons_data{};
+    const DATAFILE* giblet_data{};
+};
+
 class AssetManager
 {
   public:

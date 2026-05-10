@@ -1,5 +1,6 @@
 #include "gem.h"
 
+#include "helper.h"
 #include "settings.h"
 
 Gem::Gem(Settings& settings) : settings_{&settings}

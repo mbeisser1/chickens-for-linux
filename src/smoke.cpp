@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "helper.h"
 #include "level.h"
 #include "settings.h"
 

@@ -3,7 +3,7 @@
 
 #include <allegro.h>
 
-#include "helper.h"
+#include "asset_manager.h"
 
 constexpr int BONUS_TIMER = 0;
 constexpr int BONUS_ROCKETSIZE = 1;

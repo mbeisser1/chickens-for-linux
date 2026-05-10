@@ -5,7 +5,7 @@
 
 #include <allegro.h>
 
-#include "helper.h"
+#include "asset_manager.h"
 
 struct Level;
 struct Settings;

@@ -36,12 +36,4 @@ constexpr int CROSSED_THE_ROAD = 2;
 
 extern volatile int game_time;
 
-struct RenderContext
-{
-    BITMAP* target{};
-    const DATAFILE* gem_data{};
-    const DATAFILE* icons_data{};
-    const DATAFILE* giblet_data{};
-};
-
 #endif
